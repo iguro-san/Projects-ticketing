@@ -11,6 +11,7 @@ class LoginController extends Controller
         return view('login');
     }
 
+    // Gunakan method PROSES dari versi lokal (lebih lengkap)
     public function proses(Request $request)
     {
         $request->validate([
@@ -32,6 +33,7 @@ class LoginController extends Controller
         }
     }
 
+    // Method logout
     public function logout()
     {
         session()->flush();

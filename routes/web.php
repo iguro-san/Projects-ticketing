@@ -6,8 +6,14 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListBarangController;
-// Tambahkan ini
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DaftarEventController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 // ============ ROUTES LOGIN ============
 Route::get('/login', [LoginController::class, 'index'])->name('login');
@@ -31,16 +37,30 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-// Route untuk list barang
+// Route untuk list barang (praktikum)
 Route::get('/listbarang/{id}/{nama}', function($id, $nama){
     return view('list_barang', compact('id', 'nama'));
 });
 
-// ============ ROUTES PBL ANDA ============
+// ============ ROUTES PBL (PROJECT ANDA) ============
+
+// Halaman utama
 Route::get('/', [HomeController::class, 'index']);
+
+// Halaman kontak
 Route::get('/contact', [HomeController::class, 'contact']);
+
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+// Events (menggunakan EventController)
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'detail']);
+
+// Daftar Event (menggunakan DaftarEventController - jika ada)
+Route::get('/daftarevent', [DaftarEventController::class, 'index']);
+Route::get('/daftarevent/{id}', [DaftarEventController::class, 'detail']);
+
+// Tiket
 Route::get('/tickets', [TicketController::class, 'index']);
 Route::get('/tickets/buy/{id}', [TicketController::class, 'buy']);

@@ -83,28 +83,71 @@
             color: #764ba2;
             text-decoration: underline;
         }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h1>🔐 Login</h1>
         
+        <!-- Tampilkan pesan error jika ada -->
+        @if(session('error'))
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        
         <form action="/login" method="POST">
             @csrf
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" required>
+                <input type="email" name="email" value="admin@example.com" required>
+                <small style="color: #666; display: block; margin-top: 5px;">Gunakan: admin@example.com</small>
             </div>
             
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" value="123456" required>
+                <small style="color: #666; display: block; margin-top: 5px;">Gunakan: 123456</small>
             </div>
             
             <button type="submit" class="btn-login">Login</button>
             
             <a href="/events" class="btn-back">← Kembali ke Daftar Event</a>
         </form>
+        
+        <div class="info">
+            <p>Demo: admin@example.com / 123456</p>
+        </div>
     </div>
 </body>
 </html>

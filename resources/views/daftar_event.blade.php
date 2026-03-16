@@ -9,6 +9,7 @@
 <body class="bg-light">
 
   <div class="container mt-5">
+    <a href="/login" class="btn btn-outline-primary">Login</a>
     <h1 class="text-center mb-4">Daftar Event</h1>
 
     <div class="row">

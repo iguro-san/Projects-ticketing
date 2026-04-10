@@ -11,7 +11,6 @@ class LoginController extends Controller
         return view('login');
     }
 
-    // Gunakan method PROSES dari versi lokal (lebih lengkap)
     public function proses(Request $request)
     {
         $request->validate([
@@ -19,21 +18,31 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
-        // Coba login
-        if ($request->email == "admin@example.com" && $request->password == "123456") {
-            // Simpan session login
-            session(['logged_in' => true]);
-            session(['user_email' => $request->email]);
-            session(['user_name' => 'Admin']);
+        // Simulasi database user dengan role
+        $users = [
+            'admin@example.com' => ['password' => '123456', 'name' => 'Admin', 'role' => 'admin'],
+            'user@example.com' => ['password' => '123456', 'name' => 'User Biasa', 'role' => 'user'],
+        ];
+
+        if (isset($users[$request->email]) && $users[$request->email]['password'] == $request->password) {
+            session([
+                'logged_in' => true,
+                'user_email' => $request->email,
+                'user_name' => $users[$request->email]['name'],
+                'user_role' => $users[$request->email]['role']
+            ]);
             
-            // ARAHKAN KE DASHBOARD
-            return redirect('/dashboard')->with('success', 'Login berhasil! Selamat datang di Dashboard');
+            // Redirect berdasarkan role
+            if ($users[$request->email]['role'] == 'admin') {
+                return redirect('/admin/dashboard')->with('success', 'Login berhasil! Selamat datang Admin');
+            }
+            
+            return redirect('/')->with('success', 'Login berhasil! Selamat datang');
         } else {
             return back()->with('error', 'Email atau password salah!');
         }
     }
 
-    // Method logout
     public function logout()
     {
         session()->flush();

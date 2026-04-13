@@ -20,6 +20,7 @@
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Nama</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Email</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tiket</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Bukti</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Aksi</th>
                 </tr>
@@ -32,6 +33,15 @@
                     <td class="px-4 py-3">{{ $reg->user_email }}</td>
                     <td class="px-4 py-3">{{ $reg->ticketType->name }}</td>
                     <td class="px-4 py-3">
+                        @if($reg->payment_proof)
+                            <a href="{{ Storage::url($reg->payment_proof) }}" target="_blank" class="text-blue-500 hover:underline text-sm">
+                                <i class="fas fa-image"></i> Lihat
+                            </a>
+                        @else
+                            <span class="text-gray-400 text-sm">-</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
                         <span class="px-2 py-1 rounded text-xs
                             @if($reg->payment_status == 'paid') bg-green-100 text-green-700
                             @elseif($reg->payment_status == 'pending') bg-yellow-100 text-yellow-700
@@ -40,22 +50,28 @@
                         </span>
                     </td>
                     <td class="px-4 py-3">
-                        <form action="{{ route('admin.events.registrations.update-payment', [$event, $reg]) }}" method="POST" class="flex gap-2">
-                            @csrf @method('PUT')
-                            <select name="payment_status" class="border rounded px-2 py-1 text-sm focus:outline-none focus:border-purple-600">
-                                <option value="pending" {{ $reg->payment_status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="paid" {{ $reg->payment_status == 'paid' ? 'selected' : '' }}>Paid</option>
-                                <option value="failed" {{ $reg->payment_status == 'failed' ? 'selected' : '' }}>Failed</option>
-                            </select>
-                            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
-                                Update
-                            </button>
-                        </form>
+                        <div class="flex gap-2">
+                            <a href="{{ route('admin.events.registrations.payment', [$event, $reg]) }}" 
+                               class="bg-indigo-500 text-white px-3 py-1 rounded text-sm hover:bg-indigo-600 transition">
+                                <i class="fas fa-money-bill-wave"></i> Detail
+                            </a>
+                            <form action="{{ route('admin.events.registrations.update-payment', [$event, $reg]) }}" method="POST" class="flex gap-2">
+                                @csrf @method('PUT')
+                                <select name="payment_status" class="border rounded px-2 py-1 text-sm focus:outline-none focus:border-purple-600">
+                                    <option value="pending" {{ $reg->payment_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="paid" {{ $reg->payment_status == 'paid' ? 'selected' : '' }}>Paid</option>
+                                    <option value="failed" {{ $reg->payment_status == 'failed' ? 'selected' : '' }}>Failed</option>
+                                </select>
+                                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
+                                    Update
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">Belum ada peserta terdaftar</td>
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">Belum ada peserta terdaftar</td>
                 </tr>
                 @endforelse
             </tbody>

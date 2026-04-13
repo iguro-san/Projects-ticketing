@@ -24,6 +24,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
     Route::get('/my-tickets', [EventController::class, 'myTickets'])->name('my.tickets');
     
+    // Routes Pembayaran
+    Route::get('/payment/{registration}', [EventController::class, 'showPayment'])->name('payment.show');
+    Route::post('/payment/{registration}/upload', [EventController::class, 'uploadPayment'])->name('payment.upload');
+    
     // Halaman Admin
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -40,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         // Manajemen Peserta per Event
         Route::get('/events/{event}/registrations', [AdminRegistrationController::class, 'index'])->name('events.registrations.index');
         Route::get('/events/{event}/registrations/export', [AdminRegistrationController::class, 'export'])->name('events.registrations.export');
+        Route::get('/events/{event}/registrations/{registration}/payment', [AdminRegistrationController::class, 'showPayment'])->name('events.registrations.payment');
         Route::put('/events/{event}/registrations/{registration}/payment', [AdminRegistrationController::class, 'updatePayment'])->name('events.registrations.update-payment');
     });
 });

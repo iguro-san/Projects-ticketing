@@ -111,4 +111,57 @@ class EventController extends Controller
             
         return view('events.my-tickets', compact('registrations'));
     }
+
+    // Menampilkan halaman pembayaran
+    public function showPayment(Registration $registration)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+        
+        // Pastikan user hanya bisa melihat pembayaran miliknya sendiri
+        if ($registration->user_email !== auth()->user()->email) {
+            abort(403);
+        }
+        
+        $bankAccounts = [
+            ['bank' => 'BCA', 'account_number' => '1234567890', 'account_name' => 'PT Event Management'],
+            ['bank' => 'Mandiri', 'account_number' => '0987654321', 'account_name' => 'PT Event Management'],
+            ['bank' => 'BRI', 'account_number' => '1122334455', 'account_name' => 'PT Event Management'],
+            ['bank' => 'BNI', 'account_number' => '5544332211', 'account_name' => 'PT Event Management'],
+        ];
+        
+        return view('events.payment', compact('registration', 'bankAccounts'));
+    }
+
+    // Upload bukti pembayaran
+    public function uploadPayment(Request $request, Registration $registration)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+        
+        if ($registration->user_email !== auth()->user()->email) {
+            abort(403);
+        }
+        
+        if ($registration->isPaid()) {
+            return back()->with('error', 'Pembayaran sudah dikonfirmasi!');
+        }
+        
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'payment_method' => 'required|string',
+        ]);
+        
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+            $registration->update([
+                'payment_proof' => $proofPath,
+                'payment_method' => $request->payment_method,
+            ]);
+        }
+        
+        return redirect()->route('my.tickets')->with('success', 'Bukti pembayaran berhasil diupload! Menunggu konfirmasi admin.');
+    }
 }

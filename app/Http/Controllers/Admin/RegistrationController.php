@@ -26,10 +26,20 @@ class RegistrationController extends Controller
         if (!auth()->user()->isAdmin()) abort(403);
         
         $validated = $request->validate([
-            'payment_status' => 'required|in:pending,paid,failed'
+            'payment_status' => 'required|in:pending,paid,failed',
+            'admin_notes' => 'nullable|string'
         ]);
         
-        $registration->update($validated);
+        if ($validated['payment_status'] === 'paid' && !$registration->isPaid()) {
+            $registration->markAsPaid($registration->payment_method, $validated['admin_notes'] ?? null);
+        } elseif ($validated['payment_status'] === 'failed') {
+            $registration->markAsFailed($validated['admin_notes'] ?? null);
+        } else {
+            $registration->update([
+                'payment_status' => $validated['payment_status'],
+                'admin_notes' => $validated['admin_notes'] ?? null
+            ]);
+        }
         
         return redirect()->route('admin.events.registrations.index', $event)
             ->with('success', 'Status pembayaran berhasil diupdate!');
@@ -71,5 +81,13 @@ class RegistrationController extends Controller
         
         fclose($output);
         exit;
+    }
+    
+    // Lihat detail pembayaran
+    public function showPayment(Event $event, Registration $registration)
+    {
+        if (!auth()->user()->isAdmin()) abort(403);
+        
+        return view('admin.registrations.payment-detail', compact('event', 'registration'));
     }
 }

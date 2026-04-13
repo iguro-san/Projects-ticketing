@@ -25,12 +25,31 @@
                     {{ ucfirst($reg->payment_status) }}
                 </span>
             </div>
+            <p class="text-sm text-gray-500 mt-2">
+                Total: <span class="font-bold text-green-600">Rp {{ number_format($reg->ticketType->price, 0, ',', '.') }}</span>
+            </p>
         </div>
         <div class="mt-4 md:mt-0 text-left md:text-right">
-            <div class="bg-gray-100 rounded-lg p-3">
+            <div class="bg-gray-100 rounded-lg p-3 mb-2">
                 <p class="text-xs text-gray-500">No. Registrasi</p>
                 <p class="font-mono font-bold text-purple-600">{{ $reg->registration_number }}</p>
             </div>
+            
+            <!-- Tombol Bayar -->
+            @if($reg->payment_status == 'pending')
+                <a href="{{ route('payment.show', $reg) }}" class="inline-block bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
+                    <i class="fas fa-money-bill-wave"></i> Bayar Sekarang
+                </a>
+            @elseif($reg->payment_status == 'paid')
+                <span class="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-check-circle"></i> Lunas
+                </span>
+            @elseif($reg->payment_status == 'failed')
+                <span class="inline-block bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-times-circle"></i> Pembayaran Ditolak
+                </span>
+            @endif
+            
             <p class="text-xs text-gray-500 mt-2">
                 Daftar: {{ $reg->registered_at->format('d/m/Y H:i') }}
             </p>

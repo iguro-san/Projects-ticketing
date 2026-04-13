@@ -3,134 +3,86 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h2><i class="fas fa-chart-line"></i> Welcome back, {{ session('user_name') }}!</h2>
-                    <p class="mb-0">Selamat datang di dashboard admin event management system.</p>
-                </div>
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+<p class="text-gray-600 mb-8">Selamat datang, {{ auth()->user()->name }}!</p>
+
+<!-- Statistik Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Total Event</p>
+                <p class="text-3xl font-bold text-purple-600">{{ $stats['total_events'] }}</p>
             </div>
+            <i class="fas fa-calendar-alt text-4xl text-gray-300"></i>
         </div>
     </div>
-
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Total Events</h6>
-                            <h2 class="mb-0">{{ session('total_events', 3) }}</h2>
-                        </div>
-                        <i class="fas fa-calendar-alt fa-2x opacity-50"></i>
-                    </div>
-                </div>
+    
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Event Aktif</p>
+                <p class="text-3xl font-bold text-green-600">{{ $stats['active_events'] }}</p>
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Total Peserta</h6>
-                            <h2 class="mb-0">{{ session('total_participants', 0) }}</h2>
-                        </div>
-                        <i class="fas fa-users fa-2x opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Pendapatan</h6>
-                            <h2 class="mb-0">Rp {{ number_format(session('total_revenue', 0), 0, ',', '.') }}</h2>
-                        </div>
-                        <i class="fas fa-money-bill fa-2x opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Upcoming Events</h6>
-                            <h2 class="mb-0">2</h2>
-                        </div>
-                        <i class="fas fa-clock fa-2x opacity-50"></i>
-                    </div>
-                </div>
-            </div>
+            <i class="fas fa-play-circle text-4xl text-gray-300"></i>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> Menu Cepat</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-3">
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calendar-plus"></i> Kelola Event
-                        </a>
-                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-tags"></i> Kelola Kategori
-                        </a>
-                        <a href="{{ route('admin.events.create') }}" class="btn btn-success btn-lg">
-                            <i class="fas fa-plus-circle"></i> Buat Event Baru
-                        </a>
-                    </div>
-                </div>
+    
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Total Peserta</p>
+                <p class="text-3xl font-bold text-blue-600">{{ $stats['total_registrations'] }}</p>
             </div>
+            <i class="fas fa-users text-4xl text-gray-300"></i>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-history"></i> Pendaftaran Terbaru</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nama</th>
-                                    <th>Event</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $registrations = session('registrations', []);
-                                    $recentRegs = array_slice(array_reverse($registrations), 0, 5);
-                                @endphp
-                                @forelse($recentRegs as $reg)
-                                <tr>
-                                    <td>{{ $reg['user_name'] ?? '-' }}</td>
-                                    <td>{{ $reg['event_title'] ?? 'Event' }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ ($reg['payment_status'] ?? 'pending') == 'paid' ? 'success' : 'warning' }}">
-                                            {{ $reg['payment_status'] ?? 'pending' }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="3" class="text-center">Belum ada pendaftaran</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-500 text-sm">Pendapatan</p>
+                <p class="text-3xl font-bold text-yellow-600">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
             </div>
+            <i class="fas fa-money-bill-wave text-4xl text-gray-300"></i>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Menu Cepat -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Menu Cepat</h2>
+        <div class="space-y-3">
+            <a href="{{ route('admin.events.index') }}" class="block w-full bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600 transition">
+                <i class="fas fa-calendar-plus"></i> Kelola Event
+            </a>
+            <a href="{{ route('admin.categories.index') }}" class="block w-full bg-green-500 text-white text-center py-2 rounded-lg hover:bg-green-600 transition">
+                <i class="fas fa-tags"></i> Kelola Kategori
+            </a>
+            <a href="{{ route('admin.events.create') }}" class="block w-full bg-purple-500 text-white text-center py-2 rounded-lg hover:bg-purple-600 transition">
+                <i class="fas fa-plus-circle"></i> Buat Event Baru
+            </a>
+        </div>
+    </div>
+    
+    <!-- Pendaftaran Terbaru -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Pendaftaran Terbaru</h2>
+        <div class="space-y-3">
+            @forelse($recentRegistrations as $reg)
+            <div class="border-b pb-3">
+                <p class="font-semibold">{{ $reg->user_name }}</p>
+                <p class="text-sm text-gray-600">{{ $reg->event->title }}</p>
+                <span class="text-xs px-2 py-1 rounded
+                    @if($reg->payment_status == 'paid') bg-green-100 text-green-700
+                    @else bg-yellow-100 text-yellow-700 @endif">
+                    {{ ucfirst($reg->payment_status) }}
+                </span>
+            </div>
+            @empty
+            <p class="text-gray-500 text-center py-4">Belum ada pendaftaran</p>
+            @endforelse
         </div>
     </div>
 </div>

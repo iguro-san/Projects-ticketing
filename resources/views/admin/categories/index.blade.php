@@ -3,96 +3,100 @@
 @section('title', 'Kelola Kategori')
 
 @section('content')
-<div class="container">
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="fas fa-tags"></i> Daftar Kategori</h4>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                <i class="fas fa-plus"></i> Tambah Kategori
-            </button>
-        </div>
-        <div class="card-body">
-            @php
-                $categories = session('categories', [
-                    ['id' => 1, 'name' => 'Seminar', 'description' => 'Acara seminar dan presentasi'],
-                    ['id' => 2, 'name' => 'Workshop', 'description' => 'Pelatihan praktis'],
-                    ['id' => 3, 'name' => 'Expo', 'description' => 'Pameran produk dan teknologi'],
-                    ['id' => 4, 'name' => 'Conference', 'description' => 'Konferensi besar'],
-                ]);
-            @endphp
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nama Kategori</th>
-                            <th>Deskripsi</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($categories as $category)
-                        <tr>
-                            <td>{{ $category['id'] }}</td>
-                            <td><strong>{{ $category['name'] }}</strong></td>
-                            <td>{{ $category['description'] ?? '-' }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning" onclick="editCategory({{ $category['id'] }})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form action="{{ route('admin.categories.destroy', $category['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus kategori ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="text-center">Belum ada kategori</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="bg-white rounded-lg shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Daftar Kategori</h1>
+        <button onclick="showModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+            <i class="fas fa-plus"></i> Tambah Kategori
+        </button>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Nama</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Deskripsi</th>
+                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-600">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @foreach($categories as $cat)
+                <tr>
+                    <td class="px-4 py-3">{{ $cat->id }}</td>
+                    <td class="px-4 py-3 font-semibold">{{ $cat->name }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $cat->description ?? '-' }}</td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="editCategory({{ $cat->id }}, '{{ $cat->name }}', '{{ $cat->description }}')" 
+                                class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
+                            Edit
+                        </button>
+                        <form action="{{ route('admin.categories.destroy', $cat) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition" 
+                                    onclick="return confirm('Yakin hapus kategori ini?')">
+                                Hapus
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4">
+        {{ $categories->links() }}
     </div>
 </div>
 
-<!-- Modal Tambah Kategori -->
-<div class="modal fade" id="addCategoryModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('admin.categories.store') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Kategori Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nama Kategori</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
-        </div>
+<!-- Modal Tambah/Edit Kategori -->
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">Tambah Kategori</h2>
+        <form id="categoryForm" method="POST">
+            @csrf
+            <input type="text" name="name" placeholder="Nama Kategori" 
+                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required>
+            <textarea name="description" placeholder="Deskripsi (opsional)" 
+                      class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" rows="3"></textarea>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="hideModal()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Simpan</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-function editCategory(id) {
-    alert('Edit kategori dengan ID: ' + id);
+function showModal() {
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modalTitle').innerText = 'Tambah Kategori';
+    document.getElementById('categoryForm').action = "{{ route('admin.categories.store') }}";
+    document.getElementById('categoryForm').method = "POST";
+    document.querySelector('input[name="name"]').value = '';
+    document.querySelector('textarea[name="description"]').value = '';
+    let methodInput = document.querySelector('input[name="_method"]');
+    if(methodInput) methodInput.remove();
+}
+
+function editCategory(id, name, desc) {
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modalTitle').innerText = 'Edit Kategori';
+    let form = document.getElementById('categoryForm');
+    form.action = `/admin/categories/${id}`;
+    let method = document.createElement('input');
+    method.type = 'hidden';
+    method.name = '_method';
+    method.value = 'PUT';
+    form.appendChild(method);
+    document.querySelector('input[name="name"]').value = name;
+    document.querySelector('textarea[name="description"]').value = desc || '';
+}
+
+function hideModal() {
+    document.getElementById('modal').classList.add('hidden');
 }
 </script>
 @endsection

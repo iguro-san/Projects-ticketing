@@ -3,78 +3,48 @@
 @section('title', 'Tiket Saya')
 
 @section('content')
-<div class="container">
-    <div class="card">
-        <div class="card-header bg-white">
-            <h4 class="mb-0"><i class="fas fa-ticket-alt"></i> Tiket Saya</h4>
-        </div>
-        <div class="card-body">
-            @php
-                $registrations = session('registrations', []);
-                $myRegistrations = array_filter($registrations, function($reg) {
-                    return isset($reg['user_email']) && $reg['user_email'] == session('user_email');
-                });
-            @endphp
+<h1 class="text-3xl font-bold text-gray-800 mb-6">
+    <i class="fas fa-ticket-alt text-purple-600"></i> Tiket Saya
+</h1>
 
-            @if(empty($myRegistrations))
-                <div class="text-center py-5">
-                    <i class="fas fa-ticket-alt fa-4x text-muted mb-3"></i>
-                    <h5>Belum ada tiket</h5>
-                    <p class="text-muted">Anda belum mendaftar event apapun.</p>
-                    <a href="{{ route('events.index') }}" class="btn btn-primary">
-                        <i class="fas fa-calendar-alt"></i> Lihat Event
-                    </a>
-                </div>
-            @else
-                <div class="row">
-                    @foreach($myRegistrations as $reg)
-                    <div class="col-md-6 mb-4">
-                        <div class="card border-{{ ($reg['payment_status'] ?? 'pending') == 'paid' ? 'success' : 'warning' }} shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="card-title">{{ $reg['event_title'] ?? 'Event' }}</h5>
-                                        <p class="text-muted mb-1">
-                                            <small><i class="fas fa-calendar"></i> {{ $reg['event_date'] ?? '-' }}</small>
-                                        </p>
-                                        <p class="text-muted mb-1">
-                                            <small><i class="fas fa-ticket"></i> {{ $reg['ticket_type_name'] ?? 'Regular' }}</small>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-{{ ($reg['payment_status'] ?? 'pending') == 'paid' ? 'success' : 'warning' }} fs-6">
-                                            {{ ($reg['payment_status'] ?? 'pending') == 'paid' ? 'Paid' : 'Pending' }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <p class="mb-1">
-                                            <strong>No. Registrasi:</strong><br>
-                                            <code class="fs-6">{{ $reg['registration_number'] }}</code>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ $reg['registration_number'] }}')">
-                                        <i class="fas fa-copy"></i> Copy No Registrasi
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @endif
+@forelse($registrations as $reg)
+<div class="bg-white rounded-lg shadow p-6 mb-4 hover:shadow-lg transition">
+    <div class="flex flex-col md:flex-row justify-between items-start">
+        <div class="flex-1">
+            <h3 class="text-xl font-bold text-gray-800">{{ $reg->event->title }}</h3>
+            <p class="text-gray-600">{{ $reg->event->event_date->format('d F Y') }}</p>
+            <p class="text-gray-600">{{ $reg->event->location }}</p>
+            <div class="mt-3 space-x-2">
+                <span class="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
+                    {{ $reg->ticketType->name }}
+                </span>
+                <span class="inline-block px-3 py-1 rounded-full text-sm
+                    @if($reg->payment_status == 'paid') bg-green-200 text-green-700
+                    @elseif($reg->payment_status == 'pending') bg-yellow-200 text-yellow-700
+                    @else bg-red-200 text-red-700 @endif">
+                    {{ ucfirst($reg->payment_status) }}
+                </span>
+            </div>
+        </div>
+        <div class="mt-4 md:mt-0 text-left md:text-right">
+            <div class="bg-gray-100 rounded-lg p-3">
+                <p class="text-xs text-gray-500">No. Registrasi</p>
+                <p class="font-mono font-bold text-purple-600">{{ $reg->registration_number }}</p>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+                Daftar: {{ $reg->registered_at->format('d/m/Y H:i') }}
+            </p>
         </div>
     </div>
 </div>
-
-<script>
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text);
-    alert('Nomor registrasi telah disalin!');
-}
-</script>
+@empty
+<div class="bg-white rounded-lg shadow p-12 text-center">
+    <i class="fas fa-ticket-alt text-6xl text-gray-400 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-600">Belum ada tiket</h3>
+    <p class="text-gray-500 mb-6">Anda belum mendaftar event apapun</p>
+    <a href="{{ route('events.index') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+        Lihat Event
+    </a>
+</div>
+@endforelse
 @endsection

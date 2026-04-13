@@ -1,55 +1,45 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\RegistrationController as AdminRegistrationController;
+use App\Http\Controllers\Admin\TicketTypeController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AdminEventController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\RegistrationController;
-use App\Http\Controllers\DaftarEventController;
+use Illuminate\Support\Facades\Route;
 
-// Route publik
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Halaman Publik
+Route::get('/', [EventController::class, 'index'])->name('home');
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
-Route::get('/events/{id}', [EventController::class, 'detail'])->name('events.detail');
-Route::get('/daftar-event', [DaftarEventController::class, 'index'])->name('daftar.event');
-Route::get('/daftar-event/{id}', [DaftarEventController::class, 'detail'])->name('daftar.event.detail');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
-// Auth routes
-Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'proses'])->name('login.proses');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Login/Logout
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Tiket routes
-Route::get('/tickets', [TicketController::class, 'index'])->name('tickets');
-Route::get('/tickets/buy/{id}', [TicketController::class, 'buy'])->name('tickets.buy');
-
-// Registrasi (perlu login)
-Route::middleware(['auth.session'])->group(function () {
-    Route::post('/events/{eventId}/register', [RegistrationController::class, 'store'])->name('register.event');
-    Route::get('/my-tickets', [RegistrationController::class, 'myTickets'])->name('my.tickets');
-});
-
-// Admin routes (perlu role admin)
-Route::prefix('admin')->middleware(['auth.session'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+// Halaman yang memerlukan login
+Route::middleware(['auth'])->group(function () {
+    Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
+    Route::get('/my-tickets', [EventController::class, 'myTickets'])->name('my.tickets');
     
-    // Manajemen Event
-    Route::get('/events', [AdminEventController::class, 'index'])->name('admin.events.index');
-    Route::get('/events/create', [AdminEventController::class, 'create'])->name('admin.events.create');
-    Route::post('/events', [AdminEventController::class, 'store'])->name('admin.events.store');
-    Route::get('/events/{id}/edit', [AdminEventController::class, 'edit'])->name('admin.events.edit');
-    Route::put('/events/{id}', [AdminEventController::class, 'update'])->name('admin.events.update');
-    Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])->name('admin.events.destroy');
-    
-    // Manajemen Kategori
-    Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
-    Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
-    
-    // Lihat Peserta per Event
-    Route::get('/events/{eventId}/participants', [RegistrationController::class, 'participants'])->name('admin.participants');
+    // Halaman Admin
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Manajemen Kategori
+        Route::resource('categories', CategoryController::class)->except(['show', 'edit', 'create']);
+        
+        // Manajemen Event
+        Route::resource('events', AdminEventController::class);
+        
+        // Manajemen Tiket per Event
+        Route::resource('events.ticket-types', TicketTypeController::class)->shallow();
+        
+        // Manajemen Peserta per Event
+        Route::get('/events/{event}/registrations', [AdminRegistrationController::class, 'index'])->name('events.registrations.index');
+        Route::get('/events/{event}/registrations/export', [AdminRegistrationController::class, 'export'])->name('events.registrations.export');
+        Route::put('/events/{event}/registrations/{registration}/payment', [AdminRegistrationController::class, 'updatePayment'])->name('events.registrations.update-payment');
+    });
 });

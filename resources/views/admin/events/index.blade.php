@@ -3,78 +3,72 @@
 @section('title', 'Kelola Event')
 
 @section('content')
-<div class="container">
-    <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="fas fa-calendar-alt"></i> Daftar Event</h4>
-            <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Buat Event Baru
-            </a>
-        </div>
-        <div class="card-body">
-            @php
-                $events = session('events', [
-                    ['id' => 1, 'title' => 'Seminar AI 2026', 'category_id' => 1, 'event_date' => '2026-03-20', 'location' => 'Jakarta Convention Center', 'description' => 'Belajar AI'],
-                    ['id' => 2, 'title' => 'Workshop Laravel', 'category_id' => 2, 'event_date' => '2026-03-25', 'location' => 'Bandung Digital Valley', 'description' => 'Praktik Laravel'],
-                    ['id' => 3, 'title' => 'Informatics Fair', 'category_id' => 3, 'event_date' => '2026-04-01', 'location' => 'Surabaya Convention Hall', 'description' => 'Pameran teknologi'],
-                ]);
-                $categories = [1 => 'Seminar', 2 => 'Workshop', 3 => 'Expo', 4 => 'Conference'];
-            @endphp
-
-            @if(empty($events))
-                <div class="text-center py-5">
-                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">Belum ada event. Silakan buat event baru.</p>
-                    <a href="{{ route('admin.events.create') }}" class="btn btn-primary">Buat Event</a>
-                </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Judul Event</th>
-                                <th>Kategori</th>
-                                <th>Tanggal</th>
-                                <th>Lokasi</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($events as $event)
-                            <tr>
-                                <td>{{ $event['id'] }}</td>
-                                <td><strong>{{ $event['title'] }}</strong></td>
-                                <td>{{ $categories[$event['category_id']] ?? 'General' }}</td>
-                                <td>{{ date('d M Y', strtotime($event['event_date'])) }}</td>
-                                <td>{{ $event['location'] }}</td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('admin.events.ticket-types.index', $event['id']) }}" class="btn btn-sm btn-info" title="Kelola Tiket">
-                                            <i class="fas fa-ticket-alt"></i>
-                                        </a>
-                                        <a href="{{ route('admin.events.registrations.index', $event['id']) }}" class="btn btn-sm btn-success" title="Lihat Peserta">
-                                            <i class="fas fa-users"></i>
-                                        </a>
-                                        <a href="{{ route('admin.events.edit', $event['id']) }}" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('admin.events.destroy', $event['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus event ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
+<div class="bg-white rounded-lg shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Daftar Event</h1>
+        <a href="{{ route('admin.events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+            <i class="fas fa-plus"></i> Buat Event Baru
+        </a>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Judul</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Kategori</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tanggal</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-600">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @foreach($events as $event)
+                <tr>
+                    <td class="px-4 py-3">{{ $event->id }}</td>
+                    <td class="px-4 py-3 font-semibold">{{ $event->title }}</td>
+                    <td class="px-4 py-3">{{ $event->category->name }}</td>
+                    <td class="px-4 py-3">{{ $event->event_date->format('d/m/Y') }}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded text-xs
+                            @if($event->status == 'active') bg-green-100 text-green-700
+                            @elseif($event->status == 'completed') bg-blue-100 text-blue-700
+                            @else bg-red-100 text-red-700 @endif">
+                            {{ ucfirst($event->status) }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center gap-2">
+                            <a href="{{ route('admin.events.ticket-types.index', $event) }}" 
+                               class="bg-indigo-500 text-white px-2 py-1 rounded text-sm hover:bg-indigo-600 transition" title="Kelola Tiket">
+                                <i class="fas fa-ticket-alt"></i>
+                            </a>
+                            <a href="{{ route('admin.events.registrations.index', $event) }}" 
+                               class="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600 transition" title="Lihat Peserta">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            <a href="{{ route('admin.events.edit', $event) }}" 
+                               class="bg-yellow-500 text-white px-2 py-1 rounded text-sm hover:bg-yellow-600 transition" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600 transition" 
+                                        onclick="return confirm('Yakin hapus event ini?')" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4">
+        {{ $events->links() }}
     </div>
 </div>
 @endsection

@@ -58,11 +58,9 @@
         
         <div class="flex gap-3">
             <button type="submit" class="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
-                <i class="fas fa-save"></i> Update Event
-            </button>
+                <i class="fas fa-save"></i> Update Event</button>
             <a href="{{ route('admin.events.index') }}" class="flex-1 bg-gray-300 text-gray-700 text-center py-2 rounded-lg hover:bg-gray-400 transition">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
+                <i class="fas fa-arrow-left"></i> Kembali</a>
         </div>
     </form>
 </div>

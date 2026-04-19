@@ -11,7 +11,7 @@
     <div class="p-4">
         <span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">{{ $event->category->name }}</span>
         <h3 class="text-xl font-bold mt-2">{{ $event->title }}</h3>
-        <p class="text-gray-600 text-sm mt-2">{{ Str::limit($event->description, 100) }}</p>
+        <p class="text-gray-600 text-sm mt-2">{{ str::limit($event->description, 100) }}</p>
         <div class="mt-4 text-sm text-gray-500">
             <p><i class="fas fa-calendar"></i> {{ $event->event_date->format('d F Y') }}</p>
             <p><i class="fas fa-map-marker-alt"></i> {{ $event->location }}</p>

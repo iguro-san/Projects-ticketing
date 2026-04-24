@@ -1,74 +1,58 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Event')
+@section('title', 'Daftar Event')
 
 @section('content')
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Daftar Event</h1>
-        <a href="{{ route('admin.events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-            <i class="fas fa-plus"></i> Buat Event Baru
-        </a>
+<h1 class="text-4xl font-bold text-gray-800 mb-8">Event Terbaru</h1>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+    <form action="{{ route('home') }}" method="GET" class="flex flex-wrap gap-4">
+        <input type="text" name="search" placeholder="Cari event..." value="{{ request('search') }}" 
+               class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
+        <select name="category" class="w-48 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
+            <option value="">Semua Kategori</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+            @endforeach
+        </select>
+        <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+            <i class="fas fa-search"></i> Cari
+        </button>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @forelse($events as $event)
+    <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
+        @if($event->poster)
+            <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover">
+        @else
+            <div class="w-full h-48 bg-purple-600 flex items-center justify-center">
+                <i class="fas fa-calendar-alt text-5xl text-white opacity-50"></i>
+            </div>
+        @endif
+        <div class="p-4">
+            <span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">{{ $event->category->name }}</span>
+            <h3 class="text-xl font-bold mt-2">{{ $event->title }}</h3>
+            <p class="text-gray-600 text-sm mt-2">{{ Str::limit($event->description, 100) }}</p>
+            <div class="mt-4 text-sm text-gray-500">
+                <p><i class="fas fa-calendar"></i> {{ $event->event_date->format('d F Y') }}</p>
+                <p><i class="fas fa-map-marker-alt"></i> {{ $event->location }}</p>
+            </div>
+            <a href="{{ route('events.show', $event) }}" class="block text-center bg-purple-600 text-white py-2 rounded-lg mt-4 hover:bg-purple-700 transition">
+                Lihat Detail
+            </a>
+        </div>
     </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Judul</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Kategori</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tanggal</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-center text-sm font-semibold text-gray-600">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @foreach($events as $event)
-                <tr>
-                    <td class="px-4 py-3">{{ $event->id }}</td>
-                    <td class="px-4 py-3 font-semibold">{{ $event->title }}</td>
-                    <td class="px-4 py-3">{{ $event->category->name }}</td>
-                    <td class="px-4 py-3">{{ $event->event_date->format('d/m/Y') }}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-1 rounded text-xs
-                            @if($event->status == 'active') bg-green-100 text-green-700
-                            @elseif($event->status == 'completed') bg-blue-100 text-blue-700
-                            @else bg-red-100 text-red-700 @endif">
-                            {{ ucfirst($event->status) }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-center">
-                        <div class="flex justify-center gap-2">
-                            <a href="{{ route('admin.events.ticket-types.index', $event) }}" 
-                               class="bg-indigo-500 text-white px-2 py-1 rounded text-sm hover:bg-indigo-600 transition" title="Kelola Tiket">
-                                <i class="fas fa-ticket-alt"></i>
-                            </a>
-                            <a href="{{ route('admin.events.registrations.index', $event) }}" 
-                               class="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600 transition" title="Lihat Peserta">
-                                <i class="fas fa-users"></i>
-                            </a>
-                            <a href="{{ route('admin.events.edit', $event) }}" 
-                               class="bg-yellow-500 text-white px-2 py-1 rounded text-sm hover:bg-yellow-600 transition" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600 transition" 
-                                        onclick="return confirm('Yakin hapus event ini?')" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    @empty
+    <div class="col-span-full text-center py-12">
+        <i class="fas fa-calendar-times text-6xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">Belum ada event tersedia</p>
     </div>
-    
-    <div class="mt-4">
-        {{ $events->links() }}
-    </div>
+    @endforelse
+</div>
+
+<div class="mt-8">
+    {{ $events->links() }}
 </div>
 @endsection

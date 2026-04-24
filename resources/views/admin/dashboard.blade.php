@@ -3,87 +3,162 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
-<p class="text-gray-600 mb-8">Selamat datang, {{ auth()->user()->name }}!</p>
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+    <p class="text-gray-600 mt-1">Selamat datang, {{ auth()->user()->name }}!</p>
+</div>
 
 <!-- Statistik Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow p-6">
+    {{-- Total Event --}}
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition border-l-4 border-purple-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm">Total Event</p>
+                <p class="text-gray-500 text-sm font-medium">Total Event</p>
                 <p class="text-3xl font-bold text-purple-600">{{ $stats['total_events'] }}</p>
             </div>
-            <i class="fas fa-calendar-alt text-4xl text-gray-300"></i>
+            <div class="bg-purple-100 rounded-full p-3">
+                <i class="fas fa-calendar-alt text-purple-600 text-xl"></i>
+            </div>
         </div>
     </div>
-    
-    <div class="bg-white rounded-lg shadow p-6">
+
+    {{-- Event Aktif --}}
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition border-l-4 border-green-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm">Event Aktif</p>
+                <p class="text-gray-500 text-sm font-medium">Event Aktif</p>
                 <p class="text-3xl font-bold text-green-600">{{ $stats['active_events'] }}</p>
             </div>
-            <i class="fas fa-play-circle text-4xl text-gray-300"></i>
+            <div class="bg-green-100 rounded-full p-3">
+                <i class="fas fa-play-circle text-green-600 text-xl"></i>
+            </div>
         </div>
     </div>
-    
-    <div class="bg-white rounded-lg shadow p-6">
+
+    {{-- Total Peserta --}}
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition border-l-4 border-blue-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm">Total Peserta</p>
+                <p class="text-gray-500 text-sm font-medium">Total Peserta</p>
                 <p class="text-3xl font-bold text-blue-600">{{ $stats['total_registrations'] }}</p>
             </div>
-            <i class="fas fa-users text-4xl text-gray-300"></i>
+            <div class="bg-blue-100 rounded-full p-3">
+                <i class="fas fa-users text-blue-600 text-xl"></i>
+            </div>
         </div>
     </div>
-    
-    <div class="bg-white rounded-lg shadow p-6">
+
+    {{-- Total Panitia --}}
+    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition border-l-4 border-yellow-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-gray-500 text-sm">Pendapatan</p>
-                <p class="text-3xl font-bold text-yellow-600">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
+                <p class="text-gray-500 text-sm font-medium">Total Panitia</p>
+                <p class="text-3xl font-bold text-yellow-600">{{ $stats['total_panitia'] }}</p>
             </div>
-            <i class="fas fa-money-bill-wave text-4xl text-gray-300"></i>
+            <div class="bg-yellow-100 rounded-full p-3">
+                <i class="fas fa-user-tie text-yellow-600 text-xl"></i>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Menu Cepat -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Menu Cepat</h2>
-        <div class="space-y-3">
-            <a href="{{ route('admin.events.index') }}" class="block w-full bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600 transition">
-                <i class="fas fa-calendar-plus"></i> Kelola Event
-            </a>
-            <a href="{{ route('admin.categories.index') }}" class="block w-full bg-green-500 text-white text-center py-2 rounded-lg hover:bg-green-600 transition">
-                <i class="fas fa-tags"></i> Kelola Kategori
-            </a>
-            <a href="{{ route('admin.events.create') }}" class="block w-full bg-purple-500 text-white text-center py-2 rounded-lg hover:bg-purple-600 transition">
-                <i class="fas fa-plus-circle"></i> Buat Event Baru
-            </a>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {{-- Ilustrasi Banner --}}
+    <div class="bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-lg p-8 text-white flex flex-col justify-center items-center text-center relative overflow-hidden">
+        <div class="absolute top-0 right-0 opacity-10">
+            <i class="fas fa-ticket-alt text-9xl"></i>
+        </div>
+        <i class="fas fa-ticket-alt text-6xl mb-4 relative z-10"></i>
+        <h2 class="text-2xl font-bold mb-2 relative z-10">EventKu</h2>
+        <p class="text-lg mb-6 opacity-90 relative z-10">Sistem Manajemen Event</p>
+        <div class="grid grid-cols-3 gap-3 w-full relative z-10">
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur-sm">
+                <i class="fas fa-calendar-check text-2xl mb-1"></i>
+                <p class="text-xs">Kelola Event</p>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur-sm">
+                <i class="fas fa-qrcode text-2xl mb-1"></i>
+                <p class="text-xs">Tiket Digital</p>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur-sm">
+                <i class="fas fa-chart-line text-2xl mb-1"></i>
+                <p class="text-xs">Laporan</p>
+            </div>
         </div>
     </div>
-    
-    <!-- Pendaftaran Terbaru -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Pendaftaran Terbaru</h2>
-        <div class="space-y-3">
+
+    {{-- Pendaftaran Terbaru --}}
+    <div class="bg-white rounded-xl shadow col-span-2">
+        <div class="p-6 border-b flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-800">
+                <i class="fas fa-clock mr-2 text-blue-500"></i>Pendaftaran Terbaru
+            </h2>
+            <a href="{{ route('admin.registrations.index') }}" class="text-sm text-purple-600 hover:text-purple-800 font-medium">
+                Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        <div class="p-6">
             @forelse($recentRegistrations as $reg)
-            <div class="border-b pb-3">
-                <p class="font-semibold">{{ $reg->user_name }}</p>
-                <p class="text-sm text-gray-600">{{ $reg->event->title }}</p>
-                <span class="text-xs px-2 py-1 rounded
-                    @if($reg->payment_status == 'paid') bg-green-100 text-green-700
-                    @else bg-yellow-100 text-yellow-700 @endif">
-                    {{ ucfirst($reg->payment_status) }}
-                </span>
-            </div>
+                <div class="flex items-center justify-between py-3 border-b last:border-0 hover:bg-gray-50 px-2 rounded transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-gray-500"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">{{ $reg->user_name }}</p>
+                            <p class="text-xs text-gray-500">{{ $reg->event->title ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-gray-400">{{ $reg->created_at->diffForHumans() }}</span>
+                        <span class="px-3 py-1 text-xs rounded-full font-semibold
+                            @if($reg->payment_status == 'paid') bg-green-100 text-green-700
+                            @elseif($reg->payment_status == 'pending') bg-yellow-100 text-yellow-700
+                            @else bg-red-100 text-red-700 @endif">
+                            {{ ucfirst($reg->payment_status) }}
+                        </span>
+                    </div>
+                </div>
             @empty
-            <p class="text-gray-500 text-center py-4">Belum ada pendaftaran</p>
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-5xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500">Belum ada pendaftaran</p>
+                </div>
             @endforelse
         </div>
     </div>
 </div>
+
+{{-- Upcoming Events --}}
+@if(count($upcomingEvents) > 0)
+<div class="mt-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <i class="fas fa-calendar-star mr-2 text-purple-500"></i>Event Mendatang
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach($upcomingEvents as $event)
+            <div class="bg-white rounded-lg shadow p-4 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                            {{ $event->category->name ?? 'Event' }}
+                        </span>
+                        <h3 class="font-semibold text-gray-800 mt-2">{{ $event->title }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">
+                            <i class="fas fa-calendar-alt mr-1"></i> {{ $event->event_date->format('d F Y') }}
+                        </p>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full
+                        @if($event->status == 'active') bg-green-100 text-green-700
+                        @elseif($event->status == 'draft') bg-gray-100 text-gray-700
+                        @else bg-yellow-100 text-yellow-700 @endif">
+                        {{ ucfirst($event->status) }}
+                    </span>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
 @endsection

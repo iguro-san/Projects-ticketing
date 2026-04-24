@@ -11,14 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    // HAPUS constructor
-
     public function index(Request $request)
     {
         $query = Event::with(['category', 'panitia'])
             ->withCount('registrations');
         
-        // Filters
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -43,6 +40,7 @@ class EventController extends Controller
             ->paginate(15);
             
         $categories = Category::all();
+        // HAPUS where is_active
         $panitia = User::where('role', 'panitia')->get();
         
         return view('admin.events.index', compact('events', 'categories', 'panitia'));
@@ -51,7 +49,8 @@ class EventController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $panitia = User::where('role', 'panitia')->where('is_active', true)->get();
+        // HAPUS where is_active
+        $panitia = User::where('role', 'panitia')->get();
         
         return view('admin.events.create', compact('categories', 'panitia'));
     }
@@ -84,7 +83,8 @@ class EventController extends Controller
     {
         $event->load(['category', 'panitia', 'ticketTypes']);
         $categories = Category::all();
-        $panitia = User::where('role', 'panitia')->where('is_active', true)->get();
+        // HAPUS where is_active
+        $panitia = User::where('role', 'panitia')->get();
         
         return view('admin.events.edit', compact('event', 'categories', 'panitia'));
     }

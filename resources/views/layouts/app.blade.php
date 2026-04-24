@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @stack('styles')
 </head>
+<<<<<<< HEAD
 <body class="bg-gray-100 min-h-screen">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
@@ -123,8 +124,11 @@
             </div>
         </div>
     </nav>
+=======
+<body class="bg-gray-100">
+    <x-navbar />
+>>>>>>> aac5c4ccf1602807fa0bd17e89aaff6196f326fc
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
         <!-- Flash Messages -->
         @if(session('success'))
@@ -157,6 +161,7 @@
         @yield('content')
     </main>
 
+<<<<<<< HEAD
     <!-- Footer -->
     <footer class="bg-white border-t mt-12">
         <div class="container mx-auto px-4 py-8">
@@ -177,5 +182,8 @@
     </script>
     
     @stack('scripts')
+=======
+    <x-footer />
+>>>>>>> aac5c4ccf1602807fa0bd17e89aaff6196f326fc
 </body>
 </html>

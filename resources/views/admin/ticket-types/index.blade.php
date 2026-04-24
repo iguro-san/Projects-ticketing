@@ -36,12 +36,20 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-center">
+                        <!-- Tombol Edit -->
                         <button onclick="editTicket({{ $ticket->id }}, '{{ $ticket->name }}', {{ $ticket->price }}, {{ $ticket->quota }})" 
                                 class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
                             Edit
                         </button>
+<<<<<<< HEAD
                         <form action="{{ route('admin.ticket-types.destroy', [$event, $ticket]) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
+=======
+                        <!-- Form Hapus -->
+                        <form action="{{ route('admin.ticket-types.destroy', $ticket) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+>>>>>>> aac5c4ccf1602807fa0bd17e89aaff6196f326fc
                             <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition" 
                                     onclick="return confirm('Yakin hapus tiket ini?')">
                                 Hapus
@@ -81,7 +89,10 @@ function showModal() {
     document.getElementById('modalTitle').innerText = 'Tambah Tiket';
     document.getElementById('ticketForm').action = "{{ route('admin.events.ticket-types.store', $event) }}";
     document.getElementById('ticketForm').method = "POST";
-    document.querySelector('input[name="_method"]')?.remove();
+    // Hapus input _method jika ada (karena ini tambah, bukan edit)
+    let methodInput = document.querySelector('input[name="_method"]');
+    if (methodInput) methodInput.remove();
+    // Reset form
     document.querySelector('input[name="name"]').value = '';
     document.querySelector('input[name="price"]').value = '';
     document.querySelector('input[name="quota"]').value = '';
@@ -91,12 +102,18 @@ function editTicket(id, name, price, quota) {
     document.getElementById('modal').classList.remove('hidden');
     document.getElementById('modalTitle').innerText = 'Edit Tiket';
     let form = document.getElementById('ticketForm');
-    form.action = `/admin/events/{{ $event->id }}/ticket-types/${id}`;
-    let method = document.createElement('input');
-    method.type = 'hidden';
-    method.name = '_method';
-    method.value = 'PUT';
-    form.appendChild(method);
+    // Gunakan route update yang benar (tanpa event karena shallow)
+    form.action = "{{ url('/admin/ticket-types') }}/" + id;
+    // Hapus method input lama jika ada
+    let oldMethod = document.querySelector('input[name="_method"]');
+    if (oldMethod) oldMethod.remove();
+    // Tambahkan input _method untuk PUT
+    let methodInput = document.createElement('input');
+    methodInput.type = 'hidden';
+    methodInput.name = '_method';
+    methodInput.value = 'PUT';
+    form.appendChild(methodInput);
+    // Isi nilai form
     document.querySelector('input[name="name"]').value = name;
     document.querySelector('input[name="price"]').value = price;
     document.querySelector('input[name="quota"]').value = quota;

@@ -40,7 +40,7 @@
                                 class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
                             Edit
                         </button>
-                        <form action="{{ route('admin.events.ticket-types.destroy', [$event, $ticket]) }}" method="POST" class="inline">
+                        <form action="{{ route('admin.ticket-types.destroy', [$event, $ticket]) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition" 
                                     onclick="return confirm('Yakin hapus tiket ini?')">

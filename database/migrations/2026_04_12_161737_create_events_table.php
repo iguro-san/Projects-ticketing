@@ -11,12 +11,13 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('panitia_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->date('event_date');
             $table->string('location');
             $table->string('poster')->nullable();
-            $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
+            $table->enum('status', ['draft', 'active', 'completed', 'cancelled'])->default('draft');
             $table->timestamps();
         });
     }

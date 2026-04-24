@@ -9,17 +9,16 @@ use Illuminate\Http\Request;
 
 class TicketTypeController extends Controller
 {
+    // HAPUS constructor dan ganti pengecekan manual dengan middleware di routes
+
     public function index(Event $event)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
         $ticketTypes = TicketType::where('event_id', $event->id)->get();
         return view('admin.ticket-types.index', compact('event', 'ticketTypes'));
     }
     
     public function store(Request $request, Event $event)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        
         $validated = $request->validate([
             'name' => 'required|min:3',
             'price' => 'required|numeric|min:0',
@@ -37,8 +36,6 @@ class TicketTypeController extends Controller
     
     public function update(Request $request, Event $event, TicketType $ticketType)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        
         $validated = $request->validate([
             'name' => 'required|min:3',
             'price' => 'required|numeric|min:0',
@@ -53,8 +50,6 @@ class TicketTypeController extends Controller
     
     public function destroy(Event $event, TicketType $ticketType)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        
         if ($ticketType->registrations()->count() > 0) {
             return back()->with('error', 'Tiket tidak dapat dihapus karena sudah ada pendaftar!');
         }

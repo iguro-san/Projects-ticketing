@@ -5,9 +5,8 @@
 @section('content')
 <h1 class="text-4xl font-bold text-gray-800 mb-8">Event Terbaru</h1>
 
-<!-- Form Pencarian -->
 <div class="bg-white rounded-lg shadow p-6 mb-8">
-    <form action="{{ route('events.index') }}" method="GET" class="flex flex-wrap gap-4">
+    <form action="{{ route('home') }}" method="GET" class="flex flex-wrap gap-4">
         <input type="text" name="search" placeholder="Cari event..." value="{{ request('search') }}" 
                class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
         <select name="category" class="w-48 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
@@ -22,7 +21,6 @@
     </form>
 </div>
 
-<!-- Grid Event -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($events as $event)
     <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('quota');
             $table->integer('registered')->default(0);
+            $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

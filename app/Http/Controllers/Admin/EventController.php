@@ -5,99 +5,130 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    public function index()
+    // HAPUS constructor
+
+    public function index(Request $request)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        $events = Event::with('category')->orderBy('event_date', 'desc')->paginate(10);
-        return view('admin.events.index', compact('events'));
-    }
-    
-    public function create()
-    {
-        if (!auth()->user()->isAdmin()) abort(403);
-        $categories = Category::all();
-        return view('admin.events.create', compact('categories'));
-    }
-    
-    public function store(Request $request)
-    {
-        if (!auth()->user()->isAdmin()) abort(403);
+        $query = Event::with(['category', 'panitia'])
+            ->withCount('registrations');
         
-        $validated = $request->validate([
-            'title' => 'required|min:3',
-            'description' => 'required',
-            'event_date' => 'required|date|after:today',
-            'location' => 'required',
-            'category_id' => 'required|exists:categories,id',
-            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
-        
-        if ($request->hasFile('poster')) {
-            $validated['poster'] = $request->file('poster')->store('posters', 'public');
+        // Filters
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
         
-        $validated['status'] = 'active';
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
         
-        Event::create($validated);
+        if ($request->filled('panitia_id')) {
+            $query->where('panitia_id', $request->panitia_id);
+        }
         
-        return redirect()->route('admin.events.index')
-            ->with('success', 'Event berhasil dibuat!');
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+        
+        $events = $query->orderBy('event_date', 'desc')
+            ->paginate(15);
+            
+        $categories = Category::all();
+        $panitia = User::where('role', 'panitia')->get();
+        
+        return view('admin.events.index', compact('events', 'categories', 'panitia'));
     }
-    
+
+    public function create()
+    {
+        $categories = Category::all();
+        $panitia = User::where('role', 'panitia')->where('is_active', true)->get();
+        
+        return view('admin.events.create', compact('categories', 'panitia'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|min:3|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'panitia_id' => 'required|exists:users,id',
+            'description' => 'required|string',
+            'event_date' => 'required|date|after:today',
+            'location' => 'required|string|max:255',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|in:draft,active,cancelled',
+        ]);
+
+        if ($request->hasFile('poster')) {
+            $validated['poster'] = $request->file('poster')
+                ->store('posters/' . date('Y/m'), 'public');
+        }
+
+        Event::create($validated);
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Event berhasil dibuat.');
+    }
+
     public function edit(Event $event)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
+        $event->load(['category', 'panitia', 'ticketTypes']);
         $categories = Category::all();
-        return view('admin.events.edit', compact('event', 'categories'));
+        $panitia = User::where('role', 'panitia')->where('is_active', true)->get();
+        
+        return view('admin.events.edit', compact('event', 'categories', 'panitia'));
     }
-    
+
     public function update(Request $request, Event $event)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        
         $validated = $request->validate([
-            'title' => 'required|min:3',
-            'description' => 'required',
-            'event_date' => 'required|date',
-            'location' => 'required',
+            'title' => 'required|string|min:3|max:255',
             'category_id' => 'required|exists:categories,id',
-            'status' => 'required|in:active,completed,cancelled',
-            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'panitia_id' => 'required|exists:users,id',
+            'description' => 'required|string',
+            'event_date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|in:draft,active,completed,cancelled',
         ]);
-        
+
         if ($request->hasFile('poster')) {
             if ($event->poster) {
                 Storage::disk('public')->delete($event->poster);
             }
-            $validated['poster'] = $request->file('poster')->store('posters', 'public');
+            $validated['poster'] = $request->file('poster')
+                ->store('posters/' . date('Y/m'), 'public');
         }
-        
+
         $event->update($validated);
-        
+
         return redirect()->route('admin.events.index')
-            ->with('success', 'Event berhasil diupdate!');
+            ->with('success', 'Event berhasil diupdate.');
     }
-    
+
     public function destroy(Event $event)
     {
-        if (!auth()->user()->isAdmin()) abort(403);
-        
         if ($event->registrations()->count() > 0) {
-            return back()->with('error', 'Event tidak dapat dihapus karena sudah ada peserta terdaftar!');
+            return back()->with('error', 'Event tidak dapat dihapus karena sudah ada peserta terdaftar.');
         }
-        
+
         if ($event->poster) {
             Storage::disk('public')->delete($event->poster);
         }
-        
+
         $event->delete();
-        
+
         return redirect()->route('admin.events.index')
-            ->with('success', 'Event berhasil dihapus!');
+            ->with('success', 'Event berhasil dihapus.');
     }
 }

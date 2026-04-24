@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    use HasFactory;
+    use HasFactory; // HAPUS SoftDeletes
 
     protected $fillable = [
-        'category_id', 'title', 'description', 'event_date', 'location', 'poster', 'status'
+        'category_id', 'panitia_id', 'title', 'description',
+        'event_date', 'location', 'poster', 'status'
     ];
 
     protected $casts = [
@@ -22,6 +23,11 @@ class Event extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function panitia()
+    {
+        return $this->belongsTo(User::class, 'panitia_id');
+    }
+
     public function ticketTypes()
     {
         return $this->hasMany(TicketType::class);
@@ -30,12 +36,5 @@ class Event extends Model
     public function registrations()
     {
         return $this->hasMany(Registration::class);
-    }
-
-    public function getAvailableTicketsAttribute()
-    {
-        return $this->ticketTypes->sum(function ($ticket) {
-            return $ticket->quota - $ticket->registered;
-        });
     }
 }

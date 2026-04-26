@@ -1,8 +1,8 @@
 <?php
+// routes/console.php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+use App\Console\Commands\CancelExpiredRegistrations;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Cek pendaftaran kadaluarsa setiap 5 menit
+Schedule::command(CancelExpiredRegistrations::class)->everyFiveMinutes();

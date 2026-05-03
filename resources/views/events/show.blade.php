@@ -25,11 +25,11 @@
         @foreach($availableTickets as $ticket)
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-xl font-bold text-gray-800">{{ $ticket->name }}</h3>
-            <p class="text-3xl font-bold text-purple-600 mt-2">
+            <p class="text-3xl font-bold mt-2">
                 @if($ticket->price == 0)
-                    Gratis
+                    <span class="text-green-600">GRATIS</span>
                 @else
-                    Rp {{ number_format($ticket->price, 0, ',', '.') }}
+                    <span class="text-purple-600">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
                 @endif
             </p>
             <p class="text-gray-500 text-sm mt-2">

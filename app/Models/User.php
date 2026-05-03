@@ -10,13 +10,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name', 'email', 'password', 'role',
-    ];
-
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
@@ -26,28 +21,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isPanitia()
-    {
-        return $this->role === 'panitia';
-    }
-
-    public function isUser()
-    {
-        return $this->role === 'user';
-    }
-
-    public function events()
-    {
-        return $this->hasMany(Event::class, 'panitia_id');
-    }
-
-    public function registrations()
-    {
-        return $this->hasMany(Registration::class);
-    }
+    public function isAdmin() { return $this->role === 'admin'; }
+    public function isPanitia() { return $this->role === 'panitia'; }
+    public function isUser() { return $this->role === 'user'; }
+    public function events() { return $this->hasMany(Event::class, 'panitia_id'); }
+    public function registrations() { return $this->hasMany(Registration::class); }
 }

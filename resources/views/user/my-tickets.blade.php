@@ -61,11 +61,18 @@
             @endif
 
             <p class="text-sm text-gray-500 mt-2">
-                @if($reg->isPaid())
-                    Total: <span class="font-bold text-green-600">Rp {{ number_format($reg->amount_paid, 0, ',', '.') }}</span>
-                @else
-                    Total: <span class="font-bold text-gray-600">Rp {{ number_format($reg->ticketType->price, 0, ',', '.') }}</span>
-                @endif
+                Total: 
+                <span class="font-bold">
+                    @if($reg->ticketType->price == 0)
+                        <span class="text-green-600">GRATIS</span>
+                    @else
+                        @if($reg->isPaid())
+                            <span class="text-green-600">Rp {{ number_format($reg->amount_paid, 0, ',', '.') }}</span>
+                        @else
+                            <span class="text-gray-600">Rp {{ number_format($reg->ticketType->price, 0, ',', '.') }}</span>
+                        @endif
+                    @endif
+                </span>
             </p>
         </div>
 

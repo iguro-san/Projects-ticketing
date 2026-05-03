@@ -27,7 +27,13 @@
                 @foreach($ticketTypes as $ticket)
                 <tr>
                     <td class="px-4 py-3 font-semibold">{{ $ticket->name }}</td>
-                    <td class="px-4 py-3">Rp {{ number_format($ticket->price, 0, ',', '.') }}</td>
+                    <td class="px-4 py-3 font-semibold">
+                        @if($ticket->price == 0)
+                            <span class="text-green-600">GRATIS</span>
+                        @else
+                            Rp {{ number_format($ticket->price, 0, ',', '.') }}
+                        @endif
+                    </td>
                     <td class="px-4 py-3">{{ $ticket->quota }}</td>
                     <td class="px-4 py-3">{{ $ticket->registered }}</td>
                     <td class="px-4 py-3">
@@ -63,10 +69,10 @@
             @csrf
             <input type="text" name="name" placeholder="Nama Tiket" 
                    class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required>
-            <input type="number" name="price" placeholder="Harga" 
-                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required>
+            <input type="number" name="price" placeholder="Harga (isi 0 untuk gratis)" 
+                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required min="0">
             <input type="number" name="quota" placeholder="Kuota" 
-                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required>
+                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required min="1">
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="hideModal()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
                 <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Simpan</button>

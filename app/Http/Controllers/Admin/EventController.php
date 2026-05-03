@@ -19,22 +19,18 @@ class EventController extends Controller
         $query = Event::with(['category', 'panitia'])
             ->withCount('registrations');
         
-        // Filter status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         
-        // Filter kategori
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
         
-        // Filter panitia
         if ($request->filled('panitia_id')) {
             $query->where('panitia_id', $request->panitia_id);
         }
         
-        // Filter waktu: upcoming / past
         if ($request->filled('time_filter')) {
             if ($request->time_filter === 'upcoming') {
                 $query->whereDate('event_date', '>=', now());
@@ -43,7 +39,6 @@ class EventController extends Controller
             }
         }
         
-        // Filter pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -54,7 +49,7 @@ class EventController extends Controller
         
         $events = $query->orderBy('event_date', 'desc')
             ->paginate(15)
-            ->appends($request->query()); // Agar filter tetap ada saat pagination
+            ->appends($request->query());
         
         $categories = Category::orderBy('name')->get();
         $panitia = User::where('role', 'panitia')->orderBy('name')->get();
@@ -101,12 +96,11 @@ class EventController extends Controller
     }
 
     /**
-     * Tampilkan detail event (opsional)
+     * Tampilkan detail event
      */
     public function show(Event $event)
     {
         $event->load(['category', 'panitia', 'ticketTypes', 'registrations']);
-        
         return view('admin.events.show', compact('event'));
     }
 
@@ -138,19 +132,12 @@ class EventController extends Controller
             'status' => 'required|in:draft,active,completed,cancelled',
         ]);
 
-        // Upload poster baru jika ada
         if ($request->hasFile('poster')) {
-            // Hapus poster lama
             if ($event->poster) {
                 Storage::disk('public')->delete($event->poster);
             }
             $validated['poster'] = $request->file('poster')
                 ->store('posters/' . date('Y/m'), 'public');
-        }
-
-        // Jika status completed, set otomatis
-        if ($validated['status'] === 'completed') {
-            $validated['event_date'] = min($event->event_date, now());
         }
 
         $event->update($validated);
@@ -164,23 +151,46 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Cek apakah event sudah punya peserta
         if ($event->registrations()->count() > 0) {
             return back()->with('error', 'Event tidak dapat dihapus karena sudah ada peserta terdaftar.');
         }
 
-        // Hapus poster
         if ($event->poster) {
             Storage::disk('public')->delete($event->poster);
         }
 
-        // Hapus tiket terkait
         $event->ticketTypes()->delete();
-        
-        // Hapus event
         $event->delete();
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event berhasil dihapus.');
+    }
+
+    /**
+     * APPROVE EVENT - Setujui event dari draft menjadi active
+     */
+    public function approve(Event $event)
+    {
+        if ($event->status !== 'draft') {
+            return back()->with('error', 'Hanya event dengan status Draft yang bisa disetujui.');
+        }
+
+        $event->approve(auth()->id());
+
+        return back()->with('success', "Event \"{$event->title}\" telah DISETUJUI dan sekarang AKTIF!");
+    }
+
+    /**
+     * REJECT EVENT - Tolak event dari draft menjadi cancelled
+     */
+    public function reject(Request $request, Event $event)
+    {
+        if ($event->status !== 'draft') {
+            return back()->with('error', 'Hanya event dengan status Draft yang bisa ditolak.');
+        }
+
+        $event->reject($request->reason ?? 'Ditolak oleh admin');
+
+        return back()->with('success', "Event \"{$event->title}\" telah DITOLAK.");
     }
 }

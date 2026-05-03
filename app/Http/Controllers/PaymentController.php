@@ -13,9 +13,14 @@ class PaymentController extends Controller
      */
     public function show(Registration $registration)
     {
-        // Verifikasi kepemilikan
         if ($registration->user_email !== auth()->user()->email) {
             abort(403);
+        }
+
+        // Jika tiket GRATIS, redirect ke my-tickets
+        if ($registration->ticketType->price == 0) {
+            return redirect()->route('my.tickets')
+                ->with('success', 'Tiket GRATIS sudah otomatis aktif!');
         }
 
         // Jika sudah lunas
@@ -24,11 +29,11 @@ class PaymentController extends Controller
                 ->with('success', 'Pembayaran sudah dikonfirmasi!');
         }
 
-        // Jika sudah kadaluarsa
+        // Jika kadaluarsa
         if ($registration->isDeadlinePassed()) {
-            $registration->cancel('Batas waktu pembayaran habis');
+            $registration->cancel('Batas waktu habis');
             return redirect()->route('my.tickets')
-                ->with('error', 'Batas waktu pembayaran telah habis. Silakan daftar ulang.');
+                ->with('error', 'Batas waktu habis. Silakan daftar ulang.');
         }
 
         $registration->load(['event', 'ticketType']);
@@ -47,43 +52,38 @@ class PaymentController extends Controller
      */
     public function uploadProof(Request $request, Registration $registration)
     {
-        // Verifikasi kepemilikan
         if ($registration->user_email !== auth()->user()->email) {
             abort(403);
         }
 
-        // Cek apakah sudah dibayar
+        // Tiket gratis tidak perlu upload
+        if ($registration->ticketType->price == 0) {
+            return redirect()->route('my.tickets')
+                ->with('success', 'Tiket GRATIS sudah otomatis aktif!');
+        }
+
         if ($registration->isPaid()) {
             return back()->with('error', 'Pembayaran sudah dikonfirmasi!');
         }
 
-        // Cek deadline
         if ($registration->isDeadlinePassed()) {
-            $registration->cancel('Batas waktu pembayaran habis');
-            return redirect()->route('my.tickets')
-                ->with('error', 'Batas waktu pembayaran telah habis.');
+            $registration->cancel('Batas waktu habis');
+            return redirect()->route('my.tickets')->with('error', 'Batas waktu habis.');
         }
 
-        // Validasi
         $validated = $request->validate([
             'payment_method' => 'required|string|in:BCA,Mandiri,BRI,BNI,Other',
             'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'notes' => 'nullable|string|max:500',
         ]);
 
-        // Upload bukti
-        $proofPath = $request->file('payment_proof')->store(
-            'payment-proofs/' . date('Y/m'),
-            'public'
-        );
+        $proofPath = $request->file('payment_proof')->store('payment-proofs/' . date('Y/m'), 'public');
 
-        // Update registration
         $registration->update([
             'payment_method' => $validated['payment_method'],
             'payment_proof' => $proofPath,
         ]);
 
         return redirect()->route('my.tickets')
-            ->with('success', 'Bukti pembayaran berhasil diupload! Menunggu verifikasi panitia.');
+            ->with('success', 'Bukti pembayaran diupload! Menunggu verifikasi panitia.');
     }
 }

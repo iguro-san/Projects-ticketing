@@ -3,21 +3,30 @@
 @section('title', 'Event Management System')
 
 @section('content')
-<!-- Hero Section -->
-<div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-12 mb-12 text-white">
-    <div class="max-w-3xl">
-        <h1 class="text-5xl font-bold mb-4">Temukan Event Terbaik!</h1>
-        <p class="text-xl mb-8 opacity-90">Daftar dan ikuti berbagai event menarik dari seminar, konser, workshop, dan masih banyak lagi.</p>
-        <div class="flex gap-4">
-            @guest
-                <a href="{{ route('register') }}" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                    Daftar Sekarang
-                </a>
-            @else
-                <a href="{{ route('my.tickets') }}" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                    Tiket Saya
-                </a>
-            @endguest
+
+<!-- Hero Section with Background Image -->
+<div class="relative rounded-2xl mb-12 overflow-hidden min-h-[400px] flex items-center">
+    <div class="absolute inset-0 bg-cover bg-center"
+         style="background-image: url('{{ asset('images/bg-hero2.png') }}');">
+    </div>
+    <div class="absolute inset-0 bg-black/30"></div>
+    `
+    <!-- Konten Hero -->
+    <div class="relative z-10 container mx-auto px-4 md:px-12">
+        <div class="max-w-3xl">
+            <h1 class="text-white text-4xl md:text-5xl font-bold mb-4">Temukan Event Terbaik!</h1>
+            <p class="text-white text-lg md:text-xl mb-8">Daftar dan ikuti berbagai event menarik dari seminar, konser, workshop, dan masih banyak lagi.</p>
+            <div class="flex gap-4">
+                @guest
+                    <a href="{{ route('register') }}" class="bg-[#B6771D] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
+                        Daftar Sekarang
+                    </a>
+                @else
+                    <a href="{{ route('my.tickets') }}" class="bg-[#B6771D] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
+                        Tiket Saya
+                    </a>
+                @endguest
+            </div>
         </div>
     </div>
 </div>
@@ -40,7 +49,7 @@
                 </option>
             @endforeach
         </select>
-        <button type="submit" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+        <button type="submit" class="bg-[#B6771D] text-white px-6 py-3 rounded-lg hover:bg-[#B6771D]/80 transition">
             <i class="fas fa-search mr-2"></i> Cari
         </button>
     </form>
@@ -106,4 +115,5 @@
         <p class="text-gray-500">Coba ubah filter pencarian atau cek kembali nanti.</p>
     </div>
 @endif
+
 @endsection

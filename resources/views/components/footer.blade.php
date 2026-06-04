@@ -1,3 +1,4 @@
-<footer class="bg-white border-t mt-8 py-4 text-center text-gray-500 text-sm">
-    &copy; {{ date('Y') }} Event Management. All rights reserved.
-</footer>
+    {{-- Footer --}}
+    <footer class="bg-[#141E46] border-t mt-12 py-4 text-center text-white text-sm">
+        &copy; {{ date('Y') }} EventKu - Event Management System. All rights reserved.
+    </footer>

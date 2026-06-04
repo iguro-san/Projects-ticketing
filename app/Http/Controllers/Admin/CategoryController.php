@@ -8,12 +8,10 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // HAPUS constructor
-
     public function index()
     {
         $categories = Category::withCount('events')
-            ->orderBy('name')
+            ->orderBy('id')
             ->paginate(10);
             
         return view('admin.categories.index', compact('categories'));
@@ -24,7 +22,18 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255|unique:categories,name',
             'description' => 'nullable|string|max:500',
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.min' => 'Nama kategori minimal 3 karakter.',
+            'name.max' => 'Nama kategori maksimal 255 karakter.',
+            'name.unique' => 'Nama kategori sudah digunakan. Silakan gunakan nama lain.',
         ]);
+
+        // Trim spasi
+        $validated['name'] = trim($validated['name']);
+        if (!empty($validated['description'])) {
+            $validated['description'] = trim($validated['description']);
+        }
 
         Category::create($validated);
 
@@ -37,7 +46,17 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string|max:500',
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.min' => 'Nama kategori minimal 3 karakter.',
+            'name.max' => 'Nama kategori maksimal 255 karakter.',
+            'name.unique' => 'Nama kategori sudah digunakan. Silakan gunakan nama lain.',
         ]);
+
+        $validated['name'] = trim($validated['name']);
+        if (!empty($validated['description'])) {
+            $validated['description'] = trim($validated['description']);
+        }
 
         $category->update($validated);
 
@@ -47,7 +66,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->events()->count() > 0) {
+        // Cek apakah kategori memiliki event
+        if ($category->events()->exists()) {
             return back()->with('error', 'Kategori tidak dapat dihapus karena masih memiliki event.');
         }
 

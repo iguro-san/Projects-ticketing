@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\{
     EventController as AdminEventController,
     RegistrationController as AdminRegistrationController,
     TicketTypeController as AdminTicketTypeController,
-    PanitiaController as AdminPanitiaController
 };
 use App\Http\Controllers\Panitia\{
     DashboardController as PanitiaDashboardController,
@@ -84,7 +83,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/events/{event}/registrations/export', [AdminRegistrationController::class, 'export'])->name('events.registrations.export');
     
     // Panitia Management
-    Route::resource('/panitia', AdminPanitiaController::class);
 });
 
 // Panitia Routes
@@ -106,9 +104,4 @@ Route::middleware(['auth', 'role:panitia'])->prefix('panitia')->name('panitia.')
     Route::post('/events/{event}/registrations/{registration}/confirm', [PanitiaEventController::class, 'confirmPayment'])->name('events.registrations.confirm');
     Route::get('/events/{event}/registrations/export', [PanitiaEventController::class, 'exportRegistrations'])->name('events.registrations.export');
     
-    // Ticket Types
-    Route::get('/events/{event}/tickets', [PanitiaTicketTypeController::class, 'index'])->name('events.tickets.index');
-    Route::post('/events/{event}/tickets', [PanitiaTicketTypeController::class, 'store'])->name('events.tickets.store');
-    Route::put('/events/{event}/tickets/{ticketType}', [PanitiaTicketTypeController::class, 'update'])->name('events.tickets.update');
-    Route::delete('/events/{event}/tickets/{ticketType}', [PanitiaTicketTypeController::class, 'destroy'])->name('events.tickets.destroy');
 });

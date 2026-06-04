@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @stack('styles')
 </head>
-<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen">
+<body class="bg-[#FFFDEB] text-[#141E46] min-h-screen">
     {{-- Navbar --}}
     <x-navbar />
 

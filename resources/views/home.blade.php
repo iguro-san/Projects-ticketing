@@ -9,7 +9,7 @@
     <div class="absolute inset-0 bg-cover bg-center"
          style="background-image: url('{{ asset('images/bg-hero2.png') }}');">
     </div>
-    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="absolute inset-0 bg-black/40"></div>
     `
     <!-- Konten Hero -->
     <div class="relative z-10 container mx-auto px-4 md:px-12">

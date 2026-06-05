@@ -17,12 +17,12 @@
     @endif
 
     <div class="mb-4">
-        <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
+        <span class="bg-[#760031]/10 text-[#760031] px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
     </div>
     <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ $event->title }}</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-600">
-        <p><i class="fas fa-calendar-alt text-purple-600 w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
-        <p><i class="fas fa-map-marker-alt text-purple-600 w-6"></i> {{ $event->location }}</p>
+        <p><i class="fas fa-calendar-alt text-[#760031] w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
+        <p><i class="fas fa-map-marker-alt text-[#760031] w-6"></i> {{ $event->location }}</p>
     </div>
     <div class="mb-6">
         <h3 class="font-bold text-lg mb-2">Deskripsi Event</h3>
@@ -41,7 +41,7 @@
                 @if($ticket->price == 0)
                     <span class="text-green-600">GRATIS</span>
                 @else
-                    <span class="text-purple-600">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
+                    <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
                 @endif
             </p>
             <p class="text-gray-500 text-sm mt-2">

@@ -15,7 +15,7 @@
         <table class="w-full">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">No</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Nama</th>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Deskripsi</th>
                     <th class="px-4 py-3 text-center text-sm font-semibold text-gray-600">Aksi</th>
@@ -24,7 +24,7 @@
             <tbody class="divide-y divide-gray-200">
                 @foreach($categories as $cat)
                 <tr>
-                    <td class="px-4 py-3">{{ $cat->id }}</td>
+                    <td class="px-4 py-3">{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
                     <td class="px-4 py-3 font-semibold">{{ $cat->name }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $cat->description ?? '-' }}</td>
                     <td class="px-4 py-3 text-center">
@@ -47,7 +47,7 @@
     </div>
     
     <div class="mt-4">
-        {{ $categories->links() }}
+        {{ $categories->onEachSide(1)->links() }}
     </div>
 </div>
 
@@ -69,6 +69,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function showModal() {
     document.getElementById('modal').classList.remove('hidden');
@@ -98,5 +99,35 @@ function editCategory(id, name, desc) {
 function hideModal() {
     document.getElementById('modal').classList.add('hidden');
 }
+
+// Notifikasi dari server (error/success)
+@if($errors->any())
+    @foreach($errors->all() as $error)
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ $error }}',
+            confirmButtonColor: '#d33'
+        });
+    @endforeach
+@endif
+
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        confirmButtonColor: '#3085d6'
+    });
+@endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '{{ session('error') }}',
+        confirmButtonColor: '#d33'
+    });
+@endif
 </script>
 @endsection

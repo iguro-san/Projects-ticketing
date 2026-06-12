@@ -4,7 +4,7 @@
 
 @section('content')
 <h1 class="text-3xl font-bold text-gray-800 mb-6">
-    <i class="fas fa-ticket-alt text-purple-600"></i> Tiket Saya
+    <i class="fas fa-ticket-alt text-[#B6771D]"></i> Tiket Saya
 </h1>
 
 @forelse($registrations as $reg)
@@ -106,7 +106,7 @@
         <div class="mt-4 md:mt-0 text-left md:text-right">
             <div class="bg-gray-100 rounded-lg p-3 mb-2">
                 <p class="text-xs text-gray-500">No. Registrasi</p>
-                <p class="font-mono font-bold text-purple-600">{{ $reg->registration_number }}</p>
+                <p class="font-mono font-bold text-[#B6771D]">{{ $reg->registration_number }}</p>
             </div>
 
             {{-- Tombol Aksi --}}
@@ -167,7 +167,7 @@
     <i class="fas fa-ticket-alt text-6xl text-gray-300 mb-4"></i>
     <h3 class="text-xl font-semibold text-gray-600">Belum ada tiket</h3>
     <p class="text-gray-500 mb-6">Anda belum mendaftar event apapun</p>
-    <a href="{{ route('home') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+    <a href="{{ route('home') }}" class="inline-block bg-[#141E46] text-white px-6 py-2 rounded-lg hover:bg-[#111D5E] transition">
         <i class="fas fa-calendar-alt mr-2"></i> Lihat Event
     </a>
 </div>

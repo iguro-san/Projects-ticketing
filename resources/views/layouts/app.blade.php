@@ -10,6 +10,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('styles')
 </head>
+<<<<<<< HEAD
 <body class="bg-gray-100 min-h-screen">
     <nav class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
@@ -194,6 +195,11 @@
             </div>
         </div>
     </nav>
+=======
+<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen">
+    {{-- Navbar --}}
+    <x-navbar />
+>>>>>>> c6603cbe3ded401c6db0fb95458164972058d1a6
 
     {{-- Main Content --}}
     <main class="container mx-auto px-4 py-8">
@@ -214,11 +220,8 @@
         @endif
         @yield('content')
     </main>
-
-    {{-- Footer --}}
-    <footer class="bg-white border-t mt-12 py-4 text-center text-gray-500 text-sm">
-        &copy; {{ date('Y') }} EventKu - Event Management System. All rights reserved.
-    </footer>
+    <!-- Footer -->
+    <x-footer />
 
     <script>
         function toggleMobileMenu() {

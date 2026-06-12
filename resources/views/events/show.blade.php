@@ -4,13 +4,25 @@
 
 @section('content')
 <div class="bg-white rounded-lg shadow p-8 mb-8">
+    {{-- POSTER EVENT (bisa diklik) --}}
+    @if($event->poster)
+    <div class="mb-6 cursor-pointer" onclick="openModal('{{ Storage::url($event->poster) }}')">
+        <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" 
+             class="w-full max-h-96 object-cover rounded-lg shadow-md hover:opacity-90 transition">
+    </div>
+    @else
+    <div class="mb-6 w-full h-64 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+        <i class="fas fa-calendar-alt text-5xl text-white opacity-50"></i>
+    </div>
+    @endif
+
     <div class="mb-4">
-        <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
+        <span class="bg-[#760031]/10 text-[#760031] px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
     </div>
     <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ $event->title }}</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-600">
-        <p><i class="fas fa-calendar-alt text-purple-600 w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
-        <p><i class="fas fa-map-marker-alt text-purple-600 w-6"></i> {{ $event->location }}</p>
+        <p><i class="fas fa-calendar-alt text-[#760031] w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
+        <p><i class="fas fa-map-marker-alt text-[#760031] w-6"></i> {{ $event->location }}</p>
     </div>
     <div class="mb-6">
         <h3 class="font-bold text-lg mb-2">Deskripsi Event</h3>
@@ -65,9 +77,13 @@
                         </a>
                     @endauth
                 @else
+<<<<<<< HEAD
                     <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
                         Tiket Habis
                     </button>
+=======
+                    <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
+>>>>>>> c6603cbe3ded401c6db0fb95458164972058d1a6
                 @endif
             </div>
             @endforeach
@@ -89,4 +105,45 @@
     <p class="text-yellow-700">Silakan <a href="{{ route('login') }}" class="font-bold underline">login</a> terlebih dahulu untuk mendaftar event.</p>
 </div>
 @endif
+
+<!-- Modal Lightbox untuk melihat poster ukuran penuh -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 hidden items-center justify-center z-50" onclick="closeModal()">
+    <div class="relative max-w-5xl max-h-screen p-4" onclick="event.stopPropagation()">
+        <img id="modalImage" src="" alt="Poster Event" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-300 transition">
+            <i class="fas fa-times-circle"></i>
+        </button>
+    </div>
+</div>
+
+<style>
+    #imageModal {
+        transition: all 0.3s ease;
+    }
+</style>
+
+<script>
+    function openModal(imageUrl) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modalImg.src = imageUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Tutup modal dengan tombol Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
 @endsection

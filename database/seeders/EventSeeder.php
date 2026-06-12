@@ -13,8 +13,8 @@ class EventSeeder extends Seeder
         $event1 = Event::create([
             'category_id' => 1,
             'panitia_id' => 2,
-            'title' => 'Seminar Teknologi 2024',
-            'description' => 'Seminar tentang perkembangan teknologi terbaru di tahun 2024.',
+            'title' => 'Seminar Teknologi 2026',
+            'description' => 'Seminar tentang perkembangan teknologi terbaru di tahun 2026.',
             'event_date' => now()->addDays(30),
             'location' => 'Jakarta Convention Center',
             'status' => 'active',

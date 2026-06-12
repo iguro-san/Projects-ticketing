@@ -63,6 +63,52 @@
     </div>
 </div>
 
+<!-- Announcement Widget -->
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-bullhorn mr-2 text-purple-600"></i>Pengumuman Terbaru
+        </h2>
+        <a href="{{ route('admin.announcements.create') }}" class="text-sm text-purple-600 hover:text-purple-800">
+            <i class="fas fa-plus mr-1"></i>Buat Pengumuman
+        </a>
+    </div>
+    <div class="space-y-3">
+        @php
+            $latestAnnouncements = \App\Models\Announcement::with('creator')
+                ->where('is_active', true)
+                ->latest('published_at')
+                ->take(5)
+                ->get();
+        @endphp
+        @forelse($latestAnnouncements as $ann)
+        <div class="border-l-4 border-purple-500 pl-4 py-2 hover:bg-gray-50 transition">
+            <p class="font-semibold text-gray-800">{{ $ann->title }}</p>
+            <p class="text-sm text-gray-600">{{ Str::limit($ann->content, 100) }}</p>
+            <div class="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                <span><i class="fas fa-user mr-1"></i>{{ $ann->creator->name }}</span>
+                <span><i class="fas fa-clock mr-1"></i>{{ $ann->published_at->diffForHumans() }}</span>
+                <span class="px-2 py-0.5 rounded-full text-xs
+                    @if($ann->target == 'all') bg-purple-100 text-purple-700
+                    @elseif($ann->target == 'panitia') bg-blue-100 text-blue-700
+                    @else bg-green-100 text-green-700 @endif">
+                    <i class="fas {{ $ann->target == 'all' ? 'fa-users' : ($ann->target == 'panitia' ? 'fa-user-tie' : 'fa-user') }} mr-1"></i>
+                    {{ $ann->target == 'all' ? 'Semua User' : ($ann->target == 'panitia' ? 'Panitia' : 'User') }}
+                </span>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-6">
+            <i class="fas fa-bullhorn text-4xl text-gray-300 mb-2"></i>
+            <p class="text-gray-500">Belum ada pengumuman</p>
+            <a href="{{ route('admin.announcements.create') }}" class="inline-block mt-2 text-sm text-purple-600 hover:text-purple-800">
+                Buat pengumuman pertama
+            </a>
+        </div>
+        @endforelse
+    </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     {{-- Ilustrasi Banner --}}
     <div class="bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-lg p-8 text-white flex flex-col justify-center items-center text-center relative overflow-hidden">
@@ -89,7 +135,7 @@
     </div>
 
     {{-- Pendaftaran Terbaru --}}
-    <div class="bg-white rounded-xl shadow col-span-2">
+    <div class="bg-white rounded-xl shadow lg:col-span-2">
         <div class="p-6 border-b flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-800">
                 <i class="fas fa-clock mr-2 text-blue-500"></i>Pendaftaran Terbaru
@@ -148,13 +194,23 @@
                         <p class="text-sm text-gray-500 mt-1">
                             <i class="fas fa-calendar-alt mr-1"></i> {{ $event->event_date->format('d F Y') }}
                         </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            <i class="fas fa-user-tie mr-1"></i> {{ $event->panitia->name ?? '-' }}
+                        </p>
                     </div>
-                    <span class="px-2 py-1 text-xs rounded-full
-                        @if($event->status == 'active') bg-green-100 text-green-700
-                        @elseif($event->status == 'draft') bg-gray-100 text-gray-700
-                        @else bg-yellow-100 text-yellow-700 @endif">
-                        {{ ucfirst($event->status) }}
-                    </span>
+                    <div class="text-right">
+                        <span class="px-2 py-1 text-xs rounded-full
+                            @if($event->status == 'active') bg-green-100 text-green-700
+                            @elseif($event->status == 'draft') bg-gray-100 text-gray-700
+                            @else bg-yellow-100 text-yellow-700 @endif">
+                            {{ ucfirst($event->status) }}
+                        </span>
+                        @if($event->suspension_status === 'pending')
+                            <span class="block mt-1 px-2 py-0.5 text-xs rounded-full bg-orange-100 text-orange-700">
+                                <i class="fas fa-pause mr-1"></i>Pending
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         @endforeach

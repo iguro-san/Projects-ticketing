@@ -15,7 +15,9 @@ class Registration extends Model
         'user_id', 'user_name', 'user_email', 'user_phone',
         'payment_status', 'payment_deadline', 'payment_method', 
         'payment_proof', 'amount_paid', 'paid_at', 'cancelled_at',
-        'admin_notes', 'registered_at'
+        'admin_notes', 'registered_at',
+        'refund_status', 'refund_reason', 'refund_requested_at',
+        'refund_processed_at', 'refund_amount', 'refund_notes'
     ];
 
     protected $casts = [
@@ -23,109 +25,71 @@ class Registration extends Model
         'paid_at' => 'datetime',
         'payment_deadline' => 'datetime',
         'cancelled_at' => 'datetime',
+        'refund_requested_at' => 'datetime',
+        'refund_processed_at' => 'datetime',
         'amount_paid' => 'decimal:2',
+        'refund_amount' => 'decimal:2',
     ];
 
-    // ========== RELASI ==========
-    public function event()
+    // Refund Constants
+    const REFUND_NONE = 'none';
+    const REFUND_PENDING = 'pending';
+    const REFUND_PROCESSING = 'processing';
+    const REFUND_COMPLETED = 'completed';
+    const REFUND_FAILED = 'failed';
+
+    // Relationships
+    public function event() { return $this->belongsTo(Event::class); }
+    public function ticketType() { return $this->belongsTo(TicketType::class); }
+    public function user() { return $this->belongsTo(User::class, 'user_email', 'email'); }
+    public function payments() { return $this->hasMany(Payment::class); }
+
+    // Status Checkers
+    public function isPaid(): bool { return $this->payment_status === 'paid'; }
+    public function isPending(): bool { return $this->payment_status === 'pending'; }
+    public function isFailed(): bool { return $this->payment_status === 'failed'; }
+    public function isExpired(): bool { return $this->payment_status === 'expired'; }
+    public function isCancelled(): bool { return $this->payment_status === 'cancelled'; }
+
+    // Refund Checkers
+    public function canRequestRefund(): bool
     {
-        return $this->belongsTo(Event::class);
+        return $this->payment_status === 'paid' && 
+               $this->refund_status === self::REFUND_NONE &&
+               !$this->event->event_date->isPast();
     }
 
-    public function ticketType()
+    public function isRefundPending(): bool
     {
-        return $this->belongsTo(TicketType::class);
+        return in_array($this->refund_status, [self::REFUND_PENDING, self::REFUND_PROCESSING]);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_email', 'email');
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    // ========== STATUS CHECKERS ==========
-    public function isPaid(): bool
-    {
-        return $this->payment_status === 'paid';
-    }
-
-    public function isPending(): bool
-    {
-        return $this->payment_status === 'pending';
-    }
-
-    public function isFailed(): bool
-    {
-        return $this->payment_status === 'failed';
-    }
-
-    public function isExpired(): bool
-    {
-        return $this->payment_status === 'expired';
-    }
-
-    public function isCancelled(): bool
-    {
-        return $this->payment_status === 'cancelled';
-    }
-
-    /**
-     * Cek apakah pembayaran sudah melewati batas waktu
-     */
+    // Deadline Methods
     public function isDeadlinePassed(): bool
     {
-        if (!$this->payment_deadline) {
-            return false;
-        }
+        if (!$this->payment_deadline) return false;
         return Carbon::now()->greaterThan($this->payment_deadline);
     }
 
-    /**
-     * Batas waktu default (5 menit dari pendaftaran)
-     */
     public static function getDefaultDeadline(): Carbon
     {
         return Carbon::now()->addMinutes(5);
     }
 
-    /**
-     * Sisa waktu pembayaran dalam format readable
-     */
     public function getRemainingTimeAttribute(): ?string
     {
-        if (!$this->payment_deadline || $this->isPaid()) {
-            return null;
-        }
-
-        if ($this->isDeadlinePassed()) {
-            return 'Kadaluarsa';
-        }
-
-        return Carbon::now()->diffForHumans($this->payment_deadline, [
-            'parts' => 2,
-            'short' => false,
-            'syntax' => Carbon::DIFF_RELATIVE_TO_NOW,
-        ]);
+        if (!$this->payment_deadline || $this->isPaid()) return null;
+        if ($this->isDeadlinePassed()) return 'Kadaluarsa';
+        return Carbon::now()->diffForHumans($this->payment_deadline, ['parts' => 2, 'short' => false]);
     }
 
-    /**
-     * Sisa waktu dalam detik (untuk countdown JS)
-     */
     public function getRemainingSecondsAttribute(): int
     {
-        if (!$this->payment_deadline || $this->isPaid()) {
-            return 0;
-        }
-
-        $remaining = Carbon::now()->diffInSeconds($this->payment_deadline, false);
-        return max(0, $remaining);
+        if (!$this->payment_deadline || $this->isPaid()) return 0;
+        return max(0, Carbon::now()->diffInSeconds($this->payment_deadline, false));
     }
 
-    // ========== ACTIONS ==========
+    // Payment Actions
     public function markAsPaid($method = null, $notes = null): void
     {
         $this->update([
@@ -145,9 +109,6 @@ class Registration extends Model
         ]);
     }
 
-    /**
-     * Batalkan pendaftaran (hangus/kadaluarsa)
-     */
     public function cancel($reason = null): void
     {
         $this->update([
@@ -155,12 +116,39 @@ class Registration extends Model
             'cancelled_at' => now(),
             'admin_notes' => $reason ?? 'Batas waktu pembayaran habis'
         ]);
-
-        // Kembalikan kuota tiket
         $this->ticketType->decrement('registered');
     }
 
-    // ========== STATIC ==========
+    // Refund Actions
+    public function requestRefund($reason): void
+    {
+        $this->update([
+            'refund_status' => self::REFUND_PENDING,
+            'refund_reason' => $reason,
+            'refund_requested_at' => now()
+        ]);
+    }
+
+    public function processRefund($action, $notes = null): void
+    {
+        if ($action === 'approve') {
+            $this->update([
+                'refund_status' => self::REFUND_COMPLETED,
+                'refund_amount' => $this->amount_paid ?? $this->ticketType->price,
+                'refund_notes' => $notes,
+                'refund_processed_at' => now(),
+                'payment_status' => 'refunded'
+            ]);
+        } else {
+            $this->update([
+                'refund_status' => self::REFUND_FAILED,
+                'refund_notes' => $notes,
+                'refund_processed_at' => now()
+            ]);
+        }
+    }
+
+    // Static Methods
     public static function generateRegistrationNumber(): string
     {
         return 'REG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));

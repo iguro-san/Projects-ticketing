@@ -5,10 +5,6 @@
 @section('content')
 <h1 class="text-4xl font-bold text-gray-800 mb-8">Event Terbaru</h1>
 
-<<<<<<< HEAD
-=======
-<!-- Form Pencarian (tetap ada) -->
->>>>>>> aac5c4ccf1602807fa0bd17e89aaff6196f326fc
 <div class="bg-white rounded-lg shadow p-6 mb-8">
     <form action="{{ route('home') }}" method="GET" class="flex flex-wrap gap-4">
         <input type="text" name="search" placeholder="Cari event..." value="{{ request('search') }}" 
@@ -25,10 +21,6 @@
     </form>
 </div>
 
-<<<<<<< HEAD
-=======
-<!-- Grid Event (menggunakan komponen) -->
->>>>>>> aac5c4ccf1602807fa0bd17e89aaff6196f326fc
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($events as $event)
         <x-event-card :event="$event" />

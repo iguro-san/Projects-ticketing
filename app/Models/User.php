@@ -21,9 +21,29 @@ class User extends Authenticatable
         ];
     }
 
+    // Role Checkers
     public function isAdmin() { return $this->role === 'admin'; }
     public function isPanitia() { return $this->role === 'panitia'; }
     public function isUser() { return $this->role === 'user'; }
+
+    // Relationships
     public function events() { return $this->hasMany(Event::class, 'panitia_id'); }
     public function registrations() { return $this->hasMany(Registration::class); }
+    public function notifications() { return $this->hasMany(Notification::class)->latest(); }
+
+    // Notification Helpers
+    public function unreadNotifications()
+    {
+        return $this->notifications()->where('is_read', false);
+    }
+
+    public function notify($type, $title, $message, $data = [])
+    {
+        return $this->notifications()->create([
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'data' => $data
+        ]);
+    }
 }

@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 
 class TicketTypeController extends Controller
 {
-    // HAPUS constructor dan ganti pengecekan manual dengan middleware di routes
-
     public function index(Event $event)
     {
         $ticketTypes = TicketType::where('event_id', $event->id)->get();

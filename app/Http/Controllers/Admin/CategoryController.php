@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // HAPUS constructor
-
     public function index()
     {
         $categories = Category::withCount('events')

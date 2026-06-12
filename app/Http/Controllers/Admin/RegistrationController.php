@@ -5,13 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Registration;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class RegistrationController extends Controller
 {
-    // HAPUS constructor
-
     public function index(Request $request)
     {
         $query = Registration::with(['event', 'user', 'ticketType']);

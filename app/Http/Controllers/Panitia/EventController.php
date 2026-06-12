@@ -142,21 +142,6 @@ class EventController extends Controller
         return view('panitia.events.registrations', compact('event', 'registrations'));
     }
 
-    public function confirmPayment(Request $request, Event $event, Registration $registration)
-    {
-        if ($event->panitia_id !== auth()->id()) abort(403);
-        $validated = $request->validate(['action' => 'required|in:confirm,reject', 'notes' => 'nullable|string|max:500']);
-        
-        if ($validated['action'] === 'confirm') {
-            $registration->markAsPaid($registration->payment_method ?? 'Manual', $validated['notes'] ?? 'Dikonfirmasi panitia');
-            $msg = 'Pembayaran dikonfirmasi!';
-        } else {
-            $registration->markAsFailed($validated['notes'] ?? 'Ditolak panitia');
-            $msg = 'Pembayaran ditolak.';
-        }
-        return back()->with('success', $msg);
-    }
-
     public function exportRegistrations(Event $event)
     {
         if ($event->panitia_id !== auth()->id()) abort(403);

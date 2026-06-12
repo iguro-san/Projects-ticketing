@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\TicketType;
@@ -10,9 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
-    /**
-     * Daftar event
-     */
     public function register(Request $request, Event $event)
     {
         $user = auth()->user();
@@ -24,17 +22,14 @@ class RegistrationController extends Controller
 
         $ticketType = TicketType::findOrFail($validated['ticket_type_id']);
 
-        // Validasi tiket milik event ini
         if ($ticketType->event_id !== $event->id) {
             return back()->with('error', 'Tiket tidak valid untuk event ini.');
         }
 
-        // Cek ketersediaan tiket
         if (!$ticketType->isAvailable()) {
             return back()->with('error', 'Maaf, tiket sudah habis!');
         }
 
-        // Cek apakah user sudah punya pendaftaran
         $existingRegistration = Registration::where('event_id', $event->id)
             ->where('user_email', $user->email)
             ->where('payment_status', 'pending')
@@ -51,7 +46,6 @@ class RegistrationController extends Controller
 
         DB::beginTransaction();
         try {
-            // Jika tiket GRATIS, langsung PAID
             $paymentStatus = $ticketType->price == 0 ? 'paid' : 'pending';
             $paymentDeadline = $ticketType->price == 0 ? null : Registration::getDefaultDeadline();
 
@@ -75,14 +69,11 @@ class RegistrationController extends Controller
 
             DB::commit();
 
-            // Redirect sesuai tipe tiket
             if ($ticketType->price == 0) {
-                return redirect()->route('my.tickets')
-                    ->with('success', 'Pendaftaran berhasil! Tiket GRATIS Anda sudah aktif.');
+                return redirect()->route('my.tickets')->with('success', 'Pendaftaran berhasil! Tiket GRATIS Anda sudah aktif.');
             }
 
-            return redirect()->route('payment.show', $registration)
-                ->with('success', 'Pendaftaran berhasil! Segera bayar sebelum batas waktu.');
+            return redirect()->route('payment.show', $registration)->with('success', 'Pendaftaran berhasil! Segera bayar sebelum batas waktu.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -90,15 +81,14 @@ class RegistrationController extends Controller
         }
     }
 
-    /**
-     * Tiket saya
-     */
     public function myTickets()
     {
         $user = auth()->user();
 
-        // Auto-cancel expired
-        $this->cancelExpiredRegistrations($user->email);
+        Registration::where('user_email', $user->email)
+            ->where('payment_status', 'pending')
+            ->where('payment_deadline', '<', now())
+            ->each(fn($reg) => $reg->cancel('Batas waktu pembayaran habis'));
 
         $registrations = Registration::with(['event', 'ticketType'])
             ->where('user_email', $user->email)
@@ -106,13 +96,5 @@ class RegistrationController extends Controller
             ->paginate(10);
 
         return view('user.my-tickets', compact('registrations'));
-    }
-
-    private function cancelExpiredRegistrations($email): void
-    {
-        Registration::where('user_email', $email)
-            ->where('payment_status', 'pending')
-            ->where('payment_deadline', '<', now())
-            ->each(fn($reg) => $reg->cancel('Batas waktu pembayaran habis'));
     }
 }

@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    // HAPUS constructor
-
     public function index()
     {
         $panitiaId = auth()->id();
@@ -56,12 +54,13 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
         
+        // HANYA 3 PENDAFTAR TERBARU
         $recentRegistrations = Registration::whereHas('event', function($q) use ($panitiaId) {
                 $q->where('panitia_id', $panitiaId);
             })
             ->with(['event', 'ticketType'])
             ->latest()
-            ->take(10)
+            ->take(3)
             ->get();
         
         return view('panitia.dashboard', compact(

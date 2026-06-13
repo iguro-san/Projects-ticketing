@@ -7,10 +7,9 @@
     <title>@yield('title', 'Event Management System')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('styles')
 </head>
-<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen">
+<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen flex flex-col">
     
     {{-- Navbar --}}
     <nav class="bg-[#141E46] shadow-lg sticky top-0 z-50">
@@ -200,7 +199,7 @@
     </nav>
 
     {{-- Main Content --}}
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 flex-grow">
         @if(session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg">
                 <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
@@ -220,10 +219,11 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-[#141E46] border-t border-[#B6771D]/30 mt-12 py-4 text-center text-white/70 text-sm">
+    <footer class="bg-[#141E46] border-t border-[#B6771D]/30 py-4 text-center text-white/70 text-sm">
         &copy; {{ date('Y') }} EventKu - Event Management System. All rights reserved.
     </footer>
 
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('hidden');

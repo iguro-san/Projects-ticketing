@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Kelola Kategori')
 
@@ -26,8 +26,8 @@
                 <tr>
                     <td class="px-4 py-3">{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
                     <td class="px-4 py-3 font-semibold">{{ $cat->name }}</td>
-                    <td class="px-4 py-3 text-gray-600">{{ $cat->description ?? '-' }}</td>
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-gray-600 break-words max-w-md">{{ $cat->description ?? '-' }}</td>
+                    <td class="px-4 py-3 text-center whitespace-nowrap">
                         <button onclick="editCategory({{ $cat->id }}, '{{ $cat->name }}', '{{ $cat->description }}')" 
                                 class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
                             Edit

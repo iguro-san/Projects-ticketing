@@ -10,15 +10,16 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('styles')
 </head>
-<<<<<<< HEAD
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen">
+    
+    {{-- Navbar --}}
+    <nav class="bg-[#141E46] shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center space-x-2">
-                    <i class="fas fa-ticket-alt text-2xl text-purple-600"></i>
-                    <span class="text-xl font-bold text-gray-800">EventKu</span>
+                    <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
+                    <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
                 </a>
 
                 {{-- Desktop Menu --}}
@@ -26,48 +27,48 @@
                     @auth
                         {{-- ADMIN MENU --}}
                         @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.dashboard') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                             </a>
-                            <a href="{{ route('admin.events.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.events.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-calendar-alt mr-1"></i> Events
                             </a>
-                            <a href="{{ route('admin.categories.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.categories.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-tags mr-1"></i> Kategori
                             </a>
-                            <a href="{{ route('admin.panitia.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.panitia.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-users mr-1"></i> Panitia
                             </a>
-                            <a href="{{ route('admin.payments.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.payments.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-credit-card mr-1"></i> Pembayaran
                             </a>
-                            <a href="{{ route('admin.refunds.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.refunds.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-undo-alt mr-1"></i> Refund
                             </a>
-                            <a href="{{ route('admin.announcements.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('admin.announcements.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-bullhorn mr-1"></i> Pengumuman
                             </a>
                         {{-- PANITIA MENU --}}
                         @elseif(auth()->user()->isPanitia())
-                            <a href="{{ route('panitia.dashboard') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('panitia.dashboard') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                             </a>
-                            <a href="{{ route('panitia.events.index') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('panitia.events.index') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-calendar-alt mr-1"></i> Event Saya
                             </a>
                         {{-- USER MENU --}}
                         @else
-                            <a href="{{ route('home') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('home') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-home mr-1"></i> Home
                             </a>
-                            <a href="{{ route('my.tickets') }}" class="text-gray-600 hover:text-purple-600 transition">
+                            <a href="{{ route('my.tickets') }}" class="text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-ticket-alt mr-1"></i> Tiket Saya
                             </a>
                         @endif
 
                         {{-- Notification Bell --}}
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="relative text-gray-600 hover:text-purple-600 transition">
+                            <button @click="open = !open" class="relative text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-bell text-xl"></i>
                                 @if(auth()->user()->unreadNotifications()->count() > 0)
                                     <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -89,7 +90,7 @@
                                             @if(!$notif->is_read)
                                             <form action="{{ route('notifications.mark-read', $notif) }}" method="POST" class="inline">
                                                 @csrf
-                                                <button type="submit" class="text-xs text-purple-600 hover:text-purple-800">Tandai dibaca</button>
+                                                <button type="submit" class="text-xs text-[#B6771D] hover:text-[#B6771D]/80">Tandai dibaca</button>
                                             </form>
                                             @endif
                                         </div>
@@ -102,7 +103,7 @@
                                 <div class="p-2 border-t text-center">
                                     <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="text-xs text-purple-600 hover:text-purple-800">
+                                        <button type="submit" class="text-xs text-[#B6771D] hover:text-[#B6771D]/80">
                                             Tandai semua sebagai sudah dibaca
                                         </button>
                                     </form>
@@ -118,7 +119,7 @@
 
                         {{-- User Dropdown --}}
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center space-x-1 text-gray-600 hover:text-purple-600 transition">
+                            <button @click="open = !open" class="flex items-center space-x-1 text-white hover:text-[#B6771D] transition">
                                 <i class="fas fa-user-circle text-xl"></i>
                                 <span class="hidden sm:inline">{{ auth()->user()->name }}</span>
                                 <i class="fas fa-chevron-down text-xs"></i>
@@ -145,61 +146,58 @@
                         </div>
                     @else
                         {{-- TAMU --}}
-                        <a href="{{ route('home') }}" class="text-gray-600 hover:text-purple-600 transition">
+                        <a href="{{ route('home') }}" class="text-white hover:text-[#B6771D] transition">
                             <i class="fas fa-home mr-1"></i> Home
                         </a>
-                        <a href="{{ route('login') }}" class="text-gray-600 hover:text-purple-600 transition">
+                        <a href="{{ route('login') }}" class="text-white hover:text-[#B6771D] transition">
                             <i class="fas fa-sign-in-alt mr-1"></i> Login
                         </a>
-                        <a href="{{ route('register') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                        <a href="{{ route('register') }}" class="bg-[#B6771D] text-white px-4 py-2 rounded-lg hover:bg-[#B6771D]/80 transition">
                             <i class="fas fa-user-plus mr-1"></i> Register
                         </a>
                     @endauth
                 </div>
 
                 {{-- Mobile Menu Toggle --}}
-                <button class="md:hidden text-gray-600" onclick="toggleMobileMenu()">
+                <button class="md:hidden text-white" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
 
         {{-- Mobile Menu --}}
-        <div id="mobileMenu" class="hidden md:hidden border-t">
+        <div id="mobileMenu" class="hidden md:hidden border-t border-[#B6771D]/30">
             <div class="container mx-auto px-4 py-4 space-y-3">
                 @auth
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="block text-gray-600">Dashboard</a>
-                        <a href="{{ route('admin.events.index') }}" class="block text-gray-600">Events</a>
-                        <a href="{{ route('admin.categories.index') }}" class="block text-gray-600">Kategori</a>
-                        <a href="{{ route('admin.panitia.index') }}" class="block text-gray-600">Panitia</a>
-                        <a href="{{ route('admin.payments.index') }}" class="block text-gray-600">Pembayaran</a>
-                        <a href="{{ route('admin.refunds.index') }}" class="block text-gray-600">Refund</a>
-                        <a href="{{ route('admin.announcements.index') }}" class="block text-gray-600">Pengumuman</a>
+                        <a href="{{ route('admin.dashboard') }}" class="block text-white hover:text-[#B6771D] transition">Dashboard</a>
+                        <a href="{{ route('admin.events.index') }}" class="block text-white hover:text-[#B6771D] transition">Events</a>
+                        <a href="{{ route('admin.categories.index') }}" class="block text-white hover:text-[#B6771D] transition">Kategori</a>
+                        <a href="{{ route('admin.panitia.index') }}" class="block text-white hover:text-[#B6771D] transition">Panitia</a>
+                        <a href="{{ route('admin.payments.index') }}" class="block text-white hover:text-[#B6771D] transition">Pembayaran</a>
+                        <a href="{{ route('admin.refunds.index') }}" class="block text-white hover:text-[#B6771D] transition">Refund</a>
+                        <a href="{{ route('admin.announcements.index') }}" class="block text-white hover:text-[#B6771D] transition">Pengumuman</a>
                     @elseif(auth()->user()->isPanitia())
-                        <a href="{{ route('panitia.dashboard') }}" class="block text-gray-600">Dashboard</a>
-                        <a href="{{ route('panitia.events.index') }}" class="block text-gray-600">Event Saya</a>
+                        <a href="{{ route('panitia.dashboard') }}" class="block text-white hover:text-[#B6771D] transition">Dashboard</a>
+                        <a href="{{ route('panitia.events.index') }}" class="block text-white hover:text-[#B6771D] transition">Event Saya</a>
                     @else
-                        <a href="{{ route('home') }}" class="block text-gray-600">Home</a>
-                        <a href="{{ route('my.tickets') }}" class="block text-gray-600">Tiket Saya</a>
+                        <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Home</a>
+                        <a href="{{ route('my.tickets') }}" class="block text-white hover:text-[#B6771D] transition">Tiket Saya</a>
                     @endif
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="block text-red-600">Logout</button>
+                        <button type="submit" class="block text-red-400 hover:text-red-300 transition w-full text-left">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </button>
                     </form>
                 @else
-                    <a href="{{ route('home') }}" class="block text-gray-600">Home</a>
-                    <a href="{{ route('login') }}" class="block text-gray-600">Login</a>
-                    <a href="{{ route('register') }}" class="block text-purple-600">Register</a>
+                    <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Home</a>
+                    <a href="{{ route('login') }}" class="block text-white hover:text-[#B6771D] transition">Login</a>
+                    <a href="{{ route('register') }}" class="block text-[#B6771D] hover:text-[#B6771D]/80 transition">Register</a>
                 @endauth
             </div>
         </div>
     </nav>
-=======
-<body class="bg-[#FFF5E0] text-[#141E46] min-h-screen">
-    {{-- Navbar --}}
-    <x-navbar />
->>>>>>> c6603cbe3ded401c6db0fb95458164972058d1a6
 
     {{-- Main Content --}}
     <main class="container mx-auto px-4 py-8">
@@ -220,8 +218,11 @@
         @endif
         @yield('content')
     </main>
-    <!-- Footer -->
-    <x-footer />
+
+    {{-- Footer --}}
+    <footer class="bg-[#141E46] border-t border-[#B6771D]/30 mt-12 py-4 text-center text-white/70 text-sm">
+        &copy; {{ date('Y') }} EventKu - Event Management System. All rights reserved.
+    </footer>
 
     <script>
         function toggleMobileMenu() {

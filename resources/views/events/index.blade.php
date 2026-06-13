@@ -3,19 +3,19 @@
 @section('title', 'Daftar Event')
 
 @section('content')
-<h1 class="text-4xl font-bold text-gray-800 mb-8">Event Terbaru</h1>
+<h1 class="text-4xl font-bold text-[#141E46] mb-8">Event Terbaru</h1>
 
 <div class="bg-white rounded-lg shadow p-6 mb-8">
-    <form action="{{ route('home') }}" method="GET" class="flex flex-wrap gap-4">
+    <form action="{{ route('events.index') }}" method="GET" class="flex flex-wrap gap-4">
         <input type="text" name="search" placeholder="Cari event..." value="{{ request('search') }}" 
-               class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
-        <select name="category" class="w-48 border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
+               class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-[#B6771D]">
+        <select name="category" class="w-48 border rounded-lg px-3 py-2 focus:outline-none focus:border-[#B6771D]">
             <option value="">Semua Kategori</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
             @endforeach
         </select>
-        <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+        <button type="submit" class="bg-[#B6771D] text-white px-6 py-2 rounded-lg hover:bg-[#B6771D]/80 transition">
             <i class="fas fa-search"></i> Cari
         </button>
     </form>
@@ -32,7 +32,6 @@
     @endforelse
 </div>
 
-<!-- Pagination (tetap ada) -->
 <div class="mt-8">
     {{ $events->links() }}
 </div>

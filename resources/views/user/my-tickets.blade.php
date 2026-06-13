@@ -3,7 +3,7 @@
 @section('title', 'Tiket Saya')
 
 @section('content')
-<h1 class="text-3xl font-bold text-gray-800 mb-6">
+<h1 class="text-3xl font-bold text-[#141E46] mb-6">
     <i class="fas fa-ticket-alt text-[#B6771D]"></i> Tiket Saya
 </h1>
 
@@ -11,7 +11,7 @@
 <div class="bg-white rounded-lg shadow p-6 mb-4 hover:shadow-lg transition">
     <div class="flex flex-col md:flex-row justify-between items-start">
         <div class="flex-1">
-            <h3 class="text-xl font-bold text-gray-800">{{ $reg->event->title }}</h3>
+            <h3 class="text-xl font-bold text-[#141E46]">{{ $reg->event->title }}</h3>
             <p class="text-gray-600">{{ $reg->event->event_date->format('d F Y') }}</p>
             <p class="text-gray-600">{{ $reg->event->location }}</p>
             
@@ -20,7 +20,6 @@
                     {{ $reg->ticketType->name }}
                 </span>
                 
-                {{-- STATUS PEMBAYARAN --}}
                 @if($reg->payment_status == 'paid')
                     <span class="inline-block bg-green-200 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
                         <i class="fas fa-check-circle mr-1"></i> Lunas
@@ -46,24 +45,8 @@
                         {{ ucfirst($reg->payment_status) }}
                     </span>
                 @endif
-
-                {{-- Refund Status --}}
-                @if($reg->refund_status === 'pending')
-                    <span class="inline-block bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                        <i class="fas fa-spinner fa-spin mr-1"></i> Refund Diproses
-                    </span>
-                @elseif($reg->refund_status === 'completed')
-                    <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                        <i class="fas fa-check-circle mr-1"></i> Refund Selesai
-                    </span>
-                @elseif($reg->refund_status === 'failed')
-                    <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
-                        <i class="fas fa-times-circle mr-1"></i> Refund Ditolak
-                    </span>
-                @endif
             </div>
 
-            {{-- TAMPILAN WAKTU - HANYA UNTUK YANG BELUM UPLOAD --}}
             @if($reg->payment_status == 'pending' && !$reg->payment_proof && $reg->payment_deadline)
                 <div class="mt-2">
                     @if($reg->isDeadlinePassed())
@@ -109,7 +92,6 @@
                 <p class="font-mono font-bold text-[#B6771D]">{{ $reg->registration_number }}</p>
             </div>
 
-            {{-- Tombol Aksi --}}
             @if($reg->payment_status == 'pending' && !$reg->isDeadlinePassed() && !$reg->payment_proof)
                 <a href="{{ route('payment.show', $reg) }}" 
                    class="inline-block bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition font-semibold">
@@ -137,7 +119,6 @@
     </div>
 </div>
 
-{{-- Script Countdown untuk yang belum upload --}}
 @if($reg->payment_status == 'pending' && !$reg->payment_proof && $reg->payment_deadline && !$reg->isDeadlinePassed())
 <script>
 (function() {
@@ -167,7 +148,7 @@
     <i class="fas fa-ticket-alt text-6xl text-gray-300 mb-4"></i>
     <h3 class="text-xl font-semibold text-gray-600">Belum ada tiket</h3>
     <p class="text-gray-500 mb-6">Anda belum mendaftar event apapun</p>
-    <a href="{{ route('home') }}" class="inline-block bg-[#141E46] text-white px-6 py-2 rounded-lg hover:bg-[#111D5E] transition">
+    <a href="{{ route('home') }}" class="inline-block bg-[#141E46] text-white px-6 py-2 rounded-lg hover:bg-[#141E46]/80 transition">
         <i class="fas fa-calendar-alt mr-2"></i> Lihat Event
     </a>
 </div>

@@ -9,13 +9,13 @@
     <div class="absolute inset-0 bg-cover bg-center"
          style="background-image: url('{{ asset('images/bg-hero2.png') }}');">
     </div>
-    <div class="absolute inset-0 bg-black/40"></div>
-    `
+    <div class="absolute inset-0 bg-[#141E46]/60"></div>
+    
     <!-- Konten Hero -->
     <div class="relative z-10 container mx-auto px-4 md:px-12">
         <div class="max-w-3xl">
             <h1 class="text-white text-4xl md:text-5xl font-bold mb-4">Temukan Event Terbaik!</h1>
-            <p class="text-white text-lg md:text-xl mb-8">Daftar dan ikuti berbagai event menarik dari seminar, konser, workshop, dan masih banyak lagi.</p>
+            <p class="text-white text-lg md:text-xl mb-8 opacity-90">Daftar dan ikuti berbagai event menarik dari seminar, konser, workshop, dan masih banyak lagi.</p>
             <div class="flex gap-4">
                 @guest
                     <a href="{{ route('register') }}" class="bg-[#B6771D] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
@@ -38,10 +38,10 @@
             <div class="relative">
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 <input type="text" name="search" placeholder="Cari event..." value="{{ request('search') }}"
-                       class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-purple-600">
+                       class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D]">
             </div>
         </div>
-        <select name="category" class="px-4 py-3 border rounded-lg focus:outline-none focus:border-purple-600 min-w-[200px]">
+        <select name="category" class="px-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] min-w-[200px]">
             <option value="">Semua Kategori</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
@@ -63,14 +63,14 @@
                 @if($event->poster)
                     <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" class="w-full h-48 object-cover">
                 @else
-                    <div class="w-full h-48 bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                    <div class="w-full h-48 bg-gradient-to-r from-[#141E46] to-[#B6771D] flex items-center justify-center">
                         <i class="fas fa-calendar-alt text-5xl text-white opacity-50"></i>
                     </div>
                 @endif
                 
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                        <span class="px-3 py-1 bg-[#B6771D]/10 text-[#B6771D] rounded-full text-xs font-semibold">
                             {{ $event->category->name }}
                         </span>
                         <span class="text-sm text-gray-500">
@@ -79,12 +79,12 @@
                         </span>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $event->title }}</h3>
+                    <h3 class="text-xl font-bold text-[#141E46] mb-2">{{ $event->title }}</h3>
                     
                     <div class="space-y-2 text-gray-600 mb-4">
-                        <p class="text-sm"><i class="fas fa-calendar-alt w-5 text-purple-600"></i> {{ $event->event_date->format('d F Y') }}</p>
-                        <p class="text-sm"><i class="fas fa-map-marker-alt w-5 text-purple-600"></i> {{ $event->location }}</p>
-                        <p class="text-sm"><i class="fas fa-ticket-alt w-5 text-purple-600"></i> {{ $event->available_tickets }} tiket tersedia</p>
+                        <p class="text-sm"><i class="fas fa-calendar-alt w-5 text-[#B6771D]"></i> {{ $event->event_date->format('d F Y') }}</p>
+                        <p class="text-sm"><i class="fas fa-map-marker-alt w-5 text-[#B6771D]"></i> {{ $event->location }}</p>
+                        <p class="text-sm"><i class="fas fa-ticket-alt w-5 text-[#B6771D]"></i> {{ $event->available_tickets }} tiket tersedia</p>
                     </div>
                     
                     <div class="flex items-center justify-between">
@@ -98,7 +98,7 @@
                                 <span class="text-gray-800 font-bold">Mulai Rp {{ number_format($minPrice, 0, ',', '.') }}</span>
                             @endif
                         </div>
-                        <a href="{{ route('events.show', $event) }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm">
+                        <a href="{{ route('events.show', $event) }}" class="bg-[#141E46] text-white px-4 py-2 rounded-lg hover:bg-[#141E46]/80 transition text-sm">
                             Lihat Detail
                         </a>
                     </div>

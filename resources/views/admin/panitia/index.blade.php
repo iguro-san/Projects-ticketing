@@ -6,7 +6,7 @@
 <div class="bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">
-            <i class="fas fa-users mr-2 text-purple-600"></i>Daftar Panitia
+            <i class="fas fa-users mr-2 text-[#760031]"></i>Daftar Panitia
         </h1>
         <a href="{{ route('admin.panitia.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
             <i class="fas fa-plus mr-1"></i>Tambah Panitia

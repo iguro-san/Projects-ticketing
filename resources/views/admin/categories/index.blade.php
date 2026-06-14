@@ -5,8 +5,10 @@
 @section('content')
 <div class="bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Daftar Kategori</h1>
-        <button onclick="showModal()" class="bg-[#B6771D] text-white px-4 py-2 rounded-lg hover:bg-[#B6771D]/80 transition">
+        <h1 class="text-2xl font-bold text-[#760031]">
+            <i class="fas fa-tags w-5 mr-3"></i>Daftar Kategori
+        </h1>
+        <button onclick="showModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
             <i class="fas fa-plus"></i> Tambah Kategori
         </button>
     </div>
@@ -62,7 +64,7 @@
                       class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-[#760031]" rows="3"></textarea>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="hideModal()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-[#B6771D] text-white rounded-lg hover:bg-[#B6771D]/80 transition">Simpan</button>
+                <button type="submit" class="px-4 py-2 bg-[#760031] text-white rounded-lg hover:bg-[#760031]/80 transition">Simpan</button>
             </div>
         </form>
     </div>

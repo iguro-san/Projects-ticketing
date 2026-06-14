@@ -56,7 +56,7 @@
                     <input type="text" name="search" placeholder="Cari judul/lokasi..." value="{{ request('search') }}"
                            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                 </div>
-                <button type="submit" class="bg-[#760031] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0025] transition"><i class="fas fa-search mr-1"></i>Filter</button>
+                <button type="submit" class="bg-[#760031] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0025] transition"><i class="fas fa-search mr-1"></i>Cari</button>
                 <a href="{{ route('admin.events.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-400 transition"><i class="fas fa-redo mr-1"></i>Reset</a>
             </div>
         </form>
@@ -82,11 +82,12 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full min-w-[800px]">
+        <table class="w-full min-w-[1000px]">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">No</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Event</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Detail</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kategori</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Tanggal</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Panitia</th>
@@ -96,39 +97,48 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @forelse($events as $event)
-                <tr class="hover:bg-gray-50 {{ $event->status === 'draft' ? 'bg-yellow-50' : '' }}">
+                <tr class="hover:bg-gray-50 {{ $event->status === 'draft' ? 'bg-yellow-50' : '' }} {{ $event->suspension_status === 'pending' ? 'bg-orange-50' : '' }}">
                     <td class="px-4 py-3 text-sm text-gray-500">{{ $loop->iteration + ($events->firstItem() - 1) }}</td>
                     <td class="px-4 py-3">
-                        <div class="flex items-center space-x-3">
-                            @if($event->poster)
-                                <img src="{{ Storage::url($event->poster) }}" class="w-10 h-10 rounded-lg object-cover">
-                            @else
-                                <div class="w-10 h-10 bg-[#760031]/10 rounded-lg flex items-center justify-center"><i class="fas fa-calendar-alt text-[#760031] text-sm"></i></div>
-                            @endif
-                            <div>
-                                <p class="font-semibold text-gray-800 text-sm">{{ $event->title }}</p>
-                                <p class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i>{{ Str::limit($event->location, 25) }}</p>
-                            </div>
+                        {{-- Hanya teks, tanpa gambar poster --}}
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">{{ $event->title }}</p>
+                            <p class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i>{{ Str::limit($event->location, 25) }}</p>
                         </div>
                     </td>
-                    <td class="px-4 py-3"><span class="px-2 py-1 bg-[#760031]/10 text-[#760031] rounded-full text-xs font-medium">{{ $event->category->name ?? '-' }}</span></td>
-                    <td class="px-4 py-3 text-sm">
+                    {{-- Kolom Detail (menampilkan teks "Lihat Detail") --}}
+                    <td class="px-4 py-3">
+                        <button onclick="openEventDetail({{ $event->id }}, '{{ addslashes($event->title) }}', '{{ addslashes($event->location) }}', `{{ addslashes($event->description) }}`, '{{ $event->poster ? Storage::url($event->poster) : '' }}')"
+                                class="text-sm text-[#760031] hover:text-[#760031]/80 transition flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i> Lihat Detail
+                        </button>
+                    </td>
+                    <td class="px-4 py-3 whitespace-normal break-words">
+                        <span class="inline-block px-2 py-1 bg-[#760031]/10 text-[#760031] rounded-full text-xs font-medium max-w-full">
+                            {{ $event->category->name ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-sm whitespace-nowrap">
                         <span class="{{ $event->event_date < now() ? 'text-red-600' : 'text-green-600' }} font-medium">{{ $event->event_date->format('d/m/Y') }}</span>
                         <br><span class="text-xs {{ $event->event_date < now() ? 'text-red-400' : 'text-gray-400' }}">{{ $event->event_date < now() ? 'Lewat' : $event->event_date->diffForHumans() }}</span>
                     </td>
-                    <td class="px-4 py-3 text-sm">{{ $event->panitia->name ?? '-' }}</td>
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-sm whitespace-nowrap">{{ $event->panitia->name ?? '-' }}</td>
+                    <td class="px-4 py-3 text-center whitespace-nowrap">
                         @if($event->status === 'draft')
                             <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold"><i class="fas fa-clock mr-1"></i>Menunggu</span>
                         @elseif($event->status === 'active')
-                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Disetujui</span>
+                            @if($event->suspension_status === 'pending')
+                                <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold"><i class="fas fa-pause mr-1"></i>Pending</span>
+                            @else
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Disetujui</span>
+                            @endif
                         @elseif($event->status === 'completed')
                             <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold"><i class="fas fa-flag mr-1"></i>Selesai</span>
                         @else
                             <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold"><i class="fas fa-times-circle mr-1"></i>Ditolak</span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-center whitespace-nowrap">
                         @if($event->status === 'draft')
                             <div class="flex gap-1 justify-center">
                                 <form action="{{ route('admin.events.approve', $event) }}" method="POST">
@@ -143,13 +153,35 @@
                                     <i class="fas fa-times mr-1"></i>Tolak
                                 </button>
                             </div>
+                        @elseif($event->status === 'active' && $event->suspension_status === 'normal')
+                            <button onclick="showPendingModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
+                                    class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition">
+                                <i class="fas fa-pause mr-1"></i>Pending
+                            </button>
+                        @elseif($event->suspension_status === 'pending')
+                            <div class="flex gap-1 justify-center">
+                                <form action="{{ route('admin.events.resolve', [$event, 'continue']) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                                            onclick="return confirm('Lanjutkan event ini?')">
+                                        <i class="fas fa-play mr-1"></i>Lanjutkan
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.events.resolve', [$event, 'cancel']) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                                            onclick="return confirm('Batalkan event ini? Semua peserta akan direfund.')">
+                                        <i class="fas fa-times mr-1"></i>Batalkan
+                                    </button>
+                                </form>
+                            </div>
                         @else
                             <span class="text-xs text-gray-400">-</span>
                         @endif
-                    </td>
+                    </tr>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="px-4 py-12 text-center text-gray-500">Belum ada event</td></tr>
+                <tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">Belum ada event</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -157,6 +189,7 @@
     <div class="mt-4">{{ $events->links() }}</div>
 </div>
 
+<!-- Modal Tolak Event -->
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-96">
         <h3 class="text-lg font-bold mb-2">Tolak Event</h3>
@@ -171,6 +204,51 @@
         </form>
     </div>
 </div>
+
+<!-- Modal Pending Event -->
+<div id="pendingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+        <h3 class="text-lg font-bold mb-2">Pending Event</h3>
+        <p class="text-sm text-gray-600 mb-3">Event: <span id="pendingTitle" class="font-semibold"></span></p>
+        <form id="pendingForm" method="POST">
+            @csrf
+            <textarea name="reason" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan penundaan event..." required></textarea>
+            <div class="flex gap-2 mt-3 justify-end">
+                <button type="button" onclick="hidePendingModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm">Pending</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Detail Event (dengan poster) -->
+<div id="eventDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-[#760031]">Detail Event</h3>
+            <button onclick="closeEventDetailModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        <div id="eventDetailContent">
+            <!-- Konten akan diisi oleh JavaScript -->
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button onclick="closeEventDetailModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lightbox untuk poster (jika poster di modal diklik) -->
+<div id="posterModal" class="hidden fixed inset-0 bg-black bg-opacity-90 items-center justify-center z-50" onclick="closePosterModal()">
+    <div class="relative max-w-5xl max-h-screen p-4" onclick="event.stopPropagation()">
+        <img id="posterModalImage" src="" alt="Poster Event" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl">
+        <button onclick="closePosterModal()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-300 transition">
+            <i class="fas fa-times-circle"></i>
+        </button>
+    </div>
+</div>
+
 <script>
     function showRejectModal(id, title) {
         document.getElementById('rejectForm').action = '/admin/events/' + id + '/reject';
@@ -180,5 +258,82 @@
     function hideRejectModal() {
         document.getElementById('rejectModal').classList.add('hidden');
     }
+    function showPendingModal(id, title) {
+        document.getElementById('pendingForm').action = '/admin/events/' + id + '/pending';
+        document.getElementById('pendingTitle').innerText = title;
+        document.getElementById('pendingModal').classList.remove('hidden');
+    }
+    function hidePendingModal() {
+        document.getElementById('pendingModal').classList.add('hidden');
+    }
+    function openEventDetail(id, title, location, description, posterUrl) {
+        const contentDiv = document.getElementById('eventDetailContent');
+        let posterHtml = '';
+        if (posterUrl) {
+            posterHtml = `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Poster Event</h4>
+                    <img src="${posterUrl}" alt="${title}" class="max-w-full max-h-64 rounded-lg shadow cursor-pointer mx-auto" onclick="openPosterModal('${posterUrl}')">
+                </div>
+            `;
+        } else {
+            posterHtml = `
+                <div class="mb-4 bg-gray-100 rounded-lg p-4 text-center">
+                    <i class="fas fa-image text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 text-sm mt-1">Tidak ada poster</p>
+                </div>
+            `;
+        }
+        contentDiv.innerHTML = `
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-800">Judul Event</h4>
+                <p class="text-gray-700">${escapeHtml(title)}</p>
+            </div>
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-800">Lokasi</h4>
+                <p class="text-gray-700">${escapeHtml(location)}</p>
+            </div>
+            ${posterHtml}
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-800">Deskripsi</h4>
+                <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(description).replace(/\n/g, '<br>')}</div>
+            </div>
+        `;
+        document.getElementById('eventDetailModal').classList.remove('hidden');
+    }
+    function closeEventDetailModal() {
+        document.getElementById('eventDetailModal').classList.add('hidden');
+    }
+    function openPosterModal(imageUrl) {
+        const modal = document.getElementById('posterModal');
+        const modalImg = document.getElementById('posterModalImage');
+        modalImg.src = imageUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+    function closePosterModal() {
+        const modal = document.getElementById('posterModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePosterModal();
+            hideRejectModal();
+            hidePendingModal();
+            closeEventDetailModal();
+        }
+    });
 </script>
 @endsection

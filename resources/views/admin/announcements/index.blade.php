@@ -5,8 +5,8 @@
 @section('content')
 <div class="bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">
-            <i class="fas fa-bullhorn mr-2 text-purple-600"></i>Pengumuman
+        <h1 class="text-2xl font-bold text-[#760031]">
+            <i class="fas fa-bullhorn mr-2"></i>Pengumuman
         </h1>
         <a href="{{ route('admin.announcements.create') }}" 
            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
@@ -23,7 +23,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <h3 class="font-bold text-lg">{{ $announcement->title }}</h3>
                         <span class="text-xs px-2 py-1 rounded-full 
-                            @if($announcement->target == 'all') bg-purple-100 text-purple-700
+                            @if($announcement->target == 'all') bg-[#760031] text-white
                             @elseif($announcement->target == 'panitia') bg-blue-100 text-blue-700
                             @else bg-green-100 text-green-700 @endif">
                             <i class="fas fa-users mr-1"></i>{{ $announcement->target_label }}
@@ -65,7 +65,7 @@
     <div class="text-center py-12">
         <i class="fas fa-bullhorn text-5xl text-gray-300 mb-3"></i>
         <p class="text-gray-500">Belum ada pengumuman</p>
-        <a href="{{ route('admin.announcements.create') }}" class="inline-block mt-3 text-purple-600 hover:text-purple-800">
+        <a href="{{ route('admin.announcements.create') }}" class="inline-block mt-3 text-[#760031] hover:text-[#760031]/80">
             Buat pengumuman pertama
         </a>
     </div>

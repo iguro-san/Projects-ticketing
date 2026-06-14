@@ -47,7 +47,9 @@
     @if($event->poster)
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-xl font-bold text-gray-800 mb-3">Poster Event</h2>
-        <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" class="max-w-full max-h-96 rounded-lg mx-auto">
+        <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" 
+             class="max-w-full max-h-96 rounded-lg mx-auto cursor-pointer hover:opacity-90 transition"
+             onclick="openPosterModal('{{ Storage::url($event->poster) }}')">
     </div>
     @endif
 
@@ -167,22 +169,53 @@
     </div>
 </div>
 
+{{-- Modal Lightbox untuk poster --}}
+<div id="posterModal" class="hidden fixed inset-0 bg-black bg-opacity-90 items-center justify-center z-50" onclick="closePosterModal()">
+    <div class="relative max-w-5xl max-h-screen p-4" onclick="event.stopPropagation()">
+        <img id="posterModalImage" src="" alt="Poster Event" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl">
+        <button onclick="closePosterModal()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-300 transition">
+            <i class="fas fa-times-circle"></i>
+        </button>
+    </div>
+</div>
+
 <script>
-function showRejectModal(id, title) {
-    document.getElementById('rejectForm').action = '/admin/events/' + id + '/reject';
-    document.getElementById('rejectTitle').innerText = title;
-    document.getElementById('rejectModal').classList.remove('hidden');
-}
-function hideRejectModal() {
-    document.getElementById('rejectModal').classList.add('hidden');
-}
-function showPendingModal(id, title) {
-    document.getElementById('pendingForm').action = '/admin/events/' + id + '/pending';
-    document.getElementById('pendingTitle').innerText = title;
-    document.getElementById('pendingModal').classList.remove('hidden');
-}
-function hidePendingModal() {
-    document.getElementById('pendingModal').classList.add('hidden');
-}
+    function showRejectModal(id, title) {
+        document.getElementById('rejectForm').action = '/admin/events/' + id + '/reject';
+        document.getElementById('rejectTitle').innerText = title;
+        document.getElementById('rejectModal').classList.remove('hidden');
+    }
+    function hideRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+    }
+    function showPendingModal(id, title) {
+        document.getElementById('pendingForm').action = '/admin/events/' + id + '/pending';
+        document.getElementById('pendingTitle').innerText = title;
+        document.getElementById('pendingModal').classList.remove('hidden');
+    }
+    function hidePendingModal() {
+        document.getElementById('pendingModal').classList.add('hidden');
+    }
+    function openPosterModal(imageUrl) {
+        const modal = document.getElementById('posterModal');
+        const modalImg = document.getElementById('posterModalImage');
+        modalImg.src = imageUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+    function closePosterModal() {
+        const modal = document.getElementById('posterModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePosterModal();
+            hideRejectModal();
+            hidePendingModal();
+        }
+    });
 </script>
 @endsection

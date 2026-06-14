@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Dashboard Panitia</h1>
+        <h1 class="text-3xl font-bold text-[#141E46]">Dashboard Panitia</h1>
         <p class="text-gray-600 mt-2">Selamat datang, {{ auth()->user()->name }}!</p>
     </div>
 
@@ -15,10 +15,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm">Total Event</p>
-                    <p class="text-3xl font-bold text-purple-600">{{ $stats['total_events'] }}</p>
+                    <p class="text-3xl font-bold text-[#B6771D]">{{ $stats['total_events'] }}</p>
                 </div>
-                <div class="bg-purple-100 rounded-full p-3">
-                    <i class="fas fa-calendar-alt text-purple-600 text-xl"></i>
+                <div class="bg-[#B6771D]/10 rounded-full p-3">
+                    <i class="fas fa-calendar-alt text-[#B6771D] text-xl"></i>
                 </div>
             </div>
         </div>
@@ -51,8 +51,8 @@
     {{-- Recent Registrations (HANYA 3 TERBARU) --}}
     <div class="bg-white rounded-lg shadow mb-8">
         <div class="p-6 border-b">
-            <h2 class="text-xl font-bold text-gray-800">
-                <i class="fas fa-clock mr-2 text-blue-500"></i>3 Pendaftar Terbaru
+            <h2 class="text-xl font-bold text-[#141E46]">
+                <i class="fas fa-clock mr-2 text-[#B6771D]"></i>3 Pendaftar Terbaru
             </h2>
         </div>
         <div class="p-6">
@@ -82,9 +82,9 @@
     {{-- My Events --}}
     <div class="bg-white rounded-lg shadow">
         <div class="p-6 border-b flex justify-between items-center">
-            <h2 class="text-xl font-bold text-gray-800">Event Saya</h2>
+            <h2 class="text-xl font-bold text-[#141E46]">Event Saya</h2>
             <a href="{{ route('panitia.events.create') }}" 
-               class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition">
+               class="bg-[#B6771D] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#B6771D]/80 transition">
                 <i class="fas fa-plus mr-1"></i> Buat Event
             </a>
         </div>
@@ -122,7 +122,7 @@
                     </div>
                 @empty
                     <div class="col-span-2 text-center py-8">
-                        <p class="text-gray-500">Belum ada event. <a href="{{ route('panitia.events.create') }}" class="text-purple-600">Buat event pertama!</a></p>
+                        <p class="text-gray-500">Belum ada event. <a href="{{ route('panitia.events.create') }}" class="text-[#B6771D]">Buat event pertama!</a></p>
                     </div>
                 @endforelse
             </div>

@@ -15,7 +15,7 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Tiket GRATIS!</h1>
             <p class="text-gray-600 mb-6">Tiket Anda sudah otomatis aktif tanpa perlu pembayaran.</p>
             
-            <div class="bg-gray-50 rounded-lg p-6 max-w-md mx-auto text-left mb-6">
+            <div class="bg-[#760031]/10 rounded-lg p-6 max-w-md mx-auto text-left mb-6">
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <span class="text-gray-500">No. Registrasi</span>
@@ -128,7 +128,7 @@
         </div>
 
         {{-- Rekening Tujuan --}}
-        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+        <div class="bg-red-50 rounded-lg p-4 mb-6">
             <h2 class="font-semibold text-lg mb-3">Rekening Tujuan</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 @foreach($bankAccounts as $bank)

@@ -84,7 +84,7 @@
         <div class="p-6 border-b flex justify-between items-center">
             <h2 class="text-xl font-bold text-[#141E46]">Event Saya</h2>
             <a href="{{ route('panitia.events.create') }}" 
-               class="bg-[#B6771D] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#B6771D]/80 transition">
+               class="bg-[#760031] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#760031]/80 transition">
                 <i class="fas fa-plus mr-1"></i> Buat Event
             </a>
         </div>

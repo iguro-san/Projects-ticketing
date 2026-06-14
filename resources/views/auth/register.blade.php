@@ -7,8 +7,8 @@
     <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <div class="text-center mb-8">
-                <div class="bg-[#141E46] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-user-plus text-3xl text-[#B6771D]"></i>
+                <div class="bg-[#760031] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-plus text-3xl text-white"></i>
                 </div>
                 <h2 class="text-3xl font-bold text-[#141E46]">Daftar Akun</h2>
                 <p class="text-gray-600 mt-2">Buat akun untuk mendaftar event</p>
@@ -22,7 +22,7 @@
                     <div class="relative">
                         <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="text" name="name" value="{{ old('name') }}" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] @error('name') border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031] @error('name') border-red-500 @enderror"
                                placeholder="Masukkan nama lengkap" required>
                     </div>
                     @error('name')
@@ -35,7 +35,7 @@
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="email" name="email" value="{{ old('email') }}" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] @error('email') border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031] @error('email') border-red-500 @enderror"
                                placeholder="Masukkan email" required>
                     </div>
                     @error('email')
@@ -48,7 +48,7 @@
                     <div class="relative">
                         <i class="fas fa-phone absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="text" name="phone" value="{{ old('phone') }}" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] @error('phone') border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031] @error('phone') border-red-500 @enderror"
                                placeholder="Masukkan nomor telepon">
                     </div>
                     @error('phone')
@@ -61,7 +61,7 @@
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="password" name="password" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] @error('password') border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031] @error('password') border-red-500 @enderror"
                                placeholder="Minimal 6 karakter" required>
                     </div>
                     @error('password')
@@ -74,12 +74,12 @@
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="password" name="password_confirmation" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D]"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031]"
                                placeholder="Ulangi password" required>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-[#B6771D] text-white py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition duration-300">
+                <button type="submit" class="w-full bg-[#760031] text-white py-3 rounded-lg font-semibold hover:bg-[#760031]/80 transition duration-300">
                     <i class="fas fa-user-plus mr-2"></i> Daftar
                 </button>
             </form>
@@ -87,7 +87,7 @@
             <div class="mt-6 text-center">
                 <p class="text-gray-600">
                     Sudah punya akun? 
-                    <a href="{{ route('login') }}" class="text-[#B6771D] font-semibold hover:text-[#B6771D]/80">
+                    <a href="{{ route('login') }}" class="text-[#760031] font-semibold hover:text-[#760031]/80">
                         Login sekarang
                     </a>
                 </p>

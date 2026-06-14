@@ -14,7 +14,7 @@
                 </div>
                 <h2 class="text-xl font-bold mb-2">Tiket GRATIS!</h2>
                 <p class="text-gray-600 mb-4">Tiket Anda sudah aktif tanpa perlu pembayaran.</p>
-                <a href="{{ route('my.tickets') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg">
+                <a href="{{ route('my.tickets') }}" class="inline-block bg-[#760031] text-white px-6 py-2 rounded-lg">
                     Lihat Tiket Saya
                 </a>
             </div>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="mt-6">
-                        <a href="{{ route('my.tickets') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg">
+                        <a href="{{ route('my.tickets') }}" class="inline-block bg-[#760031] text-white px-6 py-2 rounded-lg">
                             Kembali ke Tiket Saya
                         </a>
                     </div>
@@ -75,8 +75,8 @@
                 </div>
                 @endif
 
-                <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h2 class="font-semibold text-lg mb-3">Detail Pendaftaran</h2>
+                <div class="bg-[#760031]/5 rounded-lg p-4 mb-6">
+                    <h2 class="font-semibold text-[#760031] text-lg mb-3">Detail Pendaftaran</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-500">No. Registrasi</p>
@@ -88,21 +88,21 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Jenis Tiket</p>
-                            <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">{{ $registration->ticketType->name }}</span>
+                            <span class="px-2 py-1 bg-[#760031]/20 text-[#760031] rounded-full text-xs font-medium">{{ $registration->ticketType->name }}</span>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Total</p>
-                            <p class="text-2xl font-bold text-green-600">Rp {{ number_format($registration->ticketType->price, 0, ',', '.') }}</p>
+                            <p class="text-2xl font-bold text-[#760031]">Rp {{ number_format($registration->ticketType->price, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                    <h2 class="font-semibold text-lg mb-3">Rekening Tujuan</h2>
+                <div class="bg-[#760031]/5 rounded-lg p-4 mb-6">
+                    <h2 class="font-semibold text-[#760031] text-lg mb-3">Rekening Tujuan</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         @foreach($bankAccounts as $bank)
                         <div class="bg-white rounded-lg p-4 text-center border">
-                            <i class="fas fa-university text-2xl text-blue-600 mb-2"></i>
+                            <i class="fas fa-university text-2xl text-[#760031] mb-2"></i>
                             <p class="font-bold">{{ $bank['bank'] }}</p>
                             <p class="font-mono text-sm">{{ $bank['account_number'] }}</p>
                             <p class="text-xs text-gray-500">a.n. {{ $bank['account_name'] }}</p>
@@ -118,7 +118,7 @@
                         @csrf
                         <div class="mb-4">
                             <label class="block text-gray-700 mb-2 font-semibold">Metode Pembayaran</label>
-                            <select name="payment_method" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
+                            <select name="payment_method" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
                                 <option value="">Pilih Bank</option>
                                 <option value="BCA">BCA</option>
                                 <option value="Mandiri">Mandiri</option>
@@ -129,7 +129,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 mb-2 font-semibold">Bukti Transfer</label>
-                            <input type="file" name="payment_proof" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
+                            <input type="file" name="payment_proof" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
                             <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG (Max 2MB)</p>
                         </div>
                         <div class="mb-4 p-3 bg-yellow-50 rounded-lg">
@@ -138,7 +138,7 @@
                                 Pastikan bukti transfer jelas dan sesuai dengan nominal yang tertera.
                             </p>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        <button type="submit" class="w-full bg-[#760031] text-white px-6 py-3 rounded-lg hover:bg-[#5a0024] transition font-semibold">
                             <i class="fas fa-upload mr-2"></i>Upload Bukti Transfer
                         </button>
                     </form>

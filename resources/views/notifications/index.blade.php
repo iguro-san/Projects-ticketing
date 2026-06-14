@@ -10,17 +10,17 @@
         </div>
         <div class="divide-y">
             @forelse($notifications as $notif)
-            <div class="p-4 {{ $notif->is_read ? '' : 'bg-purple-50' }}">
+            <div class="p-4 {{ $notif->is_read ? '' : 'bg-gray-100' }}">
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="font-semibold">{{ $notif->title }}</p>
-                        <p class="text-sm text-gray-600">{{ $notif->message }}</p>
-                        <p class="text-xs text-gray-400 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                        <p class="text-sm text-black mt-2">{{ $notif->message }}</p>
+                        <p class="text-xs text-[#760031] mt-5">{{ $notif->created_at->diffForHumans() }}</p>
                     </div>
                     @if(!$notif->is_read)
                     <form action="{{ route('notifications.mark-read', $notif) }}" method="POST">
                         @csrf
-                        <button type="submit" class="text-xs text-purple-600">Tandai dibaca</button>
+                        <button type="submit" class="text-xs text-[#760031] hover:text-[#760031]/80">Tandai dibaca</button>
                     </form>
                     @endif
                 </div>

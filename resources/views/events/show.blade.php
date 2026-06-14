@@ -11,22 +11,18 @@
              class="w-full max-h-96 object-cover rounded-lg shadow-md hover:opacity-90 transition">
     </div>
     @else
-<<<<<<< HEAD
-    <div class="mb-6 w-full h-64 bg-gradient-to-r from-[#141E46] to-[#760031] rounded-lg flex items-center justify-center">
-=======
     <div class="mb-6 w-full h-64 bg-gradient-to-r from-[#141E46] to-[#B6771D] rounded-lg flex items-center justify-center">
->>>>>>> 9666e08164e3298619e586825b3bbff6f6f440b2
         <i class="fas fa-calendar-alt text-5xl text-white opacity-50"></i>
     </div>
     @endif
 
     <div class="mb-4">
-        <span class="bg-[#B6771D]/10 text-[#B6771D] px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
+        <span class="bg-[#760031]/10 text-[#760031] px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
     </div>
     <h1 class="text-3xl font-bold text-[#141E46] mb-4">{{ $event->title }}</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-600">
-        <p><i class="fas fa-calendar-alt text-[#B6771D] w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
-        <p><i class="fas fa-map-marker-alt text-[#B6771D] w-6"></i> {{ $event->location }}</p>
+        <p><i class="fas fa-calendar-alt text-[#760031] w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
+        <p><i class="fas fa-map-marker-alt text-[#760031] w-6"></i> {{ $event->location }}</p>
     </div>
     <div class="mb-6">
         <h3 class="font-bold text-lg mb-2">Deskripsi Event</h3>
@@ -59,11 +55,7 @@
                     @if($ticket->price == 0)
                         <span class="text-green-600">GRATIS</span>
                     @else
-<<<<<<< HEAD
-                        <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
-=======
                         <span class="text-[#B6771D]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
->>>>>>> 9666e08164e3298619e586825b3bbff6f6f440b2
                     @endif
                 </p>
                 <p class="text-gray-500 text-sm mt-2">
@@ -75,20 +67,12 @@
                         <form action="{{ route('events.register', $event) }}" method="POST" class="mt-4">
                             @csrf
                             <input type="hidden" name="ticket_type_id" value="{{ $ticket->id }}">
-<<<<<<< HEAD
                             <button type="submit" class="w-full bg-[#760031] text-white py-2 rounded-lg hover:bg-[#5a0024] transition">
-=======
-                            <button type="submit" class="w-full bg-[#141E46] text-white py-2 rounded-lg hover:bg-[#141E46]/80 transition">
->>>>>>> 9666e08164e3298619e586825b3bbff6f6f440b2
                                 Daftar Sekarang
                             </button>
                         </form>
                     @else
-<<<<<<< HEAD
                         <a href="{{ route('login') }}" class="block w-full bg-[#760031] text-white text-center py-2 rounded-lg hover:bg-[#5a0024] transition mt-4">
-=======
-                        <a href="{{ route('login') }}" class="block w-full bg-[#141E46] text-white text-center py-2 rounded-lg hover:bg-[#141E46]/80 transition mt-4">
->>>>>>> 9666e08164e3298619e586825b3bbff6f6f440b2
                             Login untuk Daftar
                         </a>
                     @endauth
@@ -96,10 +80,6 @@
                     <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
                         Tiket Habis
                     </button>
-<<<<<<< HEAD
-                    <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
-=======
->>>>>>> 9666e08164e3298619e586825b3bbff6f6f440b2
                 @endif
             </div>
             @endforeach

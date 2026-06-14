@@ -55,7 +55,7 @@
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Poster Event</label>
             <input type="file" name="poster" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
-            <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG (Max 2MB)</p>
+            <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, WebP (Max 2MB)</p>
         </div>
         
         <!-- TIKET -->

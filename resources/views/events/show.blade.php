@@ -11,7 +11,7 @@
              class="w-full max-h-96 object-cover rounded-lg shadow-md hover:opacity-90 transition">
     </div>
     @else
-    <div class="mb-6 w-full h-64 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+    <div class="mb-6 w-full h-64 bg-gradient-to-r from-[#141E46] to-[#760031] rounded-lg flex items-center justify-center">
         <i class="fas fa-calendar-alt text-5xl text-white opacity-50"></i>
     </div>
     @endif
@@ -55,7 +55,7 @@
                     @if($ticket->price == 0)
                         <span class="text-green-600">GRATIS</span>
                     @else
-                        <span class="text-purple-600">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
+                        <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
                     @endif
                 </p>
                 <p class="text-gray-500 text-sm mt-2">
@@ -67,23 +67,20 @@
                         <form action="{{ route('events.register', $event) }}" method="POST" class="mt-4">
                             @csrf
                             <input type="hidden" name="ticket_type_id" value="{{ $ticket->id }}">
-                            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                            <button type="submit" class="w-full bg-[#760031] text-white py-2 rounded-lg hover:bg-[#5a0024] transition">
                                 Daftar Sekarang
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="block w-full bg-purple-600 text-white text-center py-2 rounded-lg hover:bg-purple-700 transition mt-4">
+                        <a href="{{ route('login') }}" class="block w-full bg-[#760031] text-white text-center py-2 rounded-lg hover:bg-[#5a0024] transition mt-4">
                             Login untuk Daftar
                         </a>
                     @endauth
                 @else
-<<<<<<< HEAD
                     <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
                         Tiket Habis
                     </button>
-=======
                     <span class="text-[#760031]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
->>>>>>> c6603cbe3ded401c6db0fb95458164972058d1a6
                 @endif
             </div>
             @endforeach

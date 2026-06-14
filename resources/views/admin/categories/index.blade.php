@@ -6,7 +6,7 @@
 <div class="bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Daftar Kategori</h1>
-        <button onclick="showModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+        <button onclick="showModal()" class="bg-[#B6771D] text-white px-4 py-2 rounded-lg hover:bg-[#B6771D]/80 transition">
             <i class="fas fa-plus"></i> Tambah Kategori
         </button>
     </div>
@@ -51,19 +51,18 @@
     </div>
 </div>
 
-<!-- Modal Tambah/Edit Kategori -->
 <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-96">
         <h2 id="modalTitle" class="text-xl font-bold mb-4">Tambah Kategori</h2>
         <form id="categoryForm" method="POST">
             @csrf
             <input type="text" name="name" placeholder="Nama Kategori" 
-                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" required>
+                   class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-[#760031]" required>
             <textarea name="description" placeholder="Deskripsi (opsional)" 
-                      class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-purple-600" rows="3"></textarea>
+                      class="w-full border rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-[#760031]" rows="3"></textarea>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="hideModal()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Simpan</button>
+                <button type="submit" class="px-4 py-2 bg-[#B6771D] text-white rounded-lg hover:bg-[#B6771D]/80 transition">Simpan</button>
             </div>
         </form>
     </div>
@@ -100,7 +99,6 @@ function hideModal() {
     document.getElementById('modal').classList.add('hidden');
 }
 
-// Notifikasi dari server (error/success)
 @if($errors->any())
     @foreach($errors->all() as $error)
         Swal.fire({

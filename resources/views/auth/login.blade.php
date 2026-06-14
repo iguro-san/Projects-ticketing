@@ -7,7 +7,7 @@
     <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <div class="text-center mb-8">
-                <div class="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="bg-[#B6771D] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-calendar-alt text-3xl text-white"></i>
                 </div>
                 <h2 class="text-3xl font-bold text-gray-800">Welcome Back!</h2>
@@ -22,7 +22,7 @@
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="email" name="email" value="{{ old('email') }}" 
-                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-purple-600 @error('email') border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#B6771D] @error('email') border-red-500 @enderror"
                                placeholder="Masukkan email Anda" required>
                     </div>
                     @error('email')

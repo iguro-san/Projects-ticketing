@@ -3,10 +3,10 @@
 @section('title', 'Persetujuan Event')
 
 @section('content')
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-white rounded-lg shadow p-4 md:p-6">
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">
                 <i class="fas fa-clipboard-check mr-2 text-[#760031]"></i>Persetujuan Event
             </h1>
             <p class="text-sm text-gray-500 mt-1">Setujui atau tolak event yang dibuat panitia</p>
@@ -17,7 +17,7 @@
         <form action="{{ route('admin.events.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
                 <label class="block text-xs text-gray-500 mb-1 font-medium">Status</label>
-                <select name="status" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
+                <select name="status" class="w-full border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                     <option value="">Semua Status</option>
                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>⏳ Draft (Butuh Persetujuan)</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>✅ Aktif</option>
@@ -27,7 +27,7 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1 font-medium">Waktu</label>
-                <select name="time_filter" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
+                <select name="time_filter" class="w-full border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                     <option value="">Semua Waktu</option>
                     <option value="upcoming" {{ request('time_filter') == 'upcoming' ? 'selected' : '' }}>Akan Datang</option>
                     <option value="past" {{ request('time_filter') == 'past' ? 'selected' : '' }}>Telah Lewat</option>
@@ -35,7 +35,7 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1 font-medium">Kategori</label>
-                <select name="category_id" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
+                <select name="category_id" class="w-full border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
@@ -44,7 +44,7 @@
             </div>
             <div>
                 <label class="block text-xs text-gray-500 mb-1 font-medium">Panitia</label>
-                <select name="panitia_id" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
+                <select name="panitia_id" class="w-full border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                     <option value="">Semua Panitia</option>
                     @foreach($panitia as $p)
                         <option value="{{ $p->id }}" {{ request('panitia_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -54,122 +54,120 @@
             <div class="sm:col-span-2 lg:col-span-4 flex gap-2 items-end">
                 <div class="flex-1">
                     <input type="text" name="search" placeholder="Cari judul/lokasi..." value="{{ request('search') }}"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
+                           class="w-full border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-[#760031] bg-white">
                 </div>
-                <button type="submit" class="bg-[#760031] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0025] transition"><i class="fas fa-search mr-1"></i>Cari</button>
-                <a href="{{ route('admin.events.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-400 transition"><i class="fas fa-redo mr-1"></i>Reset</a>
+                <button type="submit" class="bg-[#760031] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#5e0025] transition"><i class="fas fa-search mr-1"></i>Cari</button>
+                <a href="{{ route('admin.events.index') }}" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-400 transition"><i class="fas fa-redo mr-1"></i>Reset</a>
             </div>
         </form>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-200">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+        <div class="bg-yellow-50 rounded-lg p-2 text-center border border-yellow-200">
             <p class="text-xs text-yellow-500 font-medium">Butuh Persetujuan</p>
-            <p class="text-xl font-bold text-yellow-600">{{ $events->where('status', 'draft')->count() }}</p>
+            <p class="text-lg font-bold text-yellow-600">{{ $events->where('status', 'draft')->count() }}</p>
         </div>
-        <div class="bg-green-50 rounded-lg p-3 text-center border border-green-200">
+        <div class="bg-green-50 rounded-lg p-2 text-center border border-green-200">
             <p class="text-xs text-green-500 font-medium">Disetujui</p>
-            <p class="text-xl font-bold text-green-600">{{ $events->where('status', 'active')->count() }}</p>
+            <p class="text-lg font-bold text-green-600">{{ $events->where('status', 'active')->count() }}</p>
         </div>
-        <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+        <div class="bg-blue-50 rounded-lg p-2 text-center border border-blue-200">
             <p class="text-xs text-blue-500 font-medium">Selesai</p>
-            <p class="text-xl font-bold text-blue-600">{{ $events->where('status', 'completed')->count() }}</p>
+            <p class="text-lg font-bold text-blue-600">{{ $events->where('status', 'completed')->count() }}</p>
         </div>
-        <div class="bg-red-50 rounded-lg p-3 text-center border border-red-200">
+        <div class="bg-red-50 rounded-lg p-2 text-center border border-red-200">
             <p class="text-xs text-red-500 font-medium">Ditolak</p>
-            <p class="text-xl font-bold text-red-600">{{ $events->where('status', 'cancelled')->count() }}</p>
+            <p class="text-lg font-bold text-red-600">{{ $events->where('status', 'cancelled')->count() }}</p>
         </div>
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full min-w-[1000px]">
+        <table class="w-full min-w-[700px] text-sm">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">No</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Event</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Detail</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kategori</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Tanggal</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Panitia</th>
-                    <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Status</th>
-                    <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">No</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Event</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Detail</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Kategori</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Tanggal</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Panitia</th>
+                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @forelse($events as $event)
                 <tr class="hover:bg-gray-50 {{ $event->status === 'draft' ? 'bg-yellow-50' : '' }} {{ $event->suspension_status === 'pending' ? 'bg-orange-50' : '' }}">
-                    <td class="px-4 py-3 text-sm text-gray-500">{{ $loop->iteration + ($events->firstItem() - 1) }}</td>
-                    <td class="px-4 py-3">
-                        {{-- Hanya teks, tanpa gambar poster --}}
+                    <td class="px-3 py-2 text-xs text-gray-500">{{ $loop->iteration + ($events->firstItem() - 1) }}</td>
+                    <td class="px-3 py-2">
                         <div>
-                            <p class="font-semibold text-gray-800 text-sm">{{ $event->title }}</p>
-                            <p class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i>{{ Str::limit($event->location, 25) }}</p>
+                            <p class="font-semibold text-gray-800 text-xs">{{ $event->title }}</p>
+                            <p class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i>{{ Str::limit($event->location, 20) }}</p>
                         </div>
                     </td>
-                    {{-- Kolom Detail (menampilkan teks "Lihat Detail") --}}
-                    <td class="px-4 py-3">
+                    <td class="px-3 py-2">
                         <button onclick="openEventDetail({{ $event->id }}, '{{ addslashes($event->title) }}', '{{ addslashes($event->location) }}', `{{ addslashes($event->description) }}`, '{{ $event->poster ? Storage::url($event->poster) : '' }}')"
-                                class="text-sm text-[#760031] hover:text-[#760031]/80 transition flex items-center gap-1">
+                                class="text-xs text-[#760031] hover:text-[#760031]/80 transition flex items-center gap-1">
                             <i class="fas fa-info-circle"></i> Lihat Detail
                         </button>
                     </td>
-                    <td class="px-4 py-3 whitespace-normal break-words">
-                        <span class="inline-block px-2 py-1 bg-[#760031]/10 text-[#760031] rounded-full text-xs font-medium max-w-full">
+                    <td class="px-3 py-2 whitespace-normal break-words">
+                        <span class="inline-block px-2 py-0.5 bg-[#760031]/10 text-[#760031] rounded-full text-xs font-medium max-w-full">
                             {{ $event->category->name ?? '-' }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-sm whitespace-nowrap">
+                    <td class="px-3 py-2 text-xs whitespace-nowrap">
                         <span class="{{ $event->event_date < now() ? 'text-red-600' : 'text-green-600' }} font-medium">{{ $event->event_date->format('d/m/Y') }}</span>
                         <br><span class="text-xs {{ $event->event_date < now() ? 'text-red-400' : 'text-gray-400' }}">{{ $event->event_date < now() ? 'Lewat' : $event->event_date->diffForHumans() }}</span>
                     </td>
-                    <td class="px-4 py-3 text-sm whitespace-nowrap">{{ $event->panitia->name ?? '-' }}</td>
-                    <td class="px-4 py-3 text-center whitespace-nowrap">
+                    <td class="px-3 py-2 text-xs whitespace-nowrap">{{ $event->panitia->name ?? '-' }}</td>
+                    <td class="px-3 py-2 text-center whitespace-nowrap">
                         @if($event->status === 'draft')
-                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold"><i class="fas fa-clock mr-1"></i>Menunggu</span>
+                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold"><i class="fas fa-clock mr-1"></i>Menunggu</span>
                         @elseif($event->status === 'active')
                             @if($event->suspension_status === 'pending')
-                                <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold"><i class="fas fa-pause mr-1"></i>Pending</span>
+                                <span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold"><i class="fas fa-pause mr-1"></i>Pending</span>
                             @else
-                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Disetujui</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Disetujui</span>
                             @endif
                         @elseif($event->status === 'completed')
-                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold"><i class="fas fa-flag mr-1"></i>Selesai</span>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold"><i class="fas fa-flag mr-1"></i>Selesai</span>
                         @else
-                            <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold"><i class="fas fa-times-circle mr-1"></i>Ditolak</span>
+                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-semibold"><i class="fas fa-times-circle mr-1"></i>Ditolak</span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-center whitespace-nowrap">
+                    <td class="px-3 py-2 text-center whitespace-nowrap">
                         @if($event->status === 'draft')
                             <div class="flex gap-1 justify-center">
                                 <form action="{{ route('admin.events.approve', $event) }}" method="POST">
                                     @csrf
                                     <button type="submit" onclick="return confirm('Setujui event ini?')"
-                                            class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition font-semibold">
+                                            class="bg-green-500 text-white px-2 py-0.5 rounded text-xs hover:bg-green-600 transition font-semibold">
                                         <i class="fas fa-check mr-1"></i>Setujui
                                     </button>
                                 </form>
                                 <button onclick="showRejectModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition">
+                                        class="bg-red-500 text-white px-2 py-0.5 rounded text-xs hover:bg-red-600 transition">
                                     <i class="fas fa-times mr-1"></i>Tolak
                                 </button>
                             </div>
                         @elseif($event->status === 'active' && $event->suspension_status === 'normal')
                             <button onclick="showPendingModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
-                                    class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition">
+                                    class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs hover:bg-orange-600 transition">
                                 <i class="fas fa-pause mr-1"></i>Pending
                             </button>
                         @elseif($event->suspension_status === 'pending')
                             <div class="flex gap-1 justify-center">
                                 <form action="{{ route('admin.events.resolve', [$event, 'continue']) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                                    <button type="submit" class="bg-green-500 text-white px-2 py-0.5 rounded text-xs"
                                             onclick="return confirm('Lanjutkan event ini?')">
                                         <i class="fas fa-play mr-1"></i>Lanjutkan
                                     </button>
                                 </form>
                                 <form action="{{ route('admin.events.resolve', [$event, 'cancel']) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                                    <button type="submit" class="bg-red-500 text-white px-2 py-0.5 rounded text-xs"
                                             onclick="return confirm('Batalkan event ini? Semua peserta akan direfund.')">
                                         <i class="fas fa-times mr-1"></i>Batalkan
                                     </button>
@@ -178,10 +176,10 @@
                         @else
                             <span class="text-xs text-gray-400">-</span>
                         @endif
-                    </tr>
+                    </td>
                 </tr>
                 @empty
-                <tr><td colspan="8" class="px-4 py-12 text-center text-gray-500">Belum ada event</td></tr>
+                <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Belum ada event</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -191,15 +189,15 @@
 
 <!-- Modal Tolak Event -->
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96">
+    <div class="bg-white rounded-lg p-5 w-80">
         <h3 class="text-lg font-bold mb-2">Tolak Event</h3>
-        <p class="text-sm text-gray-600 mb-3">Alasan penolakan: <span id="rejectTitle" class="font-semibold"></span></p>
+        <p class="text-sm text-gray-600 mb-2">Alasan penolakan: <span id="rejectTitle" class="font-semibold"></span></p>
         <form id="rejectForm" method="POST">
             @csrf
-            <textarea name="reason" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan (opsional)"></textarea>
+            <textarea name="reason" rows="2" class="w-full border rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan (opsional)"></textarea>
             <div class="flex gap-2 mt-3 justify-end">
-                <button type="button" onclick="hideRejectModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm">Tolak</button>
+                <button type="button" onclick="hideRejectModal()" class="px-3 py-1 bg-gray-300 rounded-lg text-sm">Batal</button>
+                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Tolak</button>
             </div>
         </form>
     </div>
@@ -207,15 +205,15 @@
 
 <!-- Modal Pending Event -->
 <div id="pendingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96">
+    <div class="bg-white rounded-lg p-5 w-80">
         <h3 class="text-lg font-bold mb-2">Pending Event</h3>
-        <p class="text-sm text-gray-600 mb-3">Event: <span id="pendingTitle" class="font-semibold"></span></p>
+        <p class="text-sm text-gray-600 mb-2">Event: <span id="pendingTitle" class="font-semibold"></span></p>
         <form id="pendingForm" method="POST">
             @csrf
-            <textarea name="reason" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan penundaan event..." required></textarea>
+            <textarea name="reason" rows="2" class="w-full border rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan penundaan event..." required></textarea>
             <div class="flex gap-2 mt-3 justify-end">
-                <button type="button" onclick="hidePendingModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm">Pending</button>
+                <button type="button" onclick="hidePendingModal()" class="px-3 py-1 bg-gray-300 rounded-lg text-sm">Batal</button>
+                <button type="submit" class="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm">Pending</button>
             </div>
         </form>
     </div>
@@ -223,23 +221,23 @@
 
 <!-- Modal Detail Event (dengan poster) -->
 <div id="eventDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
+    <div class="bg-white rounded-lg p-5 w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-3">
             <h3 class="text-xl font-bold text-[#760031]">Detail Event</h3>
             <button onclick="closeEventDetailModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-2xl"></i>
+                <i class="fas fa-times text-xl"></i>
             </button>
         </div>
         <div id="eventDetailContent">
             <!-- Konten akan diisi oleh JavaScript -->
         </div>
-        <div class="mt-4 flex justify-end">
-            <button onclick="closeEventDetailModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition">Tutup</button>
+        <div class="mt-3 flex justify-end">
+            <button onclick="closeEventDetailModal()" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm">Tutup</button>
         </div>
     </div>
 </div>
 
-<!-- Modal Lightbox untuk poster (jika poster di modal diklik) -->
+<!-- Modal Lightbox untuk poster -->
 <div id="posterModal" class="hidden fixed inset-0 bg-black bg-opacity-90 items-center justify-center z-50" onclick="closePosterModal()">
     <div class="relative max-w-5xl max-h-screen p-4" onclick="event.stopPropagation()">
         <img id="posterModalImage" src="" alt="Poster Event" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl">
@@ -271,32 +269,32 @@
         let posterHtml = '';
         if (posterUrl) {
             posterHtml = `
-                <div class="mb-4">
-                    <h4 class="font-semibold text-gray-800 mb-2">Poster Event</h4>
-                    <img src="${posterUrl}" alt="${title}" class="max-w-full max-h-64 rounded-lg shadow cursor-pointer mx-auto" onclick="openPosterModal('${posterUrl}')">
+                <div class="mb-3">
+                    <h4 class="font-semibold text-gray-800 mb-1">Poster Event</h4>
+                    <img src="${posterUrl}" alt="${title}" class="max-w-full max-h-48 rounded-lg shadow cursor-pointer mx-auto" onclick="openPosterModal('${posterUrl}')">
                 </div>
             `;
         } else {
             posterHtml = `
-                <div class="mb-4 bg-gray-100 rounded-lg p-4 text-center">
-                    <i class="fas fa-image text-4xl text-gray-400"></i>
-                    <p class="text-gray-500 text-sm mt-1">Tidak ada poster</p>
+                <div class="mb-3 bg-gray-100 rounded-lg p-3 text-center">
+                    <i class="fas fa-image text-3xl text-gray-400"></i>
+                    <p class="text-gray-500 text-xs mt-1">Tidak ada poster</p>
                 </div>
             `;
         }
         contentDiv.innerHTML = `
-            <div class="mb-4">
+            <div class="mb-2">
                 <h4 class="font-semibold text-gray-800">Judul Event</h4>
-                <p class="text-gray-700">${escapeHtml(title)}</p>
+                <p class="text-gray-700 text-sm">${escapeHtml(title)}</p>
             </div>
-            <div class="mb-4">
+            <div class="mb-2">
                 <h4 class="font-semibold text-gray-800">Lokasi</h4>
-                <p class="text-gray-700">${escapeHtml(location)}</p>
+                <p class="text-gray-700 text-sm">${escapeHtml(location)}</p>
             </div>
             ${posterHtml}
-            <div class="mb-4">
+            <div class="mb-2">
                 <h4 class="font-semibold text-gray-800">Deskripsi</h4>
-                <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(description).replace(/\n/g, '<br>')}</div>
+                <div class="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(description).replace(/\n/g, '<br>')}</div>
             </div>
         `;
         document.getElementById('eventDetailModal').classList.remove('hidden');

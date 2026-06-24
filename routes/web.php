@@ -118,6 +118,16 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
 });
 
 // ==========================================
+// USER ROUTES (Regular User Only)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    // Account management (profil & ganti password) - Only for regular users
+    Route::get('/account', [\App\Http\Controllers\AccountController::class, 'index'])->name('account.show');
+    Route::post('/account', [\App\Http\Controllers\AccountController::class, 'update'])->name('account.update');
+    Route::post('/account/password', [\App\Http\Controllers\AccountController::class, 'updatePassword'])->name('account.password');
+});
+
+// ==========================================
 // NOTIFICATIONS ROUTES
 // ==========================================
 Route::middleware(['auth'])->group(function () {

@@ -2,10 +2,29 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 {{-- Logo --}}
-                <a class="flex items-center space-x-2">
-                    <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                    <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
-                </a>
+                @auth
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
+                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
+                        </a>
+                    @elseif(auth()->user()->isPanitia())
+                        <a href="{{ route('panitia.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
+                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
+                        </a>
+                    @else
+                        <a href="{{ route('home') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
+                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
+                        </a>
+                    @endif
+                @else
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
+                        <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
+                        <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
+                    </a>
+                @endauth
 
                 {{-- Desktop Menu --}}
                 <div class="hidden md:flex items-center space-x-6">
@@ -121,12 +140,18 @@
                                         {{ ucfirst(auth()->user()->role) }}
                                     </span>
                                 </div>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                                    </button>
-                                </form>
+                                {{-- Akun Saya - Only for regular users --}}
+                                @if(!auth()->user()->isAdmin() && !auth()->user()->isPanitia())
+                                   <a href="{{ route('account.show') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                       <i class="fas fa-user-cog mr-2"></i> Akun Saya
+                                   </a>
+                                @endif
+                                   <form action="{{ route('logout') }}" method="POST">
+                                       @csrf
+                                       <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+                                           <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                       </button>
+                                   </form>
                             </div>
                         </div>
                     @else
@@ -168,6 +193,10 @@
                     @else
                         <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Home</a>
                         <a href="{{ route('my.tickets') }}" class="block text-white hover:text-[#B6771D] transition">Tiket Saya</a>
+                    @endif
+                    {{-- Akun Saya - Only for regular users --}}
+                    @if(!auth()->user()->isAdmin() && !auth()->user()->isPanitia())
+                    <a href="{{ route('account.show') }}" class="block text-white hover:text-[#B6771D] transition">Akun Saya</a>
                     @endif
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

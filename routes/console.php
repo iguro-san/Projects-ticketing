@@ -6,3 +6,4 @@ use App\Console\Commands\CancelExpiredRegistrations;
 
 // Cek pendaftaran kadaluarsa setiap 5 menit
 Schedule::command(CancelExpiredRegistrations::class)->everyFiveMinutes();
+Schedule::command(UpdateEventStatus::class)->daily();

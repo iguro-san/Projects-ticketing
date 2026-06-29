@@ -48,37 +48,6 @@
         </div>
     </div>
 
-    {{-- Recent Registrations (HANYA 3 TERBARU) --}}
-    <div class="bg-white rounded-lg shadow mb-8">
-        <div class="p-6 border-b">
-            <h2 class="text-xl font-bold text-[#141E46]">
-                <i class="fas fa-clock mr-2 text-[#B6771D]"></i>3 Pendaftar Terbaru
-            </h2>
-        </div>
-        <div class="p-6">
-            @forelse($recentRegistrations as $reg)
-                <div class="flex items-center justify-between py-3 border-b last:border-0">
-                    <div>
-                        <p class="font-semibold text-gray-800">{{ $reg->user_name }}</p>
-                        <p class="text-sm text-gray-500">{{ $reg->event->title }}</p>
-                        <p class="text-xs text-gray-400">{{ $reg->created_at->diffForHumans() }}</p>
-                    </div>
-                    <span class="px-2 py-1 text-xs rounded-full
-                        @if($reg->payment_status == 'paid') bg-green-100 text-green-700
-                        @elseif($reg->payment_status == 'pending') bg-yellow-100 text-yellow-700
-                        @else bg-red-100 text-red-700 @endif">
-                        {{ ucfirst($reg->payment_status) }}
-                    </span>
-                </div>
-            @empty
-                <div class="text-center py-8">
-                    <i class="fas fa-inbox text-5xl text-gray-300 mb-3"></i>
-                    <p class="text-gray-500">Belum ada pendaftaran</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-
     {{-- My Events --}}
     <div class="bg-white rounded-lg shadow">
         <div class="p-6 border-b flex justify-between items-center">
@@ -129,4 +98,36 @@
         </div>
     </div>
 </div>
+
+    {{-- Recent Registrations (HANYA 3 TERBARU) --}}
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-bold text-[#141E46]">
+                <i class="fas fa-clock mr-2 text-[#B6771D]"></i>3 Pendaftar Terbaru
+            </h2>
+        </div>
+        <div class="p-6">
+            @forelse($recentRegistrations as $reg)
+                <div class="flex items-center justify-between py-3 border-b last:border-0">
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ $reg->user_name }}</p>
+                        <p class="text-sm text-gray-500">{{ $reg->event->title }}</p>
+                        <p class="text-xs text-gray-400">{{ $reg->created_at->diffForHumans() }}</p>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full
+                        @if($reg->payment_status == 'paid') bg-green-100 text-green-700
+                        @elseif($reg->payment_status == 'pending') bg-yellow-100 text-yellow-700
+                        @else bg-red-100 text-red-700 @endif">
+                        {{ ucfirst($reg->payment_status) }}
+                    </span>
+                </div>
+            @empty
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-5xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500">Belum ada pendaftaran</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
 @endsection

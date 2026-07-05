@@ -16,6 +16,7 @@
 <body class="bg-gray-100 flex flex-col h-full">
 
 <div x-data="{ sidebarOpen: false }" class="flex-1 flex flex-col lg:flex-row min-h-0">
+
     <!-- Mobile Navbar -->
     <div class="lg:hidden bg-[#141E46] shadow-md sticky top-0 z-50">
         <div class="flex items-center justify-between px-4 py-3">
@@ -60,6 +61,7 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto mt-2">
+
     <a href="{{ route('admin.dashboard') }}"
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
@@ -107,7 +109,9 @@
         <div class="border-t p-4">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="flex items-center w-full px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded transition">
+                <button type="submit" 
+                        onclick="return confirm('Apakah Anda yakin ingin keluar?')" 
+                        class="flex items-center w-full px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded transition">
                     <i class="fas fa-sign-out-alt w-5 mr-3"></i> Keluar
                 </button>
             </form>

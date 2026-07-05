@@ -43,18 +43,16 @@ class PanitiaController extends Controller
             ->with('success', 'Akun panitia berhasil ditambahkan.');
     }
 
-    public function destroy(User $user)
-    {
-        if ($user->role !== 'panitia') {
-            return back()->with('error', 'User bukan panitia.');
-        }
+public function destroy($id)
+{
+    $user = User::findOrFail($id);
 
-        if ($user->events()->count() > 0) {
-            return back()->with('error', 'Panitia tidak dapat dihapus karena masih memiliki event.');
-        }
-
+    try {
         $user->delete();
 
-        return back()->with('success', 'Akun panitia berhasil dihapus.');
+        return back()->with('success', 'Berhasil dihapus');
+    } catch (\Exception $e) {
+        dd($e->getMessage());
     }
+}
 }

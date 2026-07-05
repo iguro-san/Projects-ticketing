@@ -13,6 +13,7 @@
         </div>
     </div>
 
+    <!-- Filter -->
     <div class="mb-6 bg-gray-50 rounded-lg p-4">
         <form action="{{ route('admin.events.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
@@ -62,6 +63,7 @@
         </form>
     </div>
 
+    <!-- Statistik -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
         <div class="bg-yellow-50 rounded-lg p-2 text-center border border-yellow-200">
             <p class="text-xs text-yellow-500 font-medium">Butuh Persetujuan</p>
@@ -81,6 +83,7 @@
         </div>
     </div>
 
+    <!-- Tabel Event -->
     <div class="overflow-x-auto">
         <table class="w-full min-w-[700px] text-sm">
             <thead class="bg-gray-50">
@@ -106,7 +109,21 @@
                         </div>
                     </td>
                     <td class="px-3 py-2">
-                        <button onclick="openEventDetail({{ $event->id }}, '{{ addslashes($event->title) }}', '{{ addslashes($event->location) }}', `{{ addslashes($event->description) }}`, '{{ $event->poster ? Storage::url($event->poster) : '' }}')"
+                        <button onclick="openEventDetail(this)"
+                                data-id="{{ $event->id }}"
+                                data-title="{{ addslashes($event->title) }}"
+                                data-location="{{ addslashes($event->location) }}"
+                                data-description="{{ addslashes($event->description) }}"
+                                data-poster="{{ $event->poster ? Storage::url($event->poster) : '' }}"
+                                data-tickets='{{ json_encode($event->ticketTypes->map(function($ticket) {
+                                    return [
+                                        'name' => $ticket->name,
+                                        'price' => $ticket->price,
+                                        'quota' => $ticket->quota,
+                                        'registered' => $ticket->registered,
+                                        'remaining' => $ticket->remaining_quota
+                                    ];
+                                })) }}'
                                 class="text-xs text-[#760031] hover:text-[#760031]/80 transition flex items-center gap-1">
                             <i class="fas fa-info-circle"></i> Lihat Detail
                         </button>
@@ -219,9 +236,9 @@
     </div>
 </div>
 
-<!-- Modal Detail Event (dengan poster) -->
+<!-- Modal Detail Event (dengan poster & tiket) -->
 <div id="eventDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-5 w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
+    <div class="bg-white rounded-lg p-5 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-3">
             <h3 class="text-xl font-bold text-[#760031]">Detail Event</h3>
             <button onclick="closeEventDetailModal()" class="text-gray-500 hover:text-gray-700">
@@ -231,8 +248,8 @@
         <div id="eventDetailContent">
             <!-- Konten akan diisi oleh JavaScript -->
         </div>
-        <div class="mt-3 flex justify-end">
-            <button onclick="closeEventDetailModal()" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-lg text-sm">Tutup</button>
+        <div class="mt-4 flex justify-end">
+            <button onclick="closeEventDetailModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-400 transition">Tutup</button>
         </div>
     </div>
 </div>
@@ -248,6 +265,9 @@
 </div>
 
 <script>
+    
+    // REJECT MODAL
+    
     function showRejectModal(id, title) {
         document.getElementById('rejectForm').action = '/admin/events/' + id + '/reject';
         document.getElementById('rejectTitle').innerText = title;
@@ -256,6 +276,10 @@
     function hideRejectModal() {
         document.getElementById('rejectModal').classList.add('hidden');
     }
+
+    
+    // PENDING MODAL
+    
     function showPendingModal(id, title) {
         document.getElementById('pendingForm').action = '/admin/events/' + id + '/pending';
         document.getElementById('pendingTitle').innerText = title;
@@ -264,14 +288,33 @@
     function hidePendingModal() {
         document.getElementById('pendingModal').classList.add('hidden');
     }
-    function openEventDetail(id, title, location, description, posterUrl) {
+
+    
+    // DETAIL EVENT MODAL (dengan Tiket)
+    
+    function openEventDetail(button) {
+        // Ambil data dari atribut tombol
+        const title = button.dataset.title || 'Tanpa Judul';
+        const location = button.dataset.location || 'Tidak diketahui';
+        const description = button.dataset.description || 'Tidak ada deskripsi';
+        const poster = button.dataset.poster || '';
+        let tickets = [];
+
+        try {
+            tickets = JSON.parse(button.dataset.tickets || '[]');
+        } catch (e) {
+            tickets = [];
+        }
+
         const contentDiv = document.getElementById('eventDetailContent');
+
+        // Buat HTML poster
         let posterHtml = '';
-        if (posterUrl) {
+        if (poster) {
             posterHtml = `
                 <div class="mb-3">
                     <h4 class="font-semibold text-gray-800 mb-1">Poster Event</h4>
-                    <img src="${posterUrl}" alt="${title}" class="max-w-full max-h-48 rounded-lg shadow cursor-pointer mx-auto" onclick="openPosterModal('${posterUrl}')">
+                    <img src="${poster}" alt="${title}" class="max-w-full max-h-48 rounded-lg shadow cursor-pointer mx-auto" onclick="openPosterModal('${poster}')">
                 </div>
             `;
         } else {
@@ -282,6 +325,54 @@
                 </div>
             `;
         }
+
+        // Buat HTML tabel tiket
+        let ticketHtml = '';
+        if (tickets.length > 0) {
+            let rows = '';
+            tickets.forEach(function(ticket) {
+                const remaining = ticket.quota - ticket.registered;
+                const statusClass = remaining > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                rows += `
+                    <tr class="border-b">
+                        <td class="px-3 py-2 font-semibold">${escapeHtml(ticket.name)}</td>
+                        <td class="px-3 py-2">${ticket.price == 0 ? '<span class="text-green-600 font-bold">GRATIS</span>' : 'Rp ' + Number(ticket.price).toLocaleString('id-ID')}</td>
+                        <td class="px-3 py-2 text-center">${ticket.quota}</td>
+                        <td class="px-3 py-2 text-center">${ticket.registered}</td>
+                        <td class="px-3 py-2 text-center"><span class="px-2 py-1 rounded text-xs ${statusClass}">${remaining}</span></td>
+                    </tr>
+                `;
+            });
+            ticketHtml = `
+                <div class="mt-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Jenis Tiket</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Nama Tiket</th>
+                                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Harga</th>
+                                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Kuota</th>
+                                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Terdaftar</th>
+                                    <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Sisa</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        } else {
+            ticketHtml = `
+                <div class="mt-4 text-center text-gray-500 text-sm">
+                    <i class="fas fa-ticket-alt mr-1"></i> Belum ada tiket untuk event ini.
+                </div>
+            `;
+        }
+
+        // Gabungkan semua konten
         contentDiv.innerHTML = `
             <div class="mb-2">
                 <h4 class="font-semibold text-gray-800">Judul Event</h4>
@@ -296,12 +387,19 @@
                 <h4 class="font-semibold text-gray-800">Deskripsi</h4>
                 <div class="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(description).replace(/\n/g, '<br>')}</div>
             </div>
+            ${ticketHtml}
         `;
+
         document.getElementById('eventDetailModal').classList.remove('hidden');
     }
+
     function closeEventDetailModal() {
         document.getElementById('eventDetailModal').classList.add('hidden');
     }
+
+    
+    // POSTER LIGHTBOX
+    
     function openPosterModal(imageUrl) {
         const modal = document.getElementById('posterModal');
         const modalImg = document.getElementById('posterModalImage');
@@ -316,6 +414,10 @@
         modal.classList.remove('flex');
         document.body.style.overflow = 'auto';
     }
+
+    
+    // UTILITY: ESCAPE HTML
+    
     function escapeHtml(str) {
         if (!str) return '';
         return str
@@ -325,6 +427,10 @@
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
+
+    
+    // KEYBOARD SHORTCUT
+    
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closePosterModal();

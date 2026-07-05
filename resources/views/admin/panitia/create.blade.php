@@ -26,17 +26,18 @@
         </div>
 
         <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-2">Password <span class="text-red-500">*</span></label>
+            <label class="block text-gray-700 font-semibold mb-2">Kata Sandi <span class="text-red-500">*</span></label>
             <input type="password" name="password" 
-                   class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
-            <p class="text-xs text-gray-500 mt-1">Minimal 6 karakter</p>
+                class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" 
+                placeholder="Minimal 6 karakter" required>
             @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 
         <div class="mb-6">
-            <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password</label>
+            <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Kata Sandi <span class="text-red-500">*</span></label>
             <input type="password" name="password_confirmation" 
-                   class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
+                   class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" 
+                   placeholder="Konfirmasi kata sandi" required>
         </div>
 
         <div class="flex gap-3">

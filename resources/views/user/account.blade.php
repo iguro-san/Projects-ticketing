@@ -22,8 +22,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium">Telepon</label>
-                    <input type="text" value="{{ $user->phone }}" readonly class="mt-1 block w-full border rounded px-3 py-2 bg-gray-50 cursor-not-allowed">
+                    <label class="block text-sm font-medium">Nomor Telepon</label>
+                    <input type="text" value="{{ $user->phone ?? '-' }}" readonly 
+                        class="mt-1 block w-full border rounded px-3 py-2 bg-gray-50 cursor-not-allowed">
                 </div>
 
                 <div>
@@ -38,10 +39,10 @@
             <h2 class="text-lg font-medium mb-2">Password</h2>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium">Password</label>
+                    <label class="block text-sm font-medium">Kata Sandi</label>
                     <div class="mt-1 flex items-center justify-between border rounded px-3 py-2 bg-gray-50">
                         <span class="text-sm text-gray-700">••••••••</span>
-                        <button id="openChangePassword" type="button" class="ml-4 bg-red-600 text-white px-3 py-1 rounded">Ganti Password</button>
+                        <button id="openChangePassword" type="button" class="ml-4 bg-red-600 text-white px-3 py-1 rounded">Ganti Kata Sandi</button>
                     </div>
                 </div>
 
@@ -58,25 +59,28 @@
     {{-- Change Password Modal --}}
     <div id="changePasswordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white rounded-lg w-full max-w-lg p-6">
-            <h3 class="text-lg font-medium mb-4">Ganti Password</h3>
+            <h3 class="text-lg font-medium mb-4">Ganti Kata Sandi</h3>
             <form id="changePasswordForm" action="{{ route('account.password') }}" method="POST" class="space-y-4">
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium">Password Saat Ini</label>
-                    <input type="password" name="current_password" class="mt-1 block w-full border rounded px-3 py-2" required>
+                    <label class="block text-sm font-medium">Kata Sandi Saat Ini</label>
+                    <input type="password" name="current_password" class="mt-1 block w-full border rounded px-3 py-2" 
+                     placeholder="Masukkan kata sandi saat ini" required>
                     @error('current_password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-
                 <div>
-                    <label class="block text-sm font-medium">Password Baru</label>
-                    <input id="newPassword" type="password" name="password" class="mt-1 block w-full border rounded px-3 py-2" required>
+                    <label class="block text-sm font-medium">Kata Sandi Baru</label>
+                    <input id="newPassword" type="password" name="password" 
+                        class="mt-1 block w-full border rounded px-3 py-2" 
+                        placeholder="Minimal 6 karakter" required>
                     @error('password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium">Konfirmasi Password Baru</label>
-                    <input id="confirmPassword" type="password" name="password_confirmation" class="mt-1 block w-full border rounded px-3 py-2" required>
+                    <label class="block text-sm font-medium">Konfirmasi Kata Sandi Baru</label>
+                    <input id="confirmPassword" type="password" name="password_confirmation" class="mt-1 block w-full border rounded px-3 py-2" 
+                    placeholder="Konfirmasi kata sandi baru" required>
                     <p id="confirmError" class="text-red-600 text-sm mt-1 hidden">Konfirmasi tidak cocok.</p>
                 </div>
 

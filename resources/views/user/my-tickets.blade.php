@@ -41,8 +41,8 @@
                         <i class="fas fa-times-circle mr-1"></i> Pembayaran Ditolak
                     </span>
                 @else
-                    <span class="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
-                        {{ ucfirst($reg->payment_status) }}
+                    <span class="inline-block bg-red-200 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
+                        <i class="fas fa-ban mr-1"></i> Dibatalkan
                     </span>
                 @endif
             </div>
@@ -106,10 +106,6 @@
                         class="inline-block bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition font-semibold mt-2">
                     <i class="fas fa-undo-alt mr-1"></i> Minta Refund
                 </button>
-            @elseif($reg->payment_status == 'paid')
-                <span class="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm">
-                    <i class="fas fa-check-circle mr-1"></i> Lunas
-                </span>
             @endif
 
             <p class="text-xs text-gray-500 mt-2">

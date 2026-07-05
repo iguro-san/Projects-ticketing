@@ -89,14 +89,13 @@
                     
                     <div class="flex items-center justify-between">
                         <div>
-                            @php $minPrice = $event->ticketTypes->min('price'); @endphp
-                            @if($minPrice == 0 && $event->ticketTypes->max('price') == 0)
-                                <span class="text-green-600 font-bold text-lg">🎉 GRATIS</span>
-                            @elseif($minPrice == 0)
-                                <span class="text-green-600 font-bold">Mulai GRATIS</span>
-                            @else
-                                <span class="text-gray-800 font-bold">Mulai Rp {{ number_format($minPrice, 0, ',', '.') }}</span>
-                            @endif
+                        @if($event->is_free)
+                            <span class="text-green-600 font-bold text-lg">🎉 GRATIS</span>
+                        @elseif($event->min_price == 0)
+                            <span class="text-green-600 font-bold">Mulai GRATIS</span>
+                        @else
+                            <span class="text-gray-800 font-bold">Mulai Rp {{ number_format($event->min_price, 0, ',', '.') }}</span>
+                        @endif
                         </div>
                         <a href="{{ route('events.show', $event) }}" class="bg-[#760031] text-white px-4 py-2 rounded-lg hover:bg-[#5a0024] transition text-sm">
                             Lihat Detail

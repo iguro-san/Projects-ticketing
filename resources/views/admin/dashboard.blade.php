@@ -74,13 +74,7 @@
         </a>
     </div>
     <div class="space-y-3">
-        @php
-            $latestAnnouncements = \App\Models\Announcement::with('creator')
-                ->where('is_active', true)
-                ->latest('published_at')
-                ->take(5)
-                ->get();
-        @endphp
+        {{ $latestAnnouncements }}
         @forelse($latestAnnouncements as $ann)
         <div class="border-l-4 border-[#760031] pl-4 py-2 hover:bg-gray-50 transition">
             <p class="font-semibold text-gray-800">{{ $ann->title }}</p>

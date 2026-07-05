@@ -40,6 +40,13 @@ class PaymentConfirmationController extends Controller
             
             $message = 'Pembayaran berhasil dikonfirmasi.';
         } else {
+            // ==========================================
+            // KEMBALIKAN KUOTA TIKET SAAT DITOLAK
+            // ==========================================
+            if ($registration->ticketType) {
+                $registration->ticketType->decrement('registered');
+            }
+
             $registration->markAsFailed($request->notes);
             
             if ($registration->user) {
@@ -51,7 +58,7 @@ class PaymentConfirmationController extends Controller
                 );
             }
             
-            $message = 'Pembayaran ditolak.';
+            $message = 'Pembayaran ditolak dan kuota tiket dikembalikan.';
         }
 
         return redirect()->route('admin.payments.index')->with('success', $message);

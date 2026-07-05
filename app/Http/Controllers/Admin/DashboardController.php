@@ -13,6 +13,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
+
+    // Di DashboardController
+        $latestAnnouncements = Announcement::with('creator')
+            ->where('is_active', true)
+            ->latest('published_at')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'stats',
+            'recentRegistrations',
+            'upcomingEvents',
+            'latestAnnouncements'));
+            
         // Statistics
         $stats = [
             'total_users' => User::where('role', 'user')->count(),

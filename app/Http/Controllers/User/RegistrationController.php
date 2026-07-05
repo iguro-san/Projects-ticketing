@@ -22,6 +22,7 @@ class RegistrationController extends Controller
 
         $ticketType = TicketType::findOrFail($validated['ticket_type_id']);
 
+        // Validasi tiket
         if ($ticketType->event_id !== $event->id) {
             return back()->with('error', 'Tiket tidak valid untuk event ini.');
         }
@@ -30,20 +31,46 @@ class RegistrationController extends Controller
             return back()->with('error', 'Maaf, tiket sudah habis!');
         }
 
-        $existingRegistration = Registration::where('event_id', $event->id)
+        // ==========================================
+        // 1. HAPUS REGISTRASI PENDING YANG KADALUARSA
+        // ==========================================
+        Registration::where('event_id', $event->id)
             ->where('user_email', $user->email)
             ->where('payment_status', 'pending')
+            ->where('payment_deadline', '<', now())
+            ->each(fn($reg) => $reg->cancel('Batas waktu pembayaran habis'));
+
+        // ==========================================
+        // 2. CEK APAKAH SUDAH TERDAFTAR (PENDING ATAU PAID)
+        // ==========================================
+        $existing = Registration::where('event_id', $event->id)
+            ->where('user_email', $user->email)
+            ->whereIn('payment_status', ['pending', 'paid'])
             ->first();
 
-        if ($existingRegistration) {
-            if ($existingRegistration->isDeadlinePassed()) {
-                $existingRegistration->cancel('Dibatalkan karena membuat pendaftaran baru');
-            } else {
-                return redirect()->route('payment.show', $existingRegistration)
-                    ->with('warning', 'Anda sudah mendaftar!');
+        if ($existing) {
+            if ($existing->payment_status == 'pending' && !$existing->isDeadlinePassed()) {
+                return redirect()->route('payment.show', $existing)
+                    ->with('warning', 'Anda sudah mendaftar! Silakan selesaikan pembayaran.');
             }
+            return back()->with('error', 'Anda sudah terdaftar di event ini dan tidak dapat mendaftar ulang.');
         }
 
+        // ==========================================
+        // 3. CEK JUMLAH PENOLAKAN (FAILED) - MAKS 2 KALI
+        // ==========================================
+        $failedCount = Registration::where('event_id', $event->id)
+            ->where('user_email', $user->email)
+            ->where('payment_status', 'failed')
+            ->count();
+
+        if ($failedCount >= 2) {
+            return back()->with('error', 'Anda sudah 2 kali gagal bayar untuk event ini dan tidak diperbolehkan mendaftar lagi.');
+        }
+
+        // ==========================================
+        // 4. BUAT REGISTRASI BARU
+        // ==========================================
         DB::beginTransaction();
         try {
             $paymentStatus = $ticketType->price == 0 ? 'paid' : 'pending';

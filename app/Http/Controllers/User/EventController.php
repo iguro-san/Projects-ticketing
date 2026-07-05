@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Category;
+use App\Models\Registration;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -41,7 +42,37 @@ class EventController extends Controller
         }
         
         $ticketTypes = $event->ticketTypes()->get();
-        
-        return view('events.show', compact('event', 'ticketTypes'));
+
+        // ==========================================
+        // LOGIKA REGISTRASI USER UNTUK EVENT INI
+        // ==========================================
+        $pendingReg = null;
+        $paidReg = null;
+        $failedCount = 0;
+        $remainingAttempts = 0;
+        $canRegister = false;
+
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userRegistrations = Registration::where('event_id', $event->id)
+                ->where('user_email', $user->email)
+                ->get();
+
+            $pendingReg = $userRegistrations->where('payment_status', 'pending')->first();
+            $paidReg    = $userRegistrations->where('payment_status', 'paid')->first();
+            $failedCount = $userRegistrations->where('payment_status', 'failed')->count();
+            $remainingAttempts = max(0, 2 - $failedCount);
+            $canRegister = $event->canRegister() && !$pendingReg && !$paidReg && $remainingAttempts > 0;
+        }
+
+        return view('events.show', compact(
+            'event',
+            'ticketTypes',
+            'pendingReg',
+            'paidReg',
+            'failedCount',
+            'remainingAttempts',
+            'canRegister'
+        ));
     }
 }

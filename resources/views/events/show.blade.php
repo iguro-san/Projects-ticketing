@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="bg-white rounded-lg shadow p-8 mb-8">
-    {{-- POSTER EVENT (bisa diklik) --}}
+    {{-- POSTER --}}
     @if($event->poster)
     <div class="mb-6 cursor-pointer" onclick="openModal('{{ Storage::url($event->poster) }}')">
         <img src="{{ Storage::url($event->poster) }}" alt="{{ $event->title }}" 
@@ -21,7 +21,7 @@
     </div>
     <h1 class="text-3xl font-bold text-[#141E46] mb-4">{{ $event->title }}</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-600">
-        <p><i class="fas fa-calendar-alt text-[#760031] w-6"></i> {{ $event->event_date->format('l, d F Y') }}</p>
+        <p><i class="fas fa-calendar-alt text-[#760031] w-6"></i> {{ $event->event_date->translatedFormat('l, d F Y') }}</p>
         <p><i class="fas fa-map-marker-alt text-[#760031] w-6"></i> {{ $event->location }}</p>
     </div>
     <div class="mb-6">
@@ -43,52 +43,134 @@
 </div>
 @endif
 
+@auth
+    @if($pendingReg)
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-r-lg">
+            <i class="fas fa-clock mr-2"></i>
+            Anda sudah mendaftar event ini dan <strong>menunggu pembayaran</strong>. 
+            <a href="{{ route('payment.show', $pendingReg) }}" class="font-bold underline">Selesaikan pembayaran</a> sebelum batas waktu.
+            @if($pendingReg->payment_deadline)
+                <span class="block text-xs mt-1">Batas waktu: {{ $pendingReg->payment_deadline->translatedFormat('d F Y H:i') }} WIB</span>
+            @endif
+        </div>
+    @elseif($paidReg)
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg">
+            <i class="fas fa-check-circle mr-2"></i>
+            Anda sudah terdaftar dan <strong>lunas</strong> untuk event ini. Tidak dapat mendaftar ulang.
+        </div>
+    @elseif($failedCount > 0)
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            @if($remainingAttempts > 0)
+                Anda telah gagal bayar sebanyak <strong>{{ $failedCount }}</strong> kali.  
+                <strong>Sisa kesempatan mendaftar: {{ $remainingAttempts }}</strong> kali lagi.  
+                Pilih jenis tiket dengan baik karena hanya bisa mendaftar sekali untuk event ini.
+            @else
+                Anda sudah 2 kali gagal bayar untuk event ini. <strong>Tidak diperbolehkan mendaftar lagi.</strong>
+            @endif
+        </div>
+    @else
+        {{-- TIDAK ADA REGISTRASI SAMA SEKALI --}}
+        {{-- TAMPILKAN PEMBERITAHUAN UMUM --}}
+        <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded-r-lg">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Perhatian!</strong> Anda hanya dapat mendaftar <strong>satu kali</strong> untuk event ini.  
+            Pilih jenis tiket dengan bijak karena pendaftaran tidak dapat diubah setelah berhasil.
+        </div>
+    @endif
+@endauth
+
 <h2 class="text-2xl font-bold text-[#141E46] mb-4">Pilih Tiket</h2>
 
 @if($event->canRegister())
-    @if(isset($ticketTypes) && count($ticketTypes) > 0)
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach($ticketTypes as $ticket)
-            <div class="bg-white rounded-lg shadow p-6 border-t-4 border-[#B6771D]">
-                <h3 class="text-xl font-bold text-gray-800">{{ $ticket->name }}</h3>
-                <p class="text-3xl font-bold mt-2">
-                    @if($ticket->price == 0)
-                        <span class="text-green-600">GRATIS</span>
-                    @else
-                        <span class="text-[#B6771D]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
-                    @endif
-                </p>
-                <p class="text-gray-500 text-sm mt-2">
-                    Sisa kuota: {{ $ticket->quota - $ticket->registered }}
-                </p>
-                
-                @if(($ticket->quota - $ticket->registered) > 0)
-                    @auth
-                        <form action="{{ route('events.register', $event) }}" method="POST" class="mt-4">
-                            @csrf
-                            <input type="hidden" name="ticket_type_id" value="{{ $ticket->id }}">
-                            <button type="submit" class="w-full bg-[#760031] text-white py-2 rounded-lg hover:bg-[#5a0024] transition">
-                                Daftar Sekarang
+    @auth
+        @if(!$canRegister)
+            <div class="bg-gray-100 rounded-lg p-8 text-center mb-4">
+                <i class="fas fa-lock text-3xl text-gray-400 mb-2"></i>
+                <p class="text-gray-600">Anda tidak dapat mendaftar untuk event ini saat ini.</p>
+                @if($pendingReg)
+                    <p class="text-sm text-gray-500">Silakan selesaikan pembayaran Anda terlebih dahulu.</p>
+                @elseif($paidReg)
+                    <p class="text-sm text-gray-500">Anda sudah terdaftar dan lunas.</p>
+                @elseif($failedCount >= 2)
+                    <p class="text-sm text-gray-500">Batas maksimal 2 kali percobaan telah tercapai.</p>
+                @endif
+            </div>
+        @else
+            @if($ticketTypes->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($ticketTypes as $ticket)
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-[#B6771D]">
+                        <h3 class="text-xl font-bold text-gray-800">{{ $ticket->name }}</h3>
+                        <p class="text-3xl font-bold mt-2">
+                            @if($ticket->price == 0)
+                                <span class="text-green-600">GRATIS</span>
+                            @else
+                                <span class="text-[#B6771D]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
+                            @endif
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">
+                            Sisa kuota: {{ $ticket->quota - $ticket->registered }}
+                        </p>
+                        
+                        @if(($ticket->quota - $ticket->registered) > 0)
+                            <form action="{{ route('events.register', $event) }}" method="POST" class="mt-4" onsubmit="return confirm('Anda hanya bisa mendaftar SEKALI untuk event ini. Lanjutkan?')">
+                                @csrf
+                                <input type="hidden" name="ticket_type_id" value="{{ $ticket->id }}">
+                                <button type="submit" class="w-full bg-[#760031] text-white py-2 rounded-lg hover:bg-[#5a0024] transition">
+                                    Daftar Sekarang
+                                </button>
+                            </form>
+                        @else
+                            <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
+                                Tiket Habis
                             </button>
-                        </form>
-                    @else
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-white rounded-lg shadow p-6 text-center">
+                    <p class="text-gray-500">Belum ada tiket tersedia untuk event ini.</p>
+                </div>
+            @endif
+        @endif
+    @else
+        {{-- User belum login --}}
+        @if($ticketTypes->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach($ticketTypes as $ticket)
+                <div class="bg-white rounded-lg shadow p-6 border-t-4 border-[#B6771D]">
+                    <h3 class="text-xl font-bold text-gray-800">{{ $ticket->name }}</h3>
+                    <p class="text-3xl font-bold mt-2">
+                        @if($ticket->price == 0)
+                            <span class="text-green-600">GRATIS</span>
+                        @else
+                            <span class="text-[#B6771D]">Rp {{ number_format($ticket->price, 0, ',', '.') }}</span>
+                        @endif
+                    </p>
+                    <p class="text-gray-500 text-sm mt-2">
+                        Sisa kuota: {{ $ticket->quota - $ticket->registered }}
+                    </p>
+                    
+                    @if(($ticket->quota - $ticket->registered) > 0)
                         <a href="{{ route('login') }}" class="block w-full bg-[#760031] text-white text-center py-2 rounded-lg hover:bg-[#5a0024] transition mt-4">
                             Login untuk Daftar
                         </a>
-                    @endauth
-                @else
-                    <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
-                        Tiket Habis
-                    </button>
-                @endif
+                    @else
+                        <button class="w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed mt-4" disabled>
+                            Tiket Habis
+                        </button>
+                    @endif
+                </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
-    @else
-        <div class="bg-white rounded-lg shadow p-6 text-center">
-            <p class="text-gray-500">Belum ada tiket tersedia untuk event ini.</p>
-        </div>
-    @endif
+        @else
+            <div class="bg-white rounded-lg shadow p-6 text-center">
+                <p class="text-gray-500">Belum ada tiket tersedia untuk event ini.</p>
+            </div>
+        @endif
+    @endauth
 @else
     <div class="bg-gray-100 rounded-lg p-8 text-center">
         <i class="fas fa-clock text-4xl text-gray-400 mb-3"></i>

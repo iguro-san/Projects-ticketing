@@ -89,4 +89,15 @@ class Event extends Model
             'suspension_status' => self::SUSPENSION_CANCELLED
         ]);
     }
+
+    
+    public function getMinPriceAttribute()
+    {
+        return $this->ticketTypes->min('price');
+    }
+
+    public function getIsFreeAttribute()
+    {
+        return $this->ticketTypes->max('price') == 0;
+    }
 }

@@ -37,7 +37,7 @@
                         @elseif($event->status == 'completed') bg-blue-100 text-blue-700
                         @else bg-red-100 text-red-700 @endif">
                         @if($event->status == 'active') Aktif
-                        @elseif($event->status == 'draft') Draft
+                        @elseif($event->status == 'draft') Draf
                         @elseif($event->status == 'completed') Selesai
                         @else Dibatalkan
                         @endif

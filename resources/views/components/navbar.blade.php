@@ -3,12 +3,7 @@
             <div class="flex justify-between items-center py-4">
                 {{-- Logo --}}
                 @auth
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
-                        </a>
-                    @elseif(auth()->user()->isPanitia())
+                    @if(auth()->user()->isPanitia())
                         <a href="{{ route('panitia.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
                             <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
                             <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
@@ -29,44 +24,22 @@
                 {{-- Desktop Menu --}}
                 <div class="hidden md:flex items-center space-x-6">
                     @auth
-                        {{-- ADMIN MENU --}}
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
-                            </a>
-                            <a href="{{ route('admin.events.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-calendar-alt mr-1"></i> Events
-                            </a>
-                            <a href="{{ route('admin.categories.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-tags mr-1"></i> Kategori
-                            </a>
-                            <a href="{{ route('admin.panitia.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-users mr-1"></i> Panitia
-                            </a>
-                            <a href="{{ route('admin.payments.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-credit-card mr-1"></i> Pembayaran
-                            </a>
-                            <a href="{{ route('admin.refunds.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-undo-alt mr-1"></i> Refund
-                            </a>
-                            <a href="{{ route('admin.announcements.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-bullhorn mr-1"></i> Pengumuman
-                            </a>
                         {{-- PANITIA MENU --}}
-                        @elseif(auth()->user()->isPanitia())
+                        @if(auth()->user()->isPanitia())
+                        
                             <a href="{{ route('panitia.dashboard') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                                <i class="fas fa-tachometer-alt mr-1"></i> Dasbor
                             </a>
                             <a href="{{ route('panitia.events.index') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-calendar-alt mr-1"></i> Event Saya
+                                <i class="fas fa-calendar-alt mr-1"></i> Event
                             </a>
                         {{-- USER MENU --}}
                         @else
                             <a href="{{ route('home') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-home mr-1"></i> Home
+                                <i class="fas fa-home mr-1"></i> Beranda
                             </a>
                             <a href="{{ route('my.tickets') }}" class="text-white hover:text-[#B6771D] transition">
-                                <i class="fas fa-ticket-alt mr-1"></i> Tiket Saya
+                                <i class="fas fa-ticket-alt mr-1"></i> Tiket
                             </a>
                         @endif
 
@@ -149,7 +122,7 @@
                                    <form action="{{ route('logout') }}" method="POST">
                                        @csrf
                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                                           <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                           <i class="fas fa-sign-out-alt mr-2"></i> Keluar
                                        </button>
                                    </form>
                             </div>
@@ -157,13 +130,13 @@
                     @else
                         {{-- TAMU --}}
                         <a href="{{ route('home') }}" class="text-white hover:text-[#B6771D] transition">
-                            <i class="fas fa-home mr-1"></i> Home
+                            <i class="fas fa-home mr-1"></i> Beranda
                         </a>
                         <a href="{{ route('login') }}" class="text-white hover:text-[#B6771D] transition">
-                            <i class="fas fa-sign-in-alt mr-1"></i> Login
+                            <i class="fas fa-sign-in-alt mr-1"></i> Masuk
                         </a>
                         <a href="{{ route('register') }}" class="bg-[#760031] text-white px-4 py-2 rounded-lg hover:bg-[#760031]/80 transition">
-                            <i class="fas fa-user-plus mr-1"></i> Register
+                            <i class="fas fa-user-plus mr-1"></i> Daftar
                         </a>
                     @endauth
                 </div>
@@ -179,20 +152,12 @@
         <div id="mobileMenu" class="hidden md:hidden border-t border-[#B6771D]/30">
             <div class="container mx-auto px-4 py-4 space-y-3">
                 @auth
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="block text-white hover:text-[#B6771D] transition">Dashboard</a>
-                        <a href="{{ route('admin.events.index') }}" class="block text-white hover:text-[#B6771D] transition">Events</a>
-                        <a href="{{ route('admin.categories.index') }}" class="block text-white hover:text-[#B6771D] transition">Kategori</a>
-                        <a href="{{ route('admin.panitia.index') }}" class="block text-white hover:text-[#B6771D] transition">Panitia</a>
-                        <a href="{{ route('admin.payments.index') }}" class="block text-white hover:text-[#B6771D] transition">Pembayaran</a>
-                        <a href="{{ route('admin.refunds.index') }}" class="block text-white hover:text-[#B6771D] transition">Refund</a>
-                        <a href="{{ route('admin.announcements.index') }}" class="block text-white hover:text-[#B6771D] transition">Pengumuman</a>
-                    @elseif(auth()->user()->isPanitia())
-                        <a href="{{ route('panitia.dashboard') }}" class="block text-white hover:text-[#B6771D] transition">Dashboard</a>
-                        <a href="{{ route('panitia.events.index') }}" class="block text-white hover:text-[#B6771D] transition">Event Saya</a>
+                    @if(auth()->user()->isPanitia())
+                        <a href="{{ route('panitia.dashboard') }}" class="block text-white hover:text-[#B6771D] transition">Dasbor</a>
+                        <a href="{{ route('panitia.events.index') }}" class="block text-white hover:text-[#B6771D] transition">Event</a>
                     @else
-                        <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Home</a>
-                        <a href="{{ route('my.tickets') }}" class="block text-white hover:text-[#B6771D] transition">Tiket Saya</a>
+                        <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Beranda</a>
+                        <a href="{{ route('my.tickets') }}" class="block text-white hover:text-[#B6771D] transition">Tiket</a>
                     @endif
                     {{-- Akun Saya - Only for regular users --}}
                     @if(!auth()->user()->isAdmin() && !auth()->user()->isPanitia())
@@ -201,13 +166,13 @@
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="block text-red-400 hover:text-red-300 transition w-full text-left">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            <i class="fas fa-sign-out-alt mr-2"></i> Keluar
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Home</a>
-                    <a href="{{ route('login') }}" class="block text-white hover:text-[#B6771D] transition">Login</a>
-                    <a href="{{ route('register') }}" class="block text-white hover:text-[#B6771D]/80 transition">Register</a>
+                    <a href="{{ route('home') }}" class="block text-white hover:text-[#B6771D] transition">Beranda</a>
+                    <a href="{{ route('login') }}" class="block text-white hover:text-[#B6771D] transition">Masuk</a>
+                    <a href="{{ route('register') }}" class="block text-white hover:text-[#B6771D]/80 transition">Daftar</a>
                 @endauth
             </div>
         </div>

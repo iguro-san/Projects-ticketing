@@ -66,7 +66,7 @@
                                 <h3 class="font-semibold text-gray-800">{{ $event->title }}</h3>
                                 <p class="text-sm text-gray-500">
                                     <i class="fas fa-calendar-alt mr-1"></i>
-                                    {{ $event->event_date->format('d F Y') }}
+                                    {{ $event->event_date->translatedFormat('d F Y') }}
                                 </p>
                                 <p class="text-sm text-gray-500">
                                     <i class="fas fa-users mr-1"></i>

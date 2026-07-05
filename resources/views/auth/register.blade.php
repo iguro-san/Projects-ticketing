@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Phone (Opsional)</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Nomor Telepon (Opsional)</label>
                     <div class="relative">
                         <i class="fas fa-phone absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="text" name="phone" value="{{ old('phone') }}" 
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Kata Sandi</label>
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="password" name="password" 
@@ -70,12 +70,12 @@
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Kata Sandi</label>
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="password" name="password_confirmation" 
                                class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031]"
-                               placeholder="Ulangi password" required>
+                               placeholder="Ulangi kata sandi" required>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@
                 <p class="text-gray-600">
                     Sudah punya akun? 
                     <a href="{{ route('login') }}" class="text-[#760031] font-semibold hover:text-[#760031]/80">
-                        Login sekarang
+                        Masuk sekarang
                     </a>
                 </p>
             </div>

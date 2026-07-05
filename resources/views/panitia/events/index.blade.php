@@ -28,16 +28,20 @@
                 <tr>
                     <td class="px-4 py-3 font-semibold">{{ $event->title }}</td>
                     <td class="px-4 py-3">{{ $event->category->name ?? '-' }}</td>
-                    <td class="px-4 py-3">{{ $event->event_date->format('d/m/Y') }}</td>
+                    <td class="px-4 py-3">{{ $event->event_date->translatedFormat('d/m/Y') }}</td>
                     <td class="px-4 py-3">{{ $event->registrations_count }}</td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-1 rounded text-xs
-                            @if($event->status == 'active') bg-green-100 text-green-700
-                            @elseif($event->status == 'draft') bg-gray-100 text-gray-700
-                            @elseif($event->status == 'completed') bg-blue-100 text-blue-700
-                            @else bg-red-100 text-red-700 @endif">
-                            {{ ucfirst($event->status) }}
-                        </span>
+                    <span class="px-2 py-1 rounded text-xs
+                        @if($event->status == 'active') bg-green-100 text-green-700
+                        @elseif($event->status == 'draft') bg-gray-100 text-gray-700
+                        @elseif($event->status == 'completed') bg-blue-100 text-blue-700
+                        @else bg-red-100 text-red-700 @endif">
+                        @if($event->status == 'active') Aktif
+                        @elseif($event->status == 'draft') Draft
+                        @elseif($event->status == 'completed') Selesai
+                        @else Dibatalkan
+                        @endif
+                    </span>
                     </td>
                     <td class="px-4 py-3 text-center">
                         <div class="flex justify-center gap-2">

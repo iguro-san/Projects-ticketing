@@ -10,8 +10,8 @@
                 <div class="bg-[#760031] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-calendar-alt text-3xl text-white"></i>
                 </div>
-                <h2 class="text-3xl font-bold text-[#141E46]">Welcome Back!</h2>
-                <p class="text-gray-600 mt-2">Silakan login ke akun Anda</p>
+                <h2 class="text-3xl font-bold text-[#141E46]">Selamat Datang!</h2>
+                <p class="text-gray-600 mt-2">Silakan Masuk Ke Akun Anda</p>
             </div>
 
             <form action="{{ route('login') }}" method="POST">
@@ -31,25 +31,25 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                    <label class="block text-gray-700 font-semibold mb-2">Kata Sandi</label>
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="password" name="password" 
                                class="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-[#760031] @error('password') border-red-500 @enderror"
-                               placeholder="Masukkan password Anda" required>
+                               placeholder="Masukkan Kata Sandi Anda" required>
                     </div>
                     @error('password')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                     <div class="text-right mt-1">
                         <a href="{{ route('password.request') }}" class="text-xs text-[#760031] hover:text-[#760031]/80 transition">
-                            Lupa Password?
+                            Lupa Kata Sandi?
                         </a>
                     </div>
                 </div>
 
                 <button type="submit" class="w-full bg-[#760031] text-white py-3 rounded-lg font-semibold hover:bg-[#760031]/80 transition duration-300">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk
                 </button>
             </form>
 

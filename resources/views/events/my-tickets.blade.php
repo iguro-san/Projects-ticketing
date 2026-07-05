@@ -12,7 +12,7 @@
     <div class="flex flex-col md:flex-row justify-between items-start">
         <div class="flex-1">
             <h3 class="text-xl font-bold text-gray-800">{{ $reg->event->title }}</h3>
-            <p class="text-gray-600">{{ $reg->event->event_date->format('d F Y') }}</p>
+            <p class="text-gray-600">{{ $reg->event->event_date->translatedFormat('d F Y') }}</p>
             <p class="text-gray-600">{{ $reg->event->location }}</p>
             <div class="mt-3 space-x-2">
                 <span class="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">

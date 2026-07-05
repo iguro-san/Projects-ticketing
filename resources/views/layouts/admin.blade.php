@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel - EventKu')</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .sidebar-transition { transition: transform 0.1s ease-in-out; }
         html, body { height: 100%; }
@@ -64,13 +64,13 @@
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.dashboard') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-tachometer-alt w-5 mr-3"></i> Dashboard
+        <i class="fas fa-tachometer-alt w-5 mr-3"></i> Dasbor
     </a>
     <a href="{{ route('admin.events.index') }}"
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.events.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-calendar-alt w-5 mr-3"></i> Events
+        <i class="fas fa-calendar-alt w-5 mr-3"></i> Event
     </a>
     <a href="{{ route('admin.categories.index') }}"
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
@@ -88,7 +88,7 @@
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.payments.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-credit-card w-5 mr-3"></i> Pembayaran
+        <i class="fas fa-credit-card w-5 mr-3"></i> Verifikasi Pembayaran
     </a>
     <a href="{{ route('admin.refunds.index') }}"
        class="flex items-center px-4 py-3 text-white transition-all duration-200 
@@ -108,7 +108,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="flex items-center w-full px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded transition">
-                    <i class="fas fa-sign-out-alt w-5 mr-3"></i> Logout
+                    <i class="fas fa-sign-out-alt w-5 mr-3"></i> Keluar
                 </button>
             </form>
         </div>

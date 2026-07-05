@@ -65,7 +65,7 @@
                         </div>
                         <div class="text-center">
                             <p class="text-3xl font-bold text-yellow-700" id="countdown"></p>
-                            <p class="text-xs text-yellow-600 mt-1">Deadline: {{ $registration->payment_deadline->format('d M Y, H:i') }} WIB</p>
+                            <p class="text-xs text-yellow-600 mt-1">Deadline: {{ $registration->payment_deadline->translatedFormat('d M Y, H:i') }} WIB</p>
                         </div>
                     </div>
                 </div>

@@ -82,7 +82,7 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $event->title }}</h3>
                     
                     <div class="space-y-2 text-gray-600 mb-4">
-                        <p class="text-sm"><i class="fas fa-calendar-alt w-5 text-[#760031]"></i> {{ $event->event_date->format('d F Y') }}</p>
+                        <p class="text-sm"><i class="fas fa-calendar-alt w-5 text-[#760031]"></i> {{ $event->event_date->translatedFormat('d F Y') }}</p>
                         <p class="text-sm"><i class="fas fa-map-marker-alt w-5 text-[#760031]"></i> {{ $event->location }}</p>
                         <p class="text-sm"><i class="fas fa-ticket-alt w-5 text-[#760031]"></i> {{ $event->available_tickets }} tiket tersedia</p>
                     </div>

@@ -117,7 +117,7 @@
                         </span>
                     </td>
                     <td class="px-3 py-2 text-xs whitespace-nowrap">
-                        <span class="{{ $event->event_date < now() ? 'text-red-600' : 'text-green-600' }} font-medium">{{ $event->event_date->format('d/m/Y') }}</span>
+                        <span class="{{ $event->event_date < now() ? 'text-red-600' : 'text-green-600' }} font-medium">{{ $event->event_date->translatedFormat('d/m/Y') }}</span>
                         <br><span class="text-xs {{ $event->event_date < now() ? 'text-red-400' : 'text-gray-400' }}">{{ $event->event_date < now() ? 'Lewat' : $event->event_date->diffForHumans() }}</span>
                     </td>
                     <td class="px-3 py-2 text-xs whitespace-nowrap">{{ $event->panitia->name ?? '-' }}</td>

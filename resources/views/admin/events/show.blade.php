@@ -11,7 +11,7 @@
                 <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">{{ $event->category->name }}</span>
                 <h1 class="text-3xl font-bold text-gray-800 mt-3">{{ $event->title }}</h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-gray-600">
-                    <p><i class="fas fa-calendar-alt w-6 text-purple-600"></i> {{ $event->event_date->format('l, d F Y') }}</p>
+                    <p><i class="fas fa-calendar-alt w-6 text-purple-600"></i> {{ $event->event_date->translatedFormat('l, d F Y') }}</p>
                     <p><i class="fas fa-map-marker-alt w-6 text-purple-600"></i> {{ $event->location }}</p>
                     <p><i class="fas fa-user-tie w-6 text-purple-600"></i> Panitia: {{ $event->panitia->name ?? '-' }}</p>
                     <p><i class="fas fa-ticket-alt w-6 text-purple-600"></i> Total Peserta: {{ $event->registrations_count ?? $event->registrations->count() }}</p>

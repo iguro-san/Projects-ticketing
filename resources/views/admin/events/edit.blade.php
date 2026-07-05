@@ -31,7 +31,7 @@
         <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Tanggal Event</label>
-                <input type="date" name="event_date" value="{{ $event->event_date->format('Y-m-d') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
+                <input type="date" name="event_date" value="{{ $event->event_date->translatedFormat('Y-m-d') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
             </div>
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Lokasi</label>

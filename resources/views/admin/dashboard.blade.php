@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#141E46]">Admin Dashboard</h1>
+    <h1 class="text-3xl font-bold text-[#141E46]">Admin Dasbor</h1>
     <p class="text-gray-600 mt-1">Selamat datang, {{ auth()->user()->name }}!</p>
 </div>
 

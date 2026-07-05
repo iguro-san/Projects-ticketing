@@ -10,17 +10,17 @@
                 <div class="bg-[#141E46] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-key text-3xl text-[#B6771D]"></i>
                 </div>
-                <h2 class="text-3xl font-bold text-[#141E46]">Lupa Password?</h2>
-                <p class="text-gray-600 mt-2">Masukkan email Anda, kami akan mengirimkan link reset password.</p>
+                <h2 class="text-3xl font-bold text-[#141E46]">Lupa Kata Sandi?</h2>
+                <p class="text-gray-600 mt-2">Masukkan email Anda, kami akan mengirimkan tautan reset kata sandi.</p>
             </div>
 
             @if(session('reset_link'))
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p class="text-sm text-blue-700 font-semibold mb-2">🔗 Link Reset Password (Development Mode):</p>
+                <p class="text-sm text-blue-700 font-semibold mb-2">🔗 Tautan Reset Kata Sandi (Development Mode):</p>
                 <a href="{{ session('reset_link') }}" target="_blank" class="text-sm text-blue-600 break-all hover:underline">
                     {{ session('reset_link') }}
                 </a>
-                <p class="text-xs text-blue-500 mt-2">*Klik link di atas untuk reset password</p>
+                <p class="text-xs text-blue-500 mt-2">*Klik tautan di atas untuk reset kata sandi</p>
             </div>
             @endif
 
@@ -41,14 +41,14 @@
                 </div>
 
                 <button type="submit" class="w-full bg-[#B6771D] text-white py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition duration-300">
-                    <i class="fas fa-paper-plane mr-2"></i> Kirim Link Reset Password
+                    <i class="fas fa-paper-plane mr-2"></i> Kirim Tautan Reset Kata Sandi
                 </button>
             </form>
 
             <div class="mt-6 text-center">
                 <p class="text-gray-600">
                     <a href="{{ route('login') }}" class="text-[#B6771D] font-semibold hover:text-[#B6771D]/80">
-                        <i class="fas fa-arrow-left mr-1"></i> Kembali ke Login
+                        <i class="fas fa-arrow-left mr-1"></i> Kembali ke Halaman Masuk
                     </a>
                 </p>
             </div>

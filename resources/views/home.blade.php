@@ -18,11 +18,11 @@
             <p class="text-white text-lg md:text-xl mb-8">Daftar dan ikuti berbagai event menarik dari seminar, konser, workshop, dan masih banyak lagi.</p>
             <div class="flex gap-4">
                 @guest
-                    <a href="{{ route('register') }}" class="bg-[#B6771D] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
+                    <a href="{{ route('register') }}" class="bg-[#DAA016] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
                         Daftar Sekarang
                     </a>
                 @else
-                    <a href="{{ route('my.tickets') }}" class="bg-[#B6771D] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
+                    <a href="{{ route('my.tickets') }}" class="bg-[#DAA016] text-white px-6 md:px-8 py-3 rounded-lg font-semibold hover:bg-[#B6771D]/80 transition shadow-md">
                         Tiket Saya
                     </a>
                 @endguest

@@ -41,7 +41,7 @@ class DashboardController extends Controller
         // ==========================================
         $recentRegistrations = Registration::with(['event', 'user', 'ticketType'])
             ->latest()
-            ->take(10)
+            ->take(5)
             ->get();
 
         // ==========================================

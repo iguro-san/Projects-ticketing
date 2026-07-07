@@ -35,9 +35,8 @@
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
            class="sidebar-transition fixed top-0 left-0 z-50 w-64 h-full bg-[#141E46] shadow-lg lg:relative lg:translate-x-0 lg:z-auto flex flex-col">
         <div class="flex items-center justify-between p-4 border-b">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2">
-                <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                <span class="text-xl font-bold text-[#B6771D]">Admin EventKu</span>
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center hover:opacity-80 transition">
+                <img src="{{ asset('images/logo-eventix.png') }}" alt="EventKu" class="h-8 w-auto">
             </a>
             <button @click="sidebarOpen = false" class="lg:hidden text-gray-500">
                 <i class="fas fa-times"></i>
@@ -60,49 +59,54 @@
             </div>
         </div>
 
-        <nav class="flex-1 overflow-y-auto mt-2">
-
+       <nav class="flex-1 overflow-y-auto mt-4 space-y-3">
     <a href="{{ route('admin.dashboard') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.dashboard') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-tachometer-alt w-5 mr-3"></i> Dasbor
+        <i class="fas fa-tachometer-alt w-5 mr-3 text-sm"></i> Dasbor
     </a>
     <a href="{{ route('admin.events.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.events.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-calendar-alt w-5 mr-3"></i> Event
+        <i class="fas fa-calendar-alt w-5 mr-3 text-sm"></i> Event
     </a>
-    <a href="{{ route('admin.categories.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.categories.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-tags w-5 mr-3"></i> Kategori
-    </a>
-    <a href="{{ route('admin.panitia.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.panitia.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-users w-5 mr-3"></i> Panitia
-    </a>
-    <a href="{{ route('admin.payments.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
+        <a href="{{ route('admin.payments.index') }}"
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.payments.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-credit-card w-5 mr-3"></i> Verifikasi Pembayaran
+        <i class="fas fa-credit-card w-5 mr-3 text-sm"></i> Verifikasi Pembayaran
+    </a>
+        <a href="{{ route('admin.registrations.index') }}"
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
+              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+              {{ request()->routeIs('admin.registrations.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
+        <i class="fas fa-user-plus w-5 mr-3 text-sm"></i> Daftar Registrasi
+    </a>
+    <a href="{{ route('admin.categories.index') }}"
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
+              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+              {{ request()->routeIs('admin.categories.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
+        <i class="fas fa-tags w-5 mr-3 text-sm"></i> Kategori
+    </a>
+    <a href="{{ route('admin.panitia.index') }}"
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
+              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+              {{ request()->routeIs('admin.panitia.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
+        <i class="fas fa-users w-5 mr-3 text-sm"></i> Panitia
     </a>
     <a href="{{ route('admin.refunds.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.refunds.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-undo-alt w-5 mr-3"></i> Refund
+        <i class="fas fa-undo-alt w-5 mr-3 text-sm"></i> Refund
     </a>
     <a href="{{ route('admin.announcements.index') }}"
-       class="flex items-center px-4 py-3 text-white transition-all duration-200 
+       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
               hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
               {{ request()->routeIs('admin.announcements.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-bullhorn w-5 mr-3"></i> Pengumuman
+        <i class="fas fa-bullhorn w-5 mr-3 text-sm"></i> Pengumuman
     </a>
 </nav>
 

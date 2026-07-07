@@ -131,7 +131,7 @@
     <div class="bg-white rounded-xl shadow lg:col-span-2">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
             <h2 class="text-xl font-bold text-[#141E46]">
-                <i class="fas fa-clock mr-2 text-[#B6771D]"></i>Pendaftaran Terbaru
+                <i class="fas fa-clock mr-2 text-[#B6771D]"></i>Pendaftaran Event Terbaru
             </h2>
             <a href="{{ route('admin.registrations.index') }}" class="text-sm text-[#B6771D] hover:text-[#B6771D]/80 font-medium">
                 Lihat Semua <i class="fas fa-arrow-right ml-1"></i>

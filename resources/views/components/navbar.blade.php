@@ -4,20 +4,17 @@
                 {{-- Logo --}}
                 @auth
                     @if(auth()->user()->isPanitia())
-                        <a href="{{ route('panitia.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
-                        </a>
+                    <a href="{{ route('panitia.dashboard') }}" class="flex items-center hover:opacity-80 transition">
+                        <img src="{{ asset('images/logo-eventix.png') }}" alt="EventKu" class="h-10 w-auto">
+                    </a>
                     @else
-                        <a href="{{ route('home') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                            <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                            <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
-                        </a>
+                    <a href="{{ route('home') }}" class="flex items-center hover:opacity-80 transition">
+                        <img src="{{ asset('images/logo-eventix.png') }}" alt="EventKu" class="h-10 w-auto">
+                    </a>
                     @endif
                 @else
-                    <a href="{{ route('home') }}" class="flex items-center space-x-2 hover:opacity-80 transition">
-                        <i class="fas fa-ticket-alt text-2xl text-[#B6771D]"></i>
-                        <span class="text-xl font-bold text-[#B6771D]">EventKu</span>
+                    <a href="{{ route('home') }}" class="flex items-center hover:opacity-80 transition">
+                        <img src="{{ asset('images/logo-eventix.png') }}" alt="EventKu" class="h-10 w-auto">
                     </a>
                 @endauth
 

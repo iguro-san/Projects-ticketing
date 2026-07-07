@@ -12,15 +12,23 @@ class RegistrationController extends Controller
     public function index(Request $request)
     {
         $query = Registration::with(['event', 'user', 'ticketType']);
-        
+
+        // ==========================================
+        // FILTER DEFAULT: TIDAK TAMPILKAN YANG CANCELLED
+        // ==========================================
+        $query->where('payment_status', '!=', 'cancelled');
+
+        // Filter berdasarkan event
         if ($request->filled('event_id')) {
             $query->where('event_id', $request->event_id);
         }
-        
+
+        // Filter berdasarkan status pembayaran
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
-        
+
+        // Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -29,19 +37,31 @@ class RegistrationController extends Controller
                   ->orWhere('user_email', 'like', "%{$search}%");
             });
         }
-        
-        $registrations = $query->orderBy('created_at', 'desc')
-            ->paginate(20);
-            
+
+        // ==========================================
+        // URUTAN STATUS: pending → paid → failed
+        // (cancelled sudah tidak muncul)
+        // ==========================================
+        $query->orderByRaw("
+            CASE payment_status
+                WHEN 'pending' THEN 1
+                WHEN 'paid' THEN 2
+                WHEN 'failed' THEN 3
+                ELSE 4
+            END ASC
+        ");
+        // Secondary sort: yang terbaru di atas dalam kelompok status yang sama
+        $query->orderBy('created_at', 'desc');
+
+        $registrations = $query->paginate(20);
         $events = Event::all();
-        
+
         return view('admin.registrations.index', compact('registrations', 'events'));
     }
 
     public function show(Registration $registration)
     {
         $registration->load(['event', 'user', 'ticketType', 'payments.verifier']);
-        
         return view('admin.registrations.show', compact('registration'));
     }
 
@@ -53,7 +73,7 @@ class RegistrationController extends Controller
         ]);
 
         $latestPayment = $registration->payments()->latest()->first();
-        
+
         if (!$latestPayment) {
             return back()->with('error', 'Tidak ada data pembayaran.');
         }
@@ -64,17 +84,14 @@ class RegistrationController extends Controller
                 $latestPayment->method,
                 $validated['notes'] ?? 'Pembayaran diverifikasi oleh admin'
             );
-            
             $message = 'Pembayaran berhasil diverifikasi.';
         } else {
             $latestPayment->reject(auth()->id(), $validated['notes'] ?? null);
             $registration->markAsFailed($validated['notes'] ?? 'Pembayaran ditolak oleh admin');
-            
             $message = 'Pembayaran ditolak.';
         }
 
-        return redirect()->route('admin.registrations.index')
-            ->with('success', $message);
+        return redirect()->route('admin.registrations.index')->with('success', $message);
     }
 
     public function export()
@@ -84,15 +101,15 @@ class RegistrationController extends Controller
             ->get();
 
         $filename = 'registrations_' . date('Y-m-d_His') . '.csv';
-        
+
         return response()->streamDownload(function() use ($registrations) {
             $output = fopen('php://output', 'w');
-            
+
             fputcsv($output, [
-                'No Registrasi', 'Event', 'Tanggal Event', 'Peserta', 
+                'No Registrasi', 'Event', 'Tanggal Event', 'Peserta',
                 'Email', 'Tiket', 'Harga', 'Status', 'Tanggal Bayar'
             ]);
-            
+
             foreach ($registrations as $reg) {
                 fputcsv($output, [
                     $reg->registration_number,
@@ -106,7 +123,7 @@ class RegistrationController extends Controller
                     $reg->paid_at ? $reg->paid_at->format('d/m/Y H:i') : '-'
                 ]);
             }
-            
+
             fclose($output);
         }, $filename);
     }

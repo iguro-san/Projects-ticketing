@@ -34,11 +34,15 @@ class RegistrationController extends Controller
         // ==========================================
         // 1. HAPUS REGISTRASI PENDING YANG KADALUARSA
         // ==========================================
-        Registration::where('event_id', $event->id)
+        $expiredRegistrations = Registration::where('event_id', $event->id)
             ->where('user_email', $user->email)
             ->where('payment_status', 'pending')
             ->where('payment_deadline', '<', now())
-            ->each(fn($reg) => $reg->cancel('Batas waktu pembayaran habis'));
+            ->get();
+
+        foreach ($expiredRegistrations as $reg) {
+            $reg->cancel('Batas waktu pembayaran habis');
+        }
 
         // ==========================================
         // 2. CEK APAKAH SUDAH TERDAFTAR (PENDING ATAU PAID)
@@ -80,6 +84,7 @@ class RegistrationController extends Controller
                 'registration_number' => Registration::generateRegistrationNumber(),
                 'event_id' => $event->id,
                 'ticket_type_id' => $ticketType->id,
+                'user_id' => $user->id,
                 'user_name' => $user->name,
                 'user_email' => $user->email,
                 'user_phone' => $validated['user_phone'] ?? $user->phone,
@@ -92,6 +97,7 @@ class RegistrationController extends Controller
                 'registered_at' => now()
             ]);
 
+            // Tambah registered di ticket_type
             $ticketType->increment('registered');
 
             DB::commit();
@@ -112,10 +118,15 @@ class RegistrationController extends Controller
     {
         $user = auth()->user();
 
-        Registration::where('user_email', $user->email)
+        // Hapus registrasi pending yang kadaluarsa
+        $expiredRegistrations = Registration::where('user_email', $user->email)
             ->where('payment_status', 'pending')
             ->where('payment_deadline', '<', now())
-            ->each(fn($reg) => $reg->cancel('Batas waktu pembayaran habis'));
+            ->get();
+
+        foreach ($expiredRegistrations as $reg) {
+            $reg->cancel('Batas waktu pembayaran habis');
+        }
 
         $registrations = Registration::with(['event', 'ticketType'])
             ->where('user_email', $user->email)

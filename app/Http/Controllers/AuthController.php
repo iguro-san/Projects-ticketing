@@ -35,9 +35,9 @@ class AuthController extends Controller
             $user = Auth::user();
             
             if ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
             } elseif ($user->isPanitia()) {
-                return redirect()->route('panitia.dashboard');
+                return redirect()->route('panitia.dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
             }
             
             return redirect()->route('home')->with('success', 'Selamat datang kembali, ' . $user->name . '!');
@@ -104,10 +104,8 @@ class AuthController extends Controller
             'email.exists' => 'Email tidak ditemukan dalam sistem kami.',
         ]);
 
-        // Buat token reset password
         $token = Str::random(64);
         
-        // Simpan token ke database (PERBAIKAN: gunakan updateOrInsert yang benar)
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
@@ -116,7 +114,6 @@ class AuthController extends Controller
             ]
         );
 
-        // Kirim email (sementara pakai log)
         $this->sendResetEmail($request->email, $token);
 
         return back()->with('success', 'Link reset password telah dikirim ke email Anda. Silakan cek inbox atau folder spam.');
@@ -126,10 +123,8 @@ class AuthController extends Controller
     {
         $resetLink = route('password.reset', ['token' => $token, 'email' => $email]);
         
-        // Untuk development, tampilkan link di log
         \Log::info('Reset password link: ' . $resetLink);
         
-        // Simpan ke session agar user bisa lihat linknya
         session()->flash('reset_link', $resetLink);
     }
 
@@ -146,7 +141,6 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Cek token
         $resetRecord = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->where('token', $request->token)
@@ -156,21 +150,17 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Token reset password tidak valid atau sudah kadaluarsa.']);
         }
 
-        // Cek apakah token masih berlaku (2 jam)
         $tokenCreatedAt = Carbon::parse($resetRecord->created_at);
         if ($tokenCreatedAt->diffInHours(Carbon::now()) > 2) {
             return back()->withErrors(['email' => 'Link reset password sudah kadaluarsa. Silakan request ulang.']);
         }
 
-        // Update password user
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Hapus token
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        // Redirect ke halaman login dengan pesan sukses
         return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan password baru Anda.');
     }
 }

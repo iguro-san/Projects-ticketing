@@ -27,12 +27,35 @@ class Event extends Model
     const SUSPENSION_CANCELLED = 'cancelled';
 
     // Relationships
-    public function category() { return $this->belongsTo(Category::class); }
-    public function panitia() { return $this->belongsTo(User::class, 'panitia_id'); }
-    public function approver() { return $this->belongsTo(User::class, 'approved_by'); }
-    public function suspender() { return $this->belongsTo(User::class, 'suspended_by'); }
-    public function ticketTypes() { return $this->hasMany(TicketType::class); }
-    public function registrations() { return $this->hasMany(Registration::class); }
+    public function category() 
+    { 
+        return $this->belongsTo(Category::class); 
+    }
+    
+    public function panitia() 
+    { 
+        return $this->belongsTo(User::class, 'panitia_id'); 
+    }
+    
+    public function approver() 
+    { 
+        return $this->belongsTo(User::class, 'approved_by'); 
+    }
+    
+    public function suspender() 
+    { 
+        return $this->belongsTo(User::class, 'suspended_by'); 
+    }
+    
+    public function ticketTypes() 
+    { 
+        return $this->hasMany(TicketType::class); 
+    }
+    
+    public function registrations() 
+    { 
+        return $this->hasMany(Registration::class); 
+    }
 
     // Accessors
     public function getAvailableTicketsAttribute()
@@ -40,12 +63,41 @@ class Event extends Model
         return $this->ticketTypes->sum(fn($t) => $t->quota - $t->registered);
     }
 
+    public function getMinPriceAttribute()
+    {
+        return $this->ticketTypes->min('price');
+    }
+
+    public function getIsFreeAttribute()
+    {
+        return $this->ticketTypes->max('price') == 0;
+    }
+
     // Status Checkers
-    public function isApproved(): bool { return $this->status === 'active' && $this->approved_by !== null; }
-    public function isDraft(): bool { return $this->status === 'draft'; }
-    public function isSuspended(): bool { return $this->suspension_status !== self::SUSPENSION_NORMAL; }
-    public function isPendingSuspension(): bool { return $this->suspension_status === self::SUSPENSION_PENDING; }
-    public function canRegister(): bool { return $this->status === 'active' && $this->suspension_status === self::SUSPENSION_NORMAL; }
+    public function isApproved(): bool 
+    { 
+        return $this->status === 'active' && $this->approved_by !== null; 
+    }
+    
+    public function isDraft(): bool 
+    { 
+        return $this->status === 'draft'; 
+    }
+    
+    public function isSuspended(): bool 
+    { 
+        return $this->suspension_status !== self::SUSPENSION_NORMAL; 
+    }
+    
+    public function isPendingSuspension(): bool 
+    { 
+        return $this->suspension_status === self::SUSPENSION_PENDING; 
+    }
+    
+    public function canRegister(): bool 
+    { 
+        return $this->status === 'active' && $this->suspension_status === self::SUSPENSION_NORMAL; 
+    }
 
     // Actions
     public function approve($adminId): void
@@ -88,16 +140,5 @@ class Event extends Model
             'status' => 'cancelled',
             'suspension_status' => self::SUSPENSION_CANCELLED
         ]);
-    }
-
-    
-    public function getMinPriceAttribute()
-    {
-        return $this->ticketTypes->min('price');
-    }
-
-    public function getIsFreeAttribute()
-    {
-        return $this->ticketTypes->max('price') == 0;
     }
 }

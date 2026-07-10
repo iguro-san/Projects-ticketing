@@ -27,7 +27,7 @@
                     <td class="px-4 py-3 font-mono text-sm">{{ $reg->registration_number }}</td>
                     <td class="px-4 py-3">{{ $reg->user_name }}</td>
                     <td class="px-4 py-3">{{ $reg->event->title }}</td>
-                    <td class="px-4 py-3 font-semibold">Rp {{ number_format($reg->ticketType->price, 0, ',', '.') }}</td>
+                    <td class="px-4 py-3 font-semibold">Rp {{ number_format($reg->ticketType->price ?? 0, 0, ',', '.') }}</td>
                     <td class="px-4 py-3">
                         <span class="px-2 py-1 rounded text-xs
                             @if($reg->refund_status == 'pending') bg-yellow-100 text-yellow-700
@@ -40,7 +40,7 @@
                     <td class="px-4 py-3 text-sm">{{ Str::limit($reg->refund_reason, 50) }}</td>
                     <td class="px-4 py-3 text-center">
                         @if(in_array($reg->refund_status, ['pending', 'processing']))
-                        <button onclick="showProcessModal({{ $reg->id }}, '{{ $reg->registration_number }}', {{ $reg->ticketType->price }})"
+                        <button onclick="showProcessModal({{ $reg->id }}, '{{ $reg->registration_number }}', {{ $reg->ticketType->price ?? 0 }})"
                                 class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
                             <i class="fas fa-check-circle mr-1"></i> Proses
                         </button>
@@ -62,19 +62,41 @@
 
 {{-- Modal Proses Refund --}}
 <div id="processModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96">
+    <div class="bg-white rounded-lg p-6 w-96 max-h-[90vh] overflow-y-auto">
         <h3 class="text-lg font-bold mb-2">Proses Refund</h3>
         <p class="text-sm text-gray-600 mb-3">Registrasi: <span id="processRegNumber" class="font-semibold"></span></p>
         <p class="text-sm text-gray-600 mb-3">Jumlah: <span id="processAmount" class="font-bold text-green-600"></span></p>
         <form id="processForm" method="POST">
             @csrf
             <div class="mb-3">
-                <label class="block text-sm font-medium mb-1">Tindakan</label>
-                <select name="action" class="w-full border rounded-lg px-3 py-2 text-sm" required>
+                <label class="block text-sm font-medium mb-1">Tindakan <span class="text-red-500">*</span></label>
+                <select name="action" id="refundAction" class="w-full border rounded-lg px-3 py-2 text-sm" required onchange="toggleRefundFields()">
                     <option value="approve">Setujui Refund</option>
                     <option value="reject">Tolak Refund</option>
                 </select>
             </div>
+            
+            <div id="refundFields" class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Bank Tujuan <span class="text-red-500">*</span></label>
+                    <select name="refund_bank" class="w-full border rounded-lg px-3 py-2 text-sm">
+                        <option value="">Pilih Bank</option>
+                        <option value="BCA">BCA</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="BRI">BRI</option>
+                        <option value="BNI">BNI</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nama Pemilik Rekening <span class="text-red-500">*</span></label>
+                    <input type="text" name="refund_account_name" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Nama pemilik rekening">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nomor Rekening <span class="text-red-500">*</span></label>
+                    <input type="text" name="refund_account_number" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Nomor rekening tujuan">
+                </div>
+            </div>
+            
             <div class="mb-3">
                 <label class="block text-sm font-medium mb-1">Catatan</label>
                 <textarea name="notes" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm" 
@@ -95,8 +117,19 @@ function showProcessModal(id, regNumber, amount) {
     document.getElementById('processAmount').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
     document.getElementById('processModal').classList.remove('hidden');
 }
+
 function hideProcessModal() {
     document.getElementById('processModal').classList.add('hidden');
+}
+
+function toggleRefundFields() {
+    const action = document.getElementById('refundAction').value;
+    const fields = document.getElementById('refundFields');
+    if (action === 'approve') {
+        fields.style.display = 'block';
+    } else {
+        fields.style.display = 'none';
+    }
 }
 </script>
 @endsection

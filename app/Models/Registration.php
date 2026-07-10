@@ -11,146 +11,187 @@ class Registration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'registration_number', 'event_id', 'ticket_type_id',
-        'user_id', 'user_name', 'user_email', 'user_phone',
-        'payment_status', 'payment_deadline', 'payment_method', 
-        'payment_proof', 'amount_paid', 'paid_at', 'cancelled_at',
-        'admin_notes', 'registered_at',
-        'refund_status', 'refund_reason', 'refund_requested_at',
-        'refund_processed_at', 'refund_amount', 'refund_notes'
+        'registration_number',
+        'event_id',
+        'ticket_type_id',
+        'user_id',
+        'user_name',
+        'user_email',
+        'user_phone',
+        'payment_status',
+        'payment_method',
+        'sender_name',
+        'sender_account',
+        'payment_proof',
+        'payment_deadline',
+        'amount_paid',
+        'paid_at',
+        'admin_notes',
+        'refund_status',
+        'refund_reason',
+        'refund_requested_at',
+        'refund_processed_at',
+        'refund_notes',
+        'refund_bank',
+        'refund_account_name',
+        'refund_account_number',
+        'registered_at',
+        'cancelled_at',
     ];
 
     protected $casts = [
-        'registered_at' => 'datetime',
         'paid_at' => 'datetime',
         'payment_deadline' => 'datetime',
-        'cancelled_at' => 'datetime',
+        'registered_at' => 'datetime',
         'refund_requested_at' => 'datetime',
         'refund_processed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'amount_paid' => 'decimal:2',
-        'refund_amount' => 'decimal:2',
     ];
 
-    // Refund Constants
-    const REFUND_NONE = 'none';
-    const REFUND_PENDING = 'pending';
-    const REFUND_PROCESSING = 'processing';
-    const REFUND_COMPLETED = 'completed';
-    const REFUND_FAILED = 'failed';
-
     // Relationships
-    public function event() { return $this->belongsTo(Event::class); }
-    public function ticketType() { return $this->belongsTo(TicketType::class); }
-    public function user() { return $this->belongsTo(User::class, 'user_email', 'email'); }
-    public function payments() { return $this->hasMany(Payment::class); }
-
-    // Status Checkers
-    public function isPaid(): bool { return $this->payment_status === 'paid'; }
-    public function isPending(): bool { return $this->payment_status === 'pending'; }
-    public function isFailed(): bool { return $this->payment_status === 'failed'; }
-    public function isExpired(): bool { return $this->payment_status === 'expired'; }
-    public function isCancelled(): bool { return $this->payment_status === 'cancelled'; }
-
-    // Refund Checkers
-    public function canRequestRefund(): bool
+    public function event()
     {
-        return $this->payment_status === 'paid' && 
-               $this->refund_status === self::REFUND_NONE &&
-               !$this->event->event_date->isPast();
+        return $this->belongsTo(Event::class);
     }
 
-    public function isRefundPending(): bool
+    public function ticketType()
     {
-        return in_array($this->refund_status, [self::REFUND_PENDING, self::REFUND_PROCESSING]);
+        return $this->belongsTo(TicketType::class);
     }
 
-    // Deadline Methods
-    public function isDeadlinePassed(): bool
+    public function user()
     {
-        if (!$this->payment_deadline) return false;
-        return Carbon::now()->greaterThan($this->payment_deadline);
+        return $this->belongsTo(User::class);
     }
 
-    public static function getDefaultDeadline(): Carbon
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    // Static Methods
+    public static function generateRegistrationNumber()
+    {
+        $prefix = 'REG-' . date('Ymd');
+        $last = self::where('registration_number', 'like', $prefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        if (!$last) {
+            $number = 1;
+        } else {
+            $number = intval(substr($last->registration_number, -4)) + 1;
+        }
+        
+        return $prefix . '-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+    }
+
+    public static function getDefaultDeadline()
     {
         return Carbon::now()->addMinutes(5);
     }
 
-    public function getRemainingTimeAttribute(): ?string
+    // Status Checkers
+    public function isPaid()
     {
-        if (!$this->payment_deadline || $this->isPaid()) return null;
-        if ($this->isDeadlinePassed()) return 'Kadaluarsa';
-        return Carbon::now()->diffForHumans($this->payment_deadline, ['parts' => 2, 'short' => false]);
+        return $this->payment_status === 'paid';
     }
 
-    public function getRemainingSecondsAttribute(): int
+    public function isPending()
     {
-        if (!$this->payment_deadline || $this->isPaid()) return 0;
-        return max(0, Carbon::now()->diffInSeconds($this->payment_deadline, false));
+        return $this->payment_status === 'pending';
     }
 
-    // Payment Actions
-    public function markAsPaid($method = null, $notes = null): void
+    public function isFailed()
+    {
+        return $this->payment_status === 'failed';
+    }
+
+    public function isCancelled()
+    {
+        return $this->payment_status === 'cancelled';
+    }
+
+    public function isDeadlinePassed()
+    {
+        if (!$this->payment_deadline) {
+            return false;
+        }
+        return Carbon::now()->gt($this->payment_deadline);
+    }
+
+    // Refund Methods
+    public function canRequestRefund()
+    {
+        return $this->isPaid() 
+            && $this->refund_status === 'none'
+            && $this->ticketType 
+            && $this->ticketType->price > 0;
+    }
+
+    public function requestRefund($reason)
+    {
+        $this->update([
+            'refund_status' => 'pending',
+            'refund_reason' => $reason,
+            'refund_requested_at' => now(),
+        ]);
+    }
+
+    public function markAsPaid($method, $notes = null)
     {
         $this->update([
             'payment_status' => 'paid',
-            'payment_method' => $method ?? $this->payment_method,
-            'amount_paid' => $this->ticketType->price,
+            'payment_method' => $method,
+            'amount_paid' => $this->ticketType->price ?? 0,
             'paid_at' => now(),
-            'admin_notes' => $notes
+            'admin_notes' => $notes,
         ]);
     }
 
-    public function markAsFailed($notes = null): void
+    public function markAsFailed($notes = null)
     {
         $this->update([
             'payment_status' => 'failed',
-            'admin_notes' => $notes
+            'admin_notes' => $notes,
         ]);
     }
 
-    public function cancel($reason = null): void
+    public function cancel($reason = null)
     {
+        // Kurangi registered di ticket_type saat pembatalan
+        if ($this->ticketType && $this->payment_status !== 'cancelled') {
+            $this->ticketType->decrement('registered');
+        }
+        
         $this->update([
             'payment_status' => 'cancelled',
             'cancelled_at' => now(),
-            'admin_notes' => $reason ?? 'Batas waktu pembayaran habis'
-        ]);
-        $this->ticketType->decrement('registered');
-    }
-
-    // Refund Actions
-    public function requestRefund($reason): void
-    {
-        $this->update([
-            'refund_status' => self::REFUND_PENDING,
-            'refund_reason' => $reason,
-            'refund_requested_at' => now()
+            'admin_notes' => $reason ?? 'Dibatalkan sistem',
         ]);
     }
 
-    public function processRefund($action, $notes = null): void
+    // Accessors - Pastikan return integer
+    public function getRemainingSecondsAttribute()
     {
-        if ($action === 'approve') {
-            $this->update([
-                'refund_status' => self::REFUND_COMPLETED,
-                'refund_amount' => $this->amount_paid ?? $this->ticketType->price,
-                'refund_notes' => $notes,
-                'refund_processed_at' => now(),
-                'payment_status' => 'refunded'
-            ]);
-        } else {
-            $this->update([
-                'refund_status' => self::REFUND_FAILED,
-                'refund_notes' => $notes,
-                'refund_processed_at' => now()
-            ]);
+        if (!$this->payment_deadline) {
+            return 0;
         }
+        return (int) max(0, Carbon::now()->diffInSeconds($this->payment_deadline));
     }
 
-    // Static Methods
-    public static function generateRegistrationNumber(): string
+    public function getRemainingTimeAttribute()
     {
-        return 'REG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+        $seconds = $this->remaining_seconds;
+        if ($seconds <= 0) {
+            return 'Kadaluarsa';
+        }
+        
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $secs = $seconds % 60;
+        
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $secs);
     }
 }

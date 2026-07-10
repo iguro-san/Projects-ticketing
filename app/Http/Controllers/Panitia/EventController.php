@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Panitia;
 
-use App\Http\Controllers\BaseEventController; // <-- Ganti parent class
+use App\Http\Controllers\BaseEventController;
 use App\Models\Category;
 use App\Models\Event;
 use App\Models\Registration;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class EventController extends BaseEventController // <-- Extends ke BaseEventController
+class EventController extends BaseEventController
 {
     /**
      * ==========================================
@@ -22,7 +22,7 @@ class EventController extends BaseEventController // <-- Extends ke BaseEventCon
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function getBaseQuery(Request $request)
+    protected function getUserQuery(Request $request)
     {
         return Event::where('panitia_id', auth()->id());
     }
@@ -41,7 +41,6 @@ class EventController extends BaseEventController // <-- Extends ke BaseEventCon
     {
         return view('panitia.events.index', compact('events'));
     }
-
 
     public function create()
     {

@@ -52,8 +52,8 @@
             <h2 class="font-semibold text-lg mb-3">Rekening Tujuan Transfer</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach($bankAccounts as $bank)
-                <div class="bg-white rounded-lg p-3 text-center">
-                    <i class="fas fa-university text-2xl text-blue-600 mb-2"></i>
+                <div class="bg-white rounded-lg p-3 text-center border-2 hover:border-[#760031] transition cursor-pointer" onclick="selectBank('{{ $bank['bank'] }}', '{{ $bank['account_number'] }}', '{{ $bank['account_name'] }}')">
+                    <i class="fas fa-university text-2xl text-[#760031] mb-2"></i>
                     <p class="font-bold">{{ $bank['bank'] }}</p>
                     <p class="font-mono text-sm">{{ $bank['account_number'] }}</p>
                     <p class="text-xs text-gray-500">a.n. {{ $bank['account_name'] }}</p>
@@ -67,36 +67,53 @@
         <div class="border-t pt-6">
             <h2 class="font-semibold text-lg mb-4">Upload Bukti Transfer</h2>
             
-            <form action="{{ route('payment.upload', $registration) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('payment.upload', $registration) }}" method="POST" enctype="multipart/form-data" id="paymentForm">
                 @csrf
                 
                 <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Metode Pembayaran</label>
-                    <select name="payment_method" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
+                    <label class="block text-gray-700 mb-2 font-semibold">Bank Tujuan <span class="text-red-500">*</span></label>
+                    <select name="payment_method" id="bankSelect" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
                         <option value="">Pilih Bank Tujuan</option>
                         <option value="BCA">BCA</option>
                         <option value="Mandiri">Mandiri</option>
                         <option value="BRI">BRI</option>
                         <option value="BNI">BNI</option>
-                        <option value="Other">Lainnya</option>
                     </select>
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Bukti Transfer</label>
-                    <input type="file" name="payment_proof" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600" required>
+                    <label class="block text-gray-700 mb-2 font-semibold">Nama Pengirim <span class="text-red-500">*</span></label>
+                    <input type="text" name="sender_name" value="{{ old('sender_name', auth()->user()->name) }}" 
+                           class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" 
+                           placeholder="Masukkan nama pemilik rekening pengirim" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2 font-semibold">Nomor Rekening Pengirim <span class="text-red-500">*</span></label>
+                    <input type="text" name="sender_account" 
+                           class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" 
+                           placeholder="Masukkan nomor rekening pengirim" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2 font-semibold">Bukti Transfer <span class="text-red-500">*</span></label>
+                    <input type="file" name="payment_proof" accept="image/*" id="proofInput" 
+                           class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-[#760031]" required>
                     <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG (Max 2MB)</p>
+                    <div id="fileSizeAlert" class="hidden mt-2 text-sm text-red-600">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Ukuran file melebihi 2MB. Silakan pilih file yang lebih kecil.
+                    </div>
                 </div>
                 
                 <div class="mb-4 p-3 bg-yellow-50 rounded-lg">
                     <p class="text-sm text-yellow-700">
-                        <i class="fas fa-info-circle"></i> 
+                        <i class="fas fa-info-circle mr-1"></i> 
                         Pastikan bukti transfer jelas dan sesuai dengan nominal yang tertera.
                     </p>
                 </div>
                 
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                    <i class="fas fa-upload"></i> Upload Bukti Transfer
+                <button type="submit" class="w-full bg-[#760031] text-white px-6 py-3 rounded-lg hover:bg-[#5a0024] transition font-semibold">
+                    <i class="fas fa-upload mr-2"></i>Upload Bukti Transfer
                 </button>
             </form>
         </div>
@@ -104,9 +121,54 @@
         
         <div class="mt-6">
             <a href="{{ route('my.tickets') }}" class="text-gray-600 hover:text-gray-800">
-                <i class="fas fa-arrow-left"></i> Kembali ke Tiket Saya
+                <i class="fas fa-arrow-left mr-1"></i> Kembali ke Tiket Saya
             </a>
         </div>
     </div>
 </div>
+
+<script>
+// Validasi ukuran file (max 2MB)
+document.getElementById('proofInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const alertDiv = document.getElementById('fileSizeAlert');
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    
+    if (file) {
+        if (file.size > maxSize) {
+            alertDiv.classList.remove('hidden');
+            this.value = '';
+            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alertDiv.classList.add('hidden');
+        }
+    } else {
+        alertDiv.classList.add('hidden');
+    }
+});
+
+// Auto select bank
+function selectBank(bank, account, name) {
+    document.getElementById('bankSelect').value = bank;
+    document.getElementById('bankSelect').style.borderColor = '#760031';
+}
+
+// Validasi sebelum submit
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('proofInput');
+    const alertDiv = document.getElementById('fileSizeAlert');
+    const maxSize = 2 * 1024 * 1024;
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.size > maxSize) {
+            e.preventDefault();
+            alertDiv.classList.remove('hidden');
+            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            alert('Ukuran file melebihi 2MB! Silakan pilih file yang lebih kecil.');
+            return false;
+        }
+    }
+});
+</script>
 @endsection

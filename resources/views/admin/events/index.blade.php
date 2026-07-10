@@ -169,10 +169,16 @@
                                 </button>
                             </div>
                         @elseif($event->status === 'active' && $event->suspension_status === 'normal')
-                            <button onclick="showPendingModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
-                                    class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs hover:bg-orange-600 transition">
-                                <i class="fas fa-pause mr-1"></i>Pending
-                            </button>
+                            <div class="flex gap-1 justify-center flex-wrap">
+                                <button onclick="showPendingModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
+                                        class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs hover:bg-orange-600 transition">
+                                    <i class="fas fa-pause mr-1"></i>Pending
+                                </button>
+                                <button onclick="showCancelModal({{ $event->id }}, '{{ addslashes($event->title) }}')"
+                                        class="bg-red-500 text-white px-2 py-0.5 rounded text-xs hover:bg-red-600 transition">
+                                    <i class="fas fa-ban mr-1"></i>Batalkan
+                                </button>
+                            </div>
                         @elseif($event->suspension_status === 'pending')
                             <div class="flex gap-1 justify-center">
                                 <form action="{{ route('admin.events.resolve', [$event, 'continue']) }}" method="POST">
@@ -236,6 +242,26 @@
     </div>
 </div>
 
+<!-- Modal Batalkan Event -->
+<div id="cancelModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-5 w-96">
+        <h3 class="text-lg font-bold mb-2 text-red-600">Batalkan Event</h3>
+        <p class="text-sm text-gray-600 mb-3">Event: <span id="cancelTitle" class="font-semibold"></span></p>
+        <p class="text-sm text-red-500 mb-3">
+            <i class="fas fa-exclamation-triangle mr-1"></i>
+            Semua peserta berbayar akan mendapatkan refund dalam waktu 1 bulan.
+        </p>
+        <form id="cancelForm" method="POST">
+            @csrf
+            <textarea name="reason" rows="2" class="w-full border rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-[#760031]" placeholder="Alasan pembatalan (opsional)"></textarea>
+            <div class="flex gap-2 mt-3 justify-end">
+                <button type="button" onclick="hideCancelModal()" class="px-3 py-1 bg-gray-300 rounded-lg text-sm">Batal</button>
+                <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">Batalkan Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Modal Detail Event (dengan poster & tiket) -->
 <div id="eventDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-5 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
@@ -265,9 +291,9 @@
 </div>
 
 <script>
-    
+    // ==========================================
     // REJECT MODAL
-    
+    // ==========================================
     function showRejectModal(id, title) {
         document.getElementById('rejectForm').action = '/admin/events/' + id + '/reject';
         document.getElementById('rejectTitle').innerText = title;
@@ -277,9 +303,9 @@
         document.getElementById('rejectModal').classList.add('hidden');
     }
 
-    
+    // ==========================================
     // PENDING MODAL
-    
+    // ==========================================
     function showPendingModal(id, title) {
         document.getElementById('pendingForm').action = '/admin/events/' + id + '/pending';
         document.getElementById('pendingTitle').innerText = title;
@@ -289,11 +315,22 @@
         document.getElementById('pendingModal').classList.add('hidden');
     }
 
-    
+    // ==========================================
+    // CANCEL MODAL
+    // ==========================================
+    function showCancelModal(id, title) {
+        document.getElementById('cancelForm').action = '/admin/events/' + id + '/cancel';
+        document.getElementById('cancelTitle').innerText = title;
+        document.getElementById('cancelModal').classList.remove('hidden');
+    }
+    function hideCancelModal() {
+        document.getElementById('cancelModal').classList.add('hidden');
+    }
+
+    // ==========================================
     // DETAIL EVENT MODAL (dengan Tiket)
-    
+    // ==========================================
     function openEventDetail(button) {
-        // Ambil data dari atribut tombol
         const title = button.dataset.title || 'Tanpa Judul';
         const location = button.dataset.location || 'Tidak diketahui';
         const description = button.dataset.description || 'Tidak ada deskripsi';
@@ -308,7 +345,6 @@
 
         const contentDiv = document.getElementById('eventDetailContent');
 
-        // Buat HTML poster
         let posterHtml = '';
         if (poster) {
             posterHtml = `
@@ -326,7 +362,6 @@
             `;
         }
 
-        // Buat HTML tabel tiket
         let ticketHtml = '';
         if (tickets.length > 0) {
             let rows = '';
@@ -372,7 +407,6 @@
             `;
         }
 
-        // Gabungkan semua konten
         contentDiv.innerHTML = `
             <div class="mb-2">
                 <h4 class="font-semibold text-gray-800">Judul Event</h4>
@@ -397,9 +431,9 @@
         document.getElementById('eventDetailModal').classList.add('hidden');
     }
 
-    
+    // ==========================================
     // POSTER LIGHTBOX
-    
+    // ==========================================
     function openPosterModal(imageUrl) {
         const modal = document.getElementById('posterModal');
         const modalImg = document.getElementById('posterModalImage');
@@ -415,9 +449,9 @@
         document.body.style.overflow = 'auto';
     }
 
-    
+    // ==========================================
     // UTILITY: ESCAPE HTML
-    
+    // ==========================================
     function escapeHtml(str) {
         if (!str) return '';
         return str
@@ -428,14 +462,15 @@
             .replace(/'/g, '&#39;');
     }
 
-    
+    // ==========================================
     // KEYBOARD SHORTCUT
-    
+    // ==========================================
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closePosterModal();
             hideRejectModal();
             hidePendingModal();
+            hideCancelModal();
             closeEventDetailModal();
         }
     });

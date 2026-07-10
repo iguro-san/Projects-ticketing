@@ -15,7 +15,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Event</p>
-                <p class="text-3xl font-bold text-[#760031]">{{ $stats['total_events'] }}</p>
+                <p class="text-3xl font-bold text-[#760031]">{{ $stats['total_events'] ?? 0 }}</p>
             </div>
             <div class="bg-[#760031]/10 rounded-full p-3">
                 <i class="fas fa-calendar-alt text-[#760031] text-xl"></i>
@@ -28,7 +28,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-gray-500 text-sm font-medium">Event Aktif</p>
-                <p class="text-3xl font-bold text-green-600">{{ $stats['active_events'] }}</p>
+                <p class="text-3xl font-bold text-green-600">{{ $stats['active_events'] ?? 0 }}</p>
             </div>
             <div class="bg-green-100 rounded-full p-3">
                 <i class="fas fa-play-circle text-green-600 text-xl"></i>
@@ -41,7 +41,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Peserta</p>
-                <p class="text-3xl font-bold text-blue-600">{{ $stats['total_registrations'] }}</p>
+                <p class="text-3xl font-bold text-blue-600">{{ $stats['total_registrations'] ?? 0 }}</p>
             </div>
             <div class="bg-blue-100 rounded-full p-3">
                 <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -54,7 +54,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-gray-500 text-sm font-medium">Total Panitia</p>
-                <p class="text-3xl font-bold text-yellow-600">{{ $stats['total_panitia'] }}</p>
+                <p class="text-3xl font-bold text-yellow-600">{{ $stats['total_panitia'] ?? 0 }}</p>
             </div>
             <div class="bg-yellow-100 rounded-full p-3">
                 <i class="fas fa-user-tie text-yellow-600 text-xl"></i>
@@ -74,7 +74,7 @@
         </a>
     </div>
     <div class="space-y-3">
-        @forelse($latestAnnouncements as $ann)
+        @forelse($latestAnnouncements ?? [] as $ann)
         <div class="border-l-4 border-[#760031] pl-4 py-2 hover:bg-gray-50 transition">
             <p class="font-semibold text-gray-800">{{ $ann->title }}</p>
             <p class="text-sm text-gray-600">{{ Str::limit($ann->content, 100) }}</p>
@@ -138,7 +138,7 @@
             </a>
         </div>
         <div class="p-6">
-            @forelse($recentRegistrations as $reg)
+            @forelse($recentRegistrations ?? [] as $reg)
                 <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-2 rounded transition">
                     <div class="flex items-center space-x-3">
                         <div class="bg-[#B6771D]/10 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0">
@@ -170,7 +170,7 @@
 </div>
 
 {{-- Event Mendatang --}}
-@if(count($upcomingEvents) > 0)
+@if(isset($upcomingEvents) && count($upcomingEvents) > 0)
 <div class="mt-8">
     <h2 class="text-xl font-bold text-[#141E46] mb-4">
         <i class="fas fa-calendar-star mr-2 text-[#B6771D]"></i>Event Mendatang

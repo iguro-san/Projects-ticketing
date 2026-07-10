@@ -40,10 +40,8 @@ class PaymentConfirmationController extends Controller
             
             $message = 'Pembayaran berhasil dikonfirmasi.';
         } else {
-            // ==========================================
             // KEMBALIKAN KUOTA TIKET SAAT DITOLAK
-            // ==========================================
-            if ($registration->ticketType) {
+            if ($registration->ticketType && $registration->payment_status !== 'cancelled') {
                 $registration->ticketType->decrement('registered');
             }
 

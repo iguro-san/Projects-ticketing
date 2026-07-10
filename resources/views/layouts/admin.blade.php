@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel - EventKu')</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .sidebar-transition { transition: transform 0.1s ease-in-out; }
         html, body { height: 100%; }
@@ -34,88 +34,88 @@
 
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
            class="sidebar-transition fixed top-0 left-0 z-50 w-64 h-full bg-[#141E46] shadow-lg lg:relative lg:translate-x-0 lg:z-auto flex flex-col">
-        <div class="flex items-center justify-between p-4 border-b">
+        <div class="flex items-center justify-between p-4 border-b border-[#B6771D]/30">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center hover:opacity-80 transition">
                 <img src="{{ asset('images/logo-eventix.png') }}" alt="EventKu" class="h-8 w-auto">
             </a>
-            <button @click="sidebarOpen = false" class="lg:hidden text-gray-500">
+            <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-white">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <!-- Profil User -->
-        <div class="p-4 border-b">
+        <div class="p-4 border-b border-[#B6771D]/30">
             <div class="flex items-center space-x-3">
                 <div class="bg-[#B6771D] rounded-full p-2">
                     <i class="fas fa-user-circle text-2xl text-white"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-white mt-2 truncate">{{ auth()->user()->email }}</p>
-                    <span class="inline-block mt-3 px-2 py-0.5 text-xs rounded-full bg-[#B6771D] text-white">
+                    <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 text-xs rounded-full bg-[#B6771D] text-white">
                         <i class="fas fa-user-shield mr-1"></i> {{ ucfirst(auth()->user()->role) }}
                     </span>
                 </div>
             </div>
         </div>
 
-       <nav class="flex-1 overflow-y-auto mt-4 space-y-3">
-    <a href="{{ route('admin.dashboard') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.dashboard') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-tachometer-alt w-5 mr-3 text-sm"></i> Dasbor
-    </a>
-    <a href="{{ route('admin.events.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.events.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-calendar-alt w-5 mr-3 text-sm"></i> Event
-    </a>
-        <a href="{{ route('admin.payments.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.payments.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-credit-card w-5 mr-3 text-sm"></i> Verifikasi Pembayaran
-    </a>
-        <a href="{{ route('admin.registrations.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.registrations.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-user-plus w-5 mr-3 text-sm"></i> Daftar Registrasi
-    </a>
-    <a href="{{ route('admin.categories.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.categories.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-tags w-5 mr-3 text-sm"></i> Kategori
-    </a>
-    <a href="{{ route('admin.panitia.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.panitia.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-users w-5 mr-3 text-sm"></i> Panitia
-    </a>
-    <a href="{{ route('admin.refunds.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.refunds.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-undo-alt w-5 mr-3 text-sm"></i> Refund
-    </a>
-    <a href="{{ route('admin.announcements.index') }}"
-       class="flex items-center px-4 py-1.5 text-sm text-white transition-all duration-200 
-              hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
-              {{ request()->routeIs('admin.announcements.*') ? 'bg-[#B6771D]/30 border-l-4 border-[#B6771D] text-[#B6771D]' : '' }}">
-        <i class="fas fa-bullhorn w-5 mr-3 text-sm"></i> Pengumuman
-    </a>
-</nav>
+        <nav class="flex-1 overflow-y-auto mt-4 space-y-1 px-2">
+            <a href="{{ route('admin.dashboard') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.dashboard') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-tachometer-alt w-5 mr-3 text-sm"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.events.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.events.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-calendar-alt w-5 mr-3 text-sm"></i> Event
+            </a>
+            <a href="{{ route('admin.payments.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.payments.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-credit-card w-5 mr-3 text-sm"></i> Verifikasi Pembayaran
+            </a>
+            <a href="{{ route('admin.registrations.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.registrations.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-user-plus w-5 mr-3 text-sm"></i> Daftar Registrasi
+            </a>
+            <a href="{{ route('admin.categories.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.categories.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-tags w-5 mr-3 text-sm"></i> Kategori
+            </a>
+            <a href="{{ route('admin.panitia.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.panitia.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-users w-5 mr-3 text-sm"></i> Panitia
+            </a>
+            <a href="{{ route('admin.refunds.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.refunds.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-undo-alt w-5 mr-3 text-sm"></i> Refund
+            </a>
+            <a href="{{ route('admin.announcements.index') }}"
+               class="flex items-center px-3 py-2 text-sm text-white rounded-lg transition-all duration-200 
+                      hover:bg-[#B6771D]/20 hover:text-[#B6771D] 
+                      {{ request()->routeIs('admin.announcements.*') ? 'bg-[#B6771D]/30 text-[#B6771D]' : '' }}">
+                <i class="fas fa-bullhorn w-5 mr-3 text-sm"></i> Pengumuman
+            </a>
+        </nav>
 
-        <div class="border-t p-4">
+        <div class="border-t border-[#B6771D]/30 p-4">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" 
                         onclick="return confirm('Apakah Anda yakin ingin keluar?')" 
-                        class="flex items-center w-full px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 rounded transition">
+                        class="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:text-white hover:bg-red-500 rounded-lg transition">
                     <i class="fas fa-sign-out-alt w-5 mr-3"></i> Keluar
                 </button>
             </form>

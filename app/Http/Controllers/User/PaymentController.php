@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
@@ -28,6 +29,7 @@ class PaymentController extends Controller
             ['bank' => 'BCA', 'account_number' => '1234567890', 'account_name' => 'PT Event Management'],
             ['bank' => 'Mandiri', 'account_number' => '0987654321', 'account_name' => 'PT Event Management'],
             ['bank' => 'BRI', 'account_number' => '1122334455', 'account_name' => 'PT Event Management'],
+            ['bank' => 'BNI', 'account_number' => '5566778899', 'account_name' => 'PT Event Management'],
         ];
 
         return view('payment.show', compact('registration', 'bankAccounts'));
@@ -43,7 +45,6 @@ class PaymentController extends Controller
             return redirect()->route('my.tickets')->with('success', 'Tiket GRATIS sudah otomatis aktif!');
         }
 
-        // Cek apakah sudah upload sebelumnya
         if ($registration->payment_proof) {
             return back()->with('error', 'Anda sudah upload bukti pembayaran.');
         }
@@ -58,17 +59,21 @@ class PaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'payment_method' => 'required|string|in:BCA,Mandiri,BRI,BNI,Other',
+            'payment_method' => 'required|string|in:BCA,Mandiri,BRI,BNI',
+            'sender_name' => 'required|string|max:255',
+            'sender_account' => 'required|string|max:50',
             'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'payment_proof.max' => 'Ukuran file maksimal 2MB.',
         ]);
 
         $proofPath = $request->file('payment_proof')->store('payment-proofs/' . date('Y/m'), 'public');
 
-        // UPDATE: status tetap pending, hanya simpan bukti
         $registration->update([
             'payment_method' => $validated['payment_method'],
+            'sender_name' => $validated['sender_name'],
+            'sender_account' => $validated['sender_account'],
             'payment_proof' => $proofPath,
-            // payment_status TIDAK diubah, tetap 'pending'
         ]);
 
         return redirect()->route('my.tickets')

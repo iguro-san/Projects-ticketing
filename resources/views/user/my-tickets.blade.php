@@ -101,11 +101,6 @@
                 <span class="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-semibold">
                     <i class="fas fa-clock mr-1"></i> Menunggu Verifikasi
                 </span>
-            @elseif($reg->payment_status == 'paid' && $reg->refund_status === 'none' && $reg->canRequestRefund())
-                <button onclick="showRefundModal({{ $reg->id }}, '{{ addslashes($reg->event->title) }}')"
-                        class="inline-block bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition font-semibold mt-2">
-                    <i class="fas fa-undo-alt mr-1"></i> Minta Refund
-                </button>
             @endif
 
             <p class="text-xs text-gray-500 mt-2">
@@ -118,9 +113,13 @@
 @if($reg->payment_status == 'pending' && !$reg->payment_proof && $reg->payment_deadline && !$reg->isDeadlinePassed())
 <script>
 (function() {
-    let remaining = {{ $reg->remaining_seconds }};
+    // Pastikan remaining adalah integer
+    let remaining = {{ (int) $reg->remaining_seconds }};
     const timerEl = document.getElementById('timer-{{ $reg->id }}');
     if (timerEl && remaining > 0) {
+        // Pastikan integer
+        remaining = Math.floor(remaining);
+        
         const interval = setInterval(() => {
             if (remaining <= 0) {
                 clearInterval(interval);
@@ -129,7 +128,7 @@
             } else {
                 const hours = Math.floor(remaining / 3600);
                 const minutes = Math.floor((remaining % 3600) / 60);
-                const seconds = remaining % 60;
+                const seconds = Math.floor(remaining % 60);
                 timerEl.innerHTML = `<i class="fas fa-hourglass-half mr-1 animate-pulse"></i> Sisa waktu: ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                 remaining--;
             }
@@ -149,41 +148,4 @@
     </a>
 </div>
 @endforelse
-
-{{-- Modal Refund --}}
-<div id="refundModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-2">Pengembalian Dana</h3>
-        <p class="text-sm text-gray-600 mb-3">Event: <span id="refundEventTitle" class="font-semibold"></span></p>
-        <form id="refundForm" method="POST">
-            @csrf
-            <div class="mb-3">
-                <label class="block text-sm font-medium mb-1">Alasan Refund</label>
-                <textarea name="reason" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm" 
-                          placeholder="Jelaskan alasan Anda meminta refund..." required></textarea>
-            </div>
-            <div class="bg-yellow-50 p-3 rounded-lg mb-3">
-                <p class="text-xs text-yellow-700">
-                    <i class="fas fa-info-circle mr-1"></i> 
-                    Refund akan diproses dalam 3-5 hari kerja setelah disetujui admin.
-                </p>
-            </div>
-            <div class="flex gap-2 mt-3 justify-end">
-                <button type="button" onclick="hideRefundModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm">Kirim Permintaan</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function showRefundModal(id, title) {
-    document.getElementById('refundForm').action = '/refund/request/' + id;
-    document.getElementById('refundEventTitle').innerText = title;
-    document.getElementById('refundModal').classList.remove('hidden');
-}
-function hideRefundModal() {
-    document.getElementById('refundModal').classList.add('hidden');
-}
-</script>
 @endsection

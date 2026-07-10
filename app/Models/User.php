@@ -24,14 +24,36 @@ class User extends Authenticatable implements CanResetPassword
     }
 
     // Role Checkers
-    public function isAdmin() { return $this->role === 'admin'; }
-    public function isPanitia() { return $this->role === 'panitia'; }
-    public function isUser() { return $this->role === 'user'; }
+    public function isAdmin() 
+    { 
+        return $this->role === 'admin'; 
+    }
+    
+    public function isPanitia() 
+    { 
+        return $this->role === 'panitia'; 
+    }
+    
+    public function isUser() 
+    { 
+        return $this->role === 'user'; 
+    }
 
     // Relationships
-    public function events() { return $this->hasMany(Event::class, 'panitia_id'); }
-    public function registrations() { return $this->hasMany(Registration::class); }
-    public function notifications() { return $this->hasMany(Notification::class)->latest(); }
+    public function events() 
+    { 
+        return $this->hasMany(Event::class, 'panitia_id'); 
+    }
+    
+    public function registrations() 
+    { 
+        return $this->hasMany(Registration::class); 
+    }
+    
+    public function notifications() 
+    { 
+        return $this->hasMany(Notification::class)->latest(); 
+    }
 
     // Notification Helpers
     public function unreadNotifications()

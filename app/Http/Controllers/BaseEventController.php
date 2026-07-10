@@ -22,7 +22,7 @@ abstract class BaseEventController extends Controller
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    abstract protected function getBaseQuery(Request $request);
+    abstract protected function getUserQuery(Request $request);
 
     /**
      * Method abstrak - WAJIB di-override oleh child class.
@@ -41,7 +41,7 @@ abstract class BaseEventController extends Controller
      * Logika umum (filter, search, pagination) DITULIS SEKALI di sini.
      * 
      * Konsep POLYMORPHISM: 
-     * Method ini memanggil $this->getBaseQuery() dan $this->renderIndexView().
+     * Method ini memanggil $this->getUserQuery() dan $this->renderIndexView().
      * Karena $this merujuk ke child class, maka perilaku ditentukan oleh child class
      * (Runtime Polymorphism / Dynamic Binding).
      * 
@@ -53,7 +53,7 @@ abstract class BaseEventController extends Controller
         // ==========================================
         // 1. Dapatkan query dari child class (POLYMORPHISM)
         // ==========================================
-        $query = $this->getBaseQuery($request)
+        $query = $this->getUserQuery($request)
             ->with(['category', 'panitia'])
             ->withCount('registrations');
 

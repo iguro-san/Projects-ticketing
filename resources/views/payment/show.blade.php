@@ -242,7 +242,7 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
 @endphp
 
 @if($showTimer)
-<script>
+
     (function() {
         console.log('🚀 Timer dimulai!');
         console.log('⏱️ Remaining seconds:', {{ $remainingSeconds }});
@@ -290,16 +290,16 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         
         console.log('✅ Timer berjalan!');
     })();
-</script>
+
 @else
-<script>
+
     console.log('❌ Timer TIDAK dijalankan karena:');
     console.log('  - payment_proof:', {{ $registration->payment_proof ? 'true' : 'false' }});
     console.log('  - isPending:', {{ $registration->isPending() ? 'true' : 'false' }});
     console.log('  - isDeadlinePassed:', {{ $registration->isDeadlinePassed() ? 'true' : 'false' }});
     console.log('  - remainingSeconds:', {{ $remainingSeconds }});
     console.log('  - showTimer:', {{ $showTimer ? 'true' : 'false' }});
-</script>
+
 @endif
 </script>
 @endsection

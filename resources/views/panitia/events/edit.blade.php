@@ -8,7 +8,7 @@
         <i class="fas fa-edit mr-2 text-purple-600"></i>Edit Event
     </h1>
     
-    <form action="{{ route('panitia.events.update', $event) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('panitia.events.update', $event) }}" method="POST" enctype="multipart/form-data" id="eventForm">
         @csrf @method('PUT')
         
         {{-- Judul --}}
@@ -54,13 +54,23 @@
         {{-- Poster --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Poster Baru (opsional)</label>
-            <input type="file" name="poster" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
+            <input type="file" name="poster" accept="image/*" id="posterInput" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-purple-600">
+            <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, WebP (Max 2MB)</p>
             @if($event->poster)
-                <p class="text-xs text-gray-500 mt-1">Poster saat ini: {{ basename($event->poster) }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                    <i class="fas fa-image mr-1"></i> Poster saat ini: {{ basename($event->poster) }}
+                    <a href="{{ Storage::url($event->poster) }}" target="_blank" class="text-blue-500 hover:underline ml-2">Lihat</a>
+                </p>
             @endif
+            <div id="posterAlert" class="hidden mt-2 text-sm text-red-600">
+                <i class="fas fa-exclamation-circle mr-1"></i> Ukuran poster melebihi 2MB. Silakan pilih file yang lebih kecil.
+            </div>
+            @error('poster') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 
-        {{-- TIKET YANG SUDAH ADA (READ ONLY) --}}
+        {{-- ========================================== --}}
+        {{-- TIKET YANG SUDAH ADA --}}
+        {{-- ========================================== --}}
         @if($event->ticketTypes->count() > 0)
         <div class="border-t pt-6 mt-6">
             <h3 class="font-bold text-lg mb-3">
@@ -76,6 +86,7 @@
                             <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500">Terdaftar</th>
                             <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500">Sisa</th>
                             <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500">Status</th>
+                            <th class="px-3 py-2 text-center text-xs font-semibold text-gray-500">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y">
@@ -103,18 +114,34 @@
                                     <span class="text-xs text-green-500 font-semibold">Tersedia</span>
                                 @endif
                             </td>
+                            <td class="px-3 py-2 text-center">
+                                @if($ticket->registrations()->count() == 0)
+                                    <form action="{{ route('panitia.events.tickets.destroy', [$event, $ticket]) }}" 
+                                          method="POST" 
+                                          onsubmit="return confirm('Hapus tiket {{ $ticket->name }}?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700 text-xs" title="Hapus tiket">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-gray-400 text-xs" title="Tiket sudah ada pendaftar">-</span>
+                                @endif
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
             <p class="text-xs text-gray-400 mt-2">
-                <i class="fas fa-info-circle mr-1"></i>Tiket yang sudah ada tidak dapat diedit. Anda hanya bisa menambah tiket baru.
+                <i class="fas fa-info-circle mr-1"></i>Tiket yang sudah ada pendaftar tidak dapat dihapus.
             </p>
         </div>
         @endif
 
+        {{-- ========================================== --}}
         {{-- TAMBAH TIKET BARU --}}
+        {{-- ========================================== --}}
         <div class="border-t pt-6 mt-6">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-lg">
@@ -124,8 +151,13 @@
                     <i class="fas fa-plus mr-1"></i>Tambah
                 </button>
             </div>
-            <div id="ticketContainer"></div>
+            <div id="ticketContainer">
+                <!-- Tiket baru akan ditambahkan di sini melalui JavaScript -->
+            </div>
             <p class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin menambah tiket baru.</p>
+            @error('ticket_names') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            @error('ticket_prices') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            @error('ticket_quotas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
         
         {{-- Submit --}}
@@ -141,21 +173,27 @@
 </div>
 
 <script>
+/**
+ * ==========================================
+ * TAMBAH TIKET BARU
+ * ==========================================
+ */
 function addTicket() {
+    const container = document.getElementById('ticketContainer');
     const div = document.createElement('div');
     div.className = 'ticket-row grid grid-cols-12 gap-2 mb-2 p-3 bg-green-50 rounded-lg border border-green-200 items-end relative';
     div.innerHTML = `
         <div class="col-span-4">
-            <label class="text-xs text-gray-500">Nama Tiket</label>
+            <label class="text-xs text-gray-500">Nama Tiket <span class="text-red-500">*</span></label>
             <input type="text" name="ticket_names[]" placeholder="Nama Tiket" class="w-full border rounded px-2 py-1.5 text-sm" required>
         </div>
         <div class="col-span-3">
-            <label class="text-xs text-gray-500">Harga (isi 0 untuk gratis)</label>
-            <input type="number" name="ticket_prices[]" placeholder="0" class="w-full border rounded px-2 py-1.5 text-sm" required min="0">
+            <label class="text-xs text-gray-500">Harga (isi 0 untuk gratis) <span class="text-red-500">*</span></label>
+            <input type="number" name="ticket_prices[]" placeholder="0" class="w-full border rounded px-2 py-1.5 text-sm" required min="0" step="1">
         </div>
         <div class="col-span-3">
-            <label class="text-xs text-gray-500">Kuota</label>
-            <input type="number" name="ticket_quotas[]" placeholder="100" class="w-full border rounded px-2 py-1.5 text-sm" required min="1">
+            <label class="text-xs text-gray-500">Kuota <span class="text-red-500">*</span></label>
+            <input type="number" name="ticket_quotas[]" placeholder="100" class="w-full border rounded px-2 py-1.5 text-sm" required min="1" step="1">
         </div>
         <div class="col-span-2 text-right">
             <button type="button" onclick="this.closest('.ticket-row').remove()" class="text-red-500 text-sm hover:text-red-700">
@@ -164,7 +202,91 @@ function addTicket() {
         </div>
         <span class="absolute -top-2 -left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">BARU</span>
     `;
-    document.getElementById('ticketContainer').appendChild(div);
+    container.appendChild(div);
 }
+
+/**
+ * ==========================================
+ * VALIDASI UKURAN POSTER (MAX 2MB)
+ * ==========================================
+ */
+document.getElementById('posterInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const alertDiv = document.getElementById('posterAlert');
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (file) {
+        if (file.size > maxSize) {
+            alertDiv.classList.remove('hidden');
+            this.value = ''; // reset input
+            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alertDiv.classList.add('hidden');
+        }
+    } else {
+        alertDiv.classList.add('hidden');
+    }
+});
+
+/**
+ * ==========================================
+ * VALIDASI SEBELUM SUBMIT
+ * ==========================================
+ */
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+    // Cek ukuran poster
+    const fileInput = document.getElementById('posterInput');
+    const alertDiv = document.getElementById('posterAlert');
+    const maxSize = 2 * 1024 * 1024;
+
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (file.size > maxSize) {
+            e.preventDefault();
+            alertDiv.classList.remove('hidden');
+            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            alert('Ukuran poster melebihi 2MB! Silakan pilih file yang lebih kecil.');
+            return false;
+        }
+    }
+
+    // Validasi tiket baru
+    const ticketRows = document.querySelectorAll('.ticket-row');
+    let hasError = false;
+    
+    ticketRows.forEach(function(row) {
+        const nameInput = row.querySelector('input[name="ticket_names[]"]');
+        const priceInput = row.querySelector('input[name="ticket_prices[]"]');
+        const quotaInput = row.querySelector('input[name="ticket_quotas[]"]');
+        
+        // Skip jika sudah dihapus oleh user (tapi masih ada di DOM)
+        if (!row.parentNode) return;
+        
+        if (!nameInput.value.trim()) {
+            alert('Nama tiket tidak boleh kosong!');
+            nameInput.focus();
+            hasError = true;
+            return;
+        }
+        
+        if (!priceInput.value || parseInt(priceInput.value) < 0) {
+            alert('Harga tiket harus diisi dengan angka yang valid (min 0)!');
+            priceInput.focus();
+            hasError = true;
+            return;
+        }
+        
+        if (!quotaInput.value || parseInt(quotaInput.value) < 1) {
+            alert('Kuota tiket harus diisi dengan angka minimal 1!');
+            quotaInput.focus();
+            hasError = true;
+            return;
+        }
+    });
+    
+    if (hasError) {
+        e.preventDefault();
+    }
+});
 </script>
 @endsection

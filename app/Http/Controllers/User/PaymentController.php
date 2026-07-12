@@ -69,11 +69,19 @@ class PaymentController extends Controller
 
         $proofPath = $request->file('payment_proof')->store('payment-proofs/' . date('Y/m'), 'public');
 
+        // ==========================================
+        // SIMPAN DATA BANK DARI USER
+        // Data ini akan digunakan untuk refund otomatis
+        // ==========================================
         $registration->update([
             'payment_method' => $validated['payment_method'],
             'sender_name' => $validated['sender_name'],
             'sender_account' => $validated['sender_account'],
             'payment_proof' => $proofPath,
+            // Data bank juga disimpan di kolom refund untuk antisipasi
+            'refund_bank' => $validated['payment_method'],
+            'refund_account_name' => $validated['sender_name'],
+            'refund_account_number' => $validated['sender_account'],
         ]);
 
         return redirect()->route('my.tickets')

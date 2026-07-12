@@ -120,6 +120,10 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::post('/events/{event}/reject', [AdminEventController::class, 'reject'])->name('events.reject');
     Route::post('/events/{event}/pending', [SuspensionController::class, 'pending'])->name('events.pending');
     Route::post('/events/{event}/resolve/{action}', [SuspensionController::class, 'resolve'])->name('events.resolve');
+    
+    // ==========================================
+    // CANCEL EVENT - OTOMATIS BUAT REFUND
+    // ==========================================
     Route::post('/events/{event}/cancel', [AdminEventController::class, 'cancelEvent'])->name('events.cancel');
     
     // Ticket Types
@@ -146,9 +150,14 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::get('/payments', [PaymentConfirmationController::class, 'index'])->name('payments.index');
     Route::post('/payments/{registration}/confirm', [PaymentConfirmationController::class, 'confirm'])->name('payments.confirm');
     
-    // Refund Management
+    // ==========================================
+    // REFUND MANAGEMENT - SISTEM BARU (SIMPEL)
+    // ==========================================
     Route::get('/refunds', [RefundController::class, 'index'])->name('refunds.index');
     Route::post('/refunds/{registration}/process', [RefundController::class, 'process'])->name('refunds.process');
+    Route::post('/refunds/process-all', [RefundController::class, 'processAll'])->name('refunds.process-all');
+    Route::post('/refunds/{registration}/reject', [RefundController::class, 'reject'])->name('refunds.reject');
+    Route::get('/refunds/{registration}', [RefundController::class, 'show'])->name('refunds.show');
     
     // Announcement Management
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');

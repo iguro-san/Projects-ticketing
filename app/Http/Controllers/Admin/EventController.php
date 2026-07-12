@@ -7,7 +7,6 @@ use App\Models\Category;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\User;
-use App\Notifications\EventCancelled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -19,9 +18,6 @@ class EventController extends BaseEventController
      * OVERRIDE METHOD #1 - POLYMORPHISM
      * ==========================================
      * Admin melihat SEMUA event (tanpa filter panitia_id)
-     * 
-     * @param Request $request
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function getUserQuery(Request $request)
     {
@@ -33,11 +29,6 @@ class EventController extends BaseEventController
      * OVERRIDE METHOD #2 - POLYMORPHISM
      * ==========================================
      * Admin view membutuhkan data tambahan: $categories dan $panitia
-     * untuk dropdown filter di halaman admin.
-     * 
-     * @param mixed $events
-     * @param Request $request
-     * @return \Illuminate\View\View
      */
     protected function renderIndexView($events, Request $request)
     {
@@ -162,9 +153,9 @@ class EventController extends BaseEventController
 
     /**
      * ==========================================
-     * BATALKAN EVENT - HANYA ADMIN
+     * BATALKAN EVENT - OTOMATIS BUAT REFUND
      * ==========================================
-     * Semua peserta berbayar akan mendapatkan refund dalam 1 bulan
+     * Semua peserta berbayar otomatis dibuatkan refund pending
      */
     public function cancelEvent(Request $request, Event $event)
     {
@@ -187,15 +178,22 @@ class EventController extends BaseEventController
             'reason' => 'nullable|string|max:500'
         ]);
 
-        DB::transaction(function () use ($event, $request) {
+        // ==========================================
+        // DEKLARASIKAN VARIABLE DI LUAR CLOSURE
+        // ==========================================
+        $refundCount = 0;
+
+        DB::transaction(function () use ($event, $request, &$refundCount) {
             // Update status event
             $event->update([
                 'status' => 'cancelled',
                 'suspension_status' => 'cancelled',
             ]);
 
-            // Proses refund untuk semua pendaftaran berbayar
-            $registrations = $event->registrations()
+            // ==========================================
+            // OTOMATIS: BUAT REFUND UNTUK SEMUA PESERTA BAYAR
+            // ==========================================
+            $registrations = Registration::where('event_id', $event->id)
                 ->where('payment_status', 'paid')
                 ->get();
 
@@ -203,17 +201,30 @@ class EventController extends BaseEventController
                 // Cek apakah tiket berbayar
                 $ticketType = $reg->ticketType;
                 if ($ticketType && $ticketType->price > 0) {
+                    // ==========================================
+                    // LANGSUNG BUAT REFUND STATUS = PENDING
+                    // Data bank diambil dari data pembayaran
+                    // ==========================================
                     $reg->update([
-                        'refund_status' => 'processing',
-                        'refund_reason' => 'Event dibatalkan oleh admin' . ($request->reason ? ': ' . $request->reason : ''),
+                        'refund_status' => 'pending',
                         'refund_requested_at' => now(),
+                        'refund_reason' => 'Event dibatalkan oleh admin' . ($request->reason ? ': ' . $request->reason : ''),
+                        'refund_amount' => $reg->amount_paid ?? $ticketType->price,
+                        'refund_bank' => $reg->payment_method ?? null,
+                        'refund_account_name' => $reg->sender_name ?? null,
+                        'refund_account_number' => $reg->sender_account ?? null,
                     ]);
 
+                    $refundCount++;
+
                     // Kirim notifikasi refund ke user
-                    $user = $reg->user;
-                    if ($user) {
-                        $user->notify(new \App\Notifications\RefundInitiated($reg));
-                        $user->notify(new EventCancelled($event, $reg));
+                    if ($reg->user) {
+                        $reg->user->notify(
+                            'refund_initiated',
+                            'Refund Otomatis Dibuat',
+                            "Event '{$event->title}' dibatalkan. Refund sebesar Rp " . number_format($reg->refund_amount, 0, ',', '.') . " sedang diproses.",
+                            ['registration_id' => $reg->id]
+                        );
                     }
                 } else {
                     // Untuk tiket gratis, tidak ada refund
@@ -221,63 +232,11 @@ class EventController extends BaseEventController
                         'refund_status' => 'completed',
                         'refund_notes' => 'Tiket gratis - tidak ada pengembalian dana',
                     ]);
-                    
-                    // Tetap kirim notifikasi event dibatalkan
-                    $user = $reg->user;
-                    if ($user) {
-                        $user->notify(new EventCancelled($event, $reg));
-                    }
                 }
             }
         });
 
         return redirect()->route('admin.events.index')
-            ->with('success', 'Event berhasil dibatalkan. Peserta berbayar akan mendapat refund dalam waktu 1 bulan.');
-    }
-
-    /**
-     * ==========================================
-     * PROSES REFUND - HANYA ADMIN
-     * ==========================================
-     */
-    public function processRefund(Request $request, Registration $registration)
-    {
-        // Hanya admin yang bisa memproses refund
-        if (auth()->user()->role !== 'admin') {
-            abort(403);
-        }
-
-        $request->validate([
-            'action' => 'required|in:approve,reject',
-            'refund_bank' => 'required_if:action,approve|in:BCA,Mandiri,BRI,BNI',
-            'refund_account_name' => 'required_if:action,approve|string|max:255',
-            'refund_account_number' => 'required_if:action,approve|string|max:50',
-            'notes' => 'nullable|string|max:500',
-        ]);
-
-        if ($request->action === 'approve') {
-            $registration->update([
-                'refund_status' => 'completed',
-                'refund_processed_at' => now(),
-                'refund_notes' => $request->notes,
-                'refund_bank' => $request->refund_bank,
-                'refund_account_name' => $request->refund_account_name,
-                'refund_account_number' => $request->refund_account_number,
-            ]);
-
-            // Kirim notifikasi refund selesai
-            if ($registration->user) {
-                $registration->user->notify(new \App\Notifications\RefundProcessed($registration));
-            }
-
-            return back()->with('success', 'Refund berhasil diproses dan dikirim ke rekening peserta.');
-        } else {
-            $registration->update([
-                'refund_status' => 'rejected',
-                'refund_notes' => $request->notes ?? 'Refund ditolak oleh admin',
-            ]);
-
-            return back()->with('success', 'Refund ditolak.');
-        }
+            ->with('success', "Event berhasil dibatalkan. {$refundCount} refund otomatis dibuat untuk peserta berbayar. Silakan proses refund di halaman Refund.");
     }
 }

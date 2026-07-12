@@ -6,11 +6,11 @@
 
 <!-- Hero Section with Background Image -->
 <div class="relative rounded-2xl mb-12 overflow-hidden min-h-[400px] flex items-center">
-    <div class="absolute inset-0 bg-cover bg-center"
+    <!-- Background dengan attachment fixed -->
+    <div class="absolute inset-0 bg-cover bg-center bg-fixed"
          style="background-image: url('{{ asset('images/bg-hero2.png') }}');">
     </div>
     <div class="absolute inset-0 bg-black/40"></div>
-    `
     <!-- Konten Hero -->
     <div class="relative z-10 container mx-auto px-4 md:px-12">
         <div class="max-w-3xl">

@@ -178,10 +178,16 @@
  * TAMBAH TIKET BARU
  * ==========================================
  */
+let ticketCounter = 0;
+
 function addTicket() {
     const container = document.getElementById('ticketContainer');
     const div = document.createElement('div');
+    ticketCounter++;
+    const uniqueId = 'ticket_' + ticketCounter + '_' + Date.now();
+    
     div.className = 'ticket-row grid grid-cols-12 gap-2 mb-2 p-3 bg-green-50 rounded-lg border border-green-200 items-end relative';
+    div.id = uniqueId;
     div.innerHTML = `
         <div class="col-span-4">
             <label class="text-xs text-gray-500">Nama Tiket <span class="text-red-500">*</span></label>
@@ -189,20 +195,38 @@ function addTicket() {
         </div>
         <div class="col-span-3">
             <label class="text-xs text-gray-500">Harga (isi 0 untuk gratis) <span class="text-red-500">*</span></label>
-            <input type="number" name="ticket_prices[]" placeholder="0" class="w-full border rounded px-2 py-1.5 text-sm" required min="0" step="1">
+            <input type="number" name="ticket_prices[]" placeholder="0" class="w-full border rounded px-2 py-1.5 text-sm" min="0" step="1" required>
         </div>
         <div class="col-span-3">
             <label class="text-xs text-gray-500">Kuota <span class="text-red-500">*</span></label>
-            <input type="number" name="ticket_quotas[]" placeholder="100" class="w-full border rounded px-2 py-1.5 text-sm" required min="1" step="1">
+            <input type="number" name="ticket_quotas[]" placeholder="100" class="w-full border rounded px-2 py-1.5 text-sm" min="1" step="1" required>
         </div>
         <div class="col-span-2 text-right">
-            <button type="button" onclick="this.closest('.ticket-row').remove()" class="text-red-500 text-sm hover:text-red-700">
+            <button type="button" onclick="removeTicket('${uniqueId}')" class="text-red-500 text-sm hover:text-red-700">
                 <i class="fas fa-trash"></i> Hapus
             </button>
         </div>
         <span class="absolute -top-2 -left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">BARU</span>
     `;
     container.appendChild(div);
+    
+    // Fokus ke input pertama tiket baru
+    setTimeout(() => {
+        const firstInput = div.querySelector('input[name="ticket_names[]"]');
+        if (firstInput) firstInput.focus();
+    }, 100);
+    
+    // Scroll ke tiket baru
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function removeTicket(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        if (confirm('Hapus tiket ini?')) {
+            element.remove();
+        }
+    }
 }
 
 /**
@@ -210,21 +234,26 @@ function addTicket() {
  * VALIDASI UKURAN POSTER (MAX 2MB)
  * ==========================================
  */
-document.getElementById('posterInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const alertDiv = document.getElementById('posterAlert');
-    const maxSize = 2 * 1024 * 1024; // 2MB
+document.addEventListener('DOMContentLoaded', function() {
+    const posterInput = document.getElementById('posterInput');
+    if (posterInput) {
+        posterInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const alertDiv = document.getElementById('posterAlert');
+            const maxSize = 2 * 1024 * 1024; // 2MB
 
-    if (file) {
-        if (file.size > maxSize) {
-            alertDiv.classList.remove('hidden');
-            this.value = ''; // reset input
-            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            alertDiv.classList.add('hidden');
-        }
-    } else {
-        alertDiv.classList.add('hidden');
+            if (file) {
+                if (file.size > maxSize) {
+                    alertDiv.classList.remove('hidden');
+                    this.value = ''; // reset input
+                    alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    alertDiv.classList.add('hidden');
+                }
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+        });
     }
 });
 
@@ -239,7 +268,7 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
     const alertDiv = document.getElementById('posterAlert');
     const maxSize = 2 * 1024 * 1024;
 
-    if (fileInput.files.length > 0) {
+    if (fileInput && fileInput.files.length > 0) {
         const file = fileInput.files[0];
         if (file.size > maxSize) {
             e.preventDefault();
@@ -250,7 +279,9 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
         }
     }
 
-    // Validasi tiket baru
+    // ==========================================
+    // VALIDASI TIKET BARU
+    // ==========================================
     const ticketRows = document.querySelectorAll('.ticket-row');
     let hasError = false;
     
@@ -259,26 +290,45 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
         const priceInput = row.querySelector('input[name="ticket_prices[]"]');
         const quotaInput = row.querySelector('input[name="ticket_quotas[]"]');
         
-        // Skip jika sudah dihapus oleh user (tapi masih ada di DOM)
-        if (!row.parentNode) return;
-        
-        if (!nameInput.value.trim()) {
+        // Validasi nama tiket
+        if (!nameInput || !nameInput.value.trim()) {
             alert('Nama tiket tidak boleh kosong!');
-            nameInput.focus();
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.style.borderColor = 'red';
+            }
             hasError = true;
             return;
         }
         
-        if (!priceInput.value || parseInt(priceInput.value) < 0) {
+        // Validasi harga tiket
+        if (!priceInput) {
+            alert('Harga tiket harus diisi!');
+            hasError = true;
+            return;
+        }
+        
+        const price = parseInt(priceInput.value);
+        if (isNaN(price) || price < 0) {
             alert('Harga tiket harus diisi dengan angka yang valid (min 0)!');
             priceInput.focus();
+            priceInput.style.borderColor = 'red';
             hasError = true;
             return;
         }
         
-        if (!quotaInput.value || parseInt(quotaInput.value) < 1) {
+        // Validasi kuota tiket
+        if (!quotaInput) {
+            alert('Kuota tiket harus diisi!');
+            hasError = true;
+            return;
+        }
+        
+        const quota = parseInt(quotaInput.value);
+        if (isNaN(quota) || quota < 1) {
             alert('Kuota tiket harus diisi dengan angka minimal 1!');
             quotaInput.focus();
+            quotaInput.style.borderColor = 'red';
             hasError = true;
             return;
         }
@@ -286,6 +336,7 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
     
     if (hasError) {
         e.preventDefault();
+        return false;
     }
 });
 </script>

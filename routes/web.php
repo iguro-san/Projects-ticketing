@@ -93,7 +93,7 @@ Route::middleware(['auth', 'check.role:panitia'])->prefix('panitia')->name('pani
     Route::get('/events/{event}/registrations/export', [PanitiaEventController::class, 'exportRegistrations'])->name('events.registrations.export');
     
     // ==========================================
-    // TAMBAHKAN ROUTE INI UNTUK HAPUS TIKET
+    // ROUTE UNTUK HAPUS TIKET
     // ==========================================
     Route::delete('/events/{event}/tickets/{ticketType}', [PanitiaEventController::class, 'destroyTicket'])->name('events.tickets.destroy');
 });

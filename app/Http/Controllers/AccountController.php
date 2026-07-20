@@ -37,6 +37,11 @@ class AccountController extends Controller
             return $this->updateEmail($request);
         }
 
+        // Check if this is a phone update request
+        if ($request->has('phone') && !$request->has('name') && !$request->has('email')) {
+            return $this->updatePhone($request);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -46,6 +51,27 @@ class AccountController extends Controller
         $user->update($data);
 
         return back()->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    // Update phone number
+    public function updatePhone(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Only allow regular users to update phone
+        if ($user->isAdmin() || $user->isPanitia()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'phone' => 'required|string|max:30',
+        ]);
+
+        $oldPhone = $user->phone ?? '-';
+        $user->phone = $request->input('phone');
+        $user->save();
+
+        return back()->with('success', "Nomor telepon berhasil diperbarui dari {$oldPhone} menjadi {$user->phone}.");
     }
 
     // Update email with password confirmation

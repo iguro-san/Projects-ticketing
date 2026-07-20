@@ -101,8 +101,12 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             <i class="fas fa-phone text-gray-400 mr-2"></i>Nomor Telepon
                         </label>
-                        <input type="text" value="{{ $user->phone ?? '-' }}" readonly 
-                            class="w-full border border-gray-200 rounded-lg px-4 py-3 bg-gray-50 text-gray-700 cursor-not-allowed focus:outline-none">
+                        <div class="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 bg-gray-50">
+                            <span class="text-gray-600 flex-1">{{ $user->phone ?? '-' }}</span>
+                            <button id="openChangePhone" type="button" class="text-green-600 hover:text-green-700 font-semibold text-sm whitespace-nowrap">
+                                <i class="fas fa-edit mr-1"></i>Ganti
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -202,6 +206,51 @@
                     </button>
                     <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 transition shadow-sm">
                         <i class="fas fa-check mr-2"></i>Simpan Email
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Change Phone Modal --}}
+    <div id="changePhoneModal" class="fixed inset-0 z-50 hidden px-4" style="align-items: center; justify-content: center;">
+        <div id="phoneModalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
+        <div id="phoneModalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
+                <div class="bg-gradient-to-br from-green-400 to-green-500 p-3 rounded-full">
+                    <i class="fas fa-phone text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900">Ganti Nomor Telepon</h3>
+            </div>
+
+            <form id="changePhoneForm" action="{{ route('account.update') }}" method="POST" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-phone text-gray-400 mr-2"></i>Nomor Lama
+                    </label>
+                    <input type="text" value="{{ $user->phone ?? '-' }}" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-gray-700 cursor-not-allowed">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-mobile-alt text-gray-400 mr-2"></i>Nomor Baru
+                    </label>
+                    <input id="newPhone" type="text" name="phone" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition" 
+                        placeholder="Contoh: 081234567890" required>
+                    @error('phone') 
+                        <p class="text-red-600 text-sm mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> 
+                    @enderror
+                </div>
+
+                <div class="flex gap-3 pt-6">
+                    <button type="button" id="closeChangePhone" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+                        <i class="fas fa-times mr-2"></i>Batal
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700 transition shadow-sm">
+                        <i class="fas fa-check mr-2"></i>Simpan Nomor
                     </button>
                 </div>
             </form>
@@ -397,6 +446,72 @@
             const hasEmailError = '{{ $errors->has('email') ? 'true' : 'false' }}';
             if(hasEmailError === 'true'){
                 setTimeout(openEmailModal, 300);
+            }
+        })();
+
+        // Phone Modal Handler
+        (function(){
+            const phoneModal = document.getElementById('changePhoneModal');
+            const phoneBackdrop = document.getElementById('phoneModalBackdrop');
+            const phoneCard = document.getElementById('phoneModalCard');
+            const openPhoneBtn = document.getElementById('openChangePhone');
+            const closePhoneBtn = document.getElementById('closeChangePhone');
+            const phoneForm = document.getElementById('changePhoneForm');
+            const newPhoneField = document.getElementById('newPhone');
+
+            function openPhoneModal(){
+                phoneModal.classList.add('modal-open');
+                phoneModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Clear field
+                newPhoneField.value = '';
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    phoneBackdrop.classList.add('modal-backdrop-enter');
+                    phoneCard.classList.add('modal-card-enter');
+                });
+            }
+
+            function closePhoneModal(){
+                phoneBackdrop.classList.remove('modal-backdrop-enter');
+                phoneCard.classList.remove('modal-card-enter');
+                
+                phoneBackdrop.classList.add('modal-backdrop-exit');
+                phoneCard.classList.add('modal-card-exit');
+                
+                setTimeout(() => {
+                    phoneModal.classList.remove('modal-open');
+                    phoneModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    phoneBackdrop.classList.remove('modal-backdrop-exit');
+                    phoneCard.classList.remove('modal-card-exit');
+                }, 300);
+            }
+
+            openPhoneBtn && openPhoneBtn.addEventListener('click', openPhoneModal);
+            closePhoneBtn && closePhoneBtn.addEventListener('click', closePhoneModal);
+
+            // Close modal when clicking on backdrop
+            phoneBackdrop && phoneBackdrop.addEventListener('click', closePhoneModal);
+
+            // Validasi nomor telepon baru
+            phoneForm && phoneForm.addEventListener('submit', function(e){
+                const currentPhone = '{{ $user->phone ?? '' }}';
+                const newPhone = newPhoneField.value.trim();
+                
+                if(newPhone === currentPhone){
+                    e.preventDefault();
+                    alert('Nomor telepon baru harus berbeda dengan nomor saat ini');
+                    return false;
+                }
+            });
+
+            // Hanya buka modal jika ada error validation phone
+            const hasPhoneError = '{{ $errors->has('phone') ? 'true' : 'false' }}';
+            if(hasPhoneError === 'true'){
+                setTimeout(openPhoneModal, 300);
             }
         })();
     </script>

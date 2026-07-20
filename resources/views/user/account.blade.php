@@ -52,9 +52,9 @@
     <div class="max-w-4xl mx-auto px-4">
         
         {{-- User Header Banner --}}
-        <div class="bg-gradient-to-r from-[#1e3a8a] to-[#312e81] rounded-lg p-8 mb-8 text-white">
+        <div class="bg-[#141E46] rounded-lg p-8 mb-8 text-white">
             <div class="flex items-center gap-4">
-                <div class="w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-3xl font-bold">
+                <div class="w-20 h-20 bg-[#760031] rounded-full flex items-center justify-center text-3xl font-bold">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 <div>
@@ -69,11 +69,11 @@
             
             {{-- Profile Card --}}
             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div class="bg-gradient-to-r from-orange-400 to-orange-300 px-6 py-4 flex items-center gap-3">
+                <div class="bg-[#B6771D] px-6 py-4 flex items-center gap-3">
                     <i class="fas fa-user text-white text-xl"></i>
                     <div>
                         <h2 class="text-white font-semibold">Profil</h2>
-                        <p class="text-orange-50 text-sm">Detail identitas dan kontak akun kamu</p>
+                        <p class="text-white/80 text-sm">Detail identitas dan kontak akun kamu</p>
                     </div>
                 </div>
                 <div class="p-6 space-y-5">
@@ -121,11 +121,11 @@
 
             {{-- Password Card --}}
             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-400 to-yellow-300 px-6 py-4 flex items-center gap-3">
+                <div class="bg-[#760031] px-6 py-4 flex items-center gap-3">
                     <i class="fas fa-lock text-white text-xl"></i>
                     <div>
                         <h2 class="text-white font-semibold">Kata Sandi</h2>
-                        <p class="text-amber-50 text-sm">Jaga akun kamu tetap aman</p>
+                        <p class="text-white/80 text-sm">Jaga akun kamu tetap aman</p>
                     </div>
                 </div>
                 <div class="p-6 space-y-5">
@@ -149,7 +149,7 @@
                         </div>
                     @endif
 
-                    <button id="openChangePassword" type="button" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all shadow-sm hover:shadow-md">
+                    <button id="openChangePassword" type="button" class="w-full bg-[#760031] hover:bg-[#760031]/80 text-white font-semibold py-3 px-4 rounded-lg transition-all shadow-sm hover:shadow-md">
                         <i class="fas fa-key mr-2"></i>Ganti Kata Sandi
                     </button>
                 </div>
@@ -162,7 +162,7 @@
         <div id="emailModalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
         <div id="emailModalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-                <div class="bg-gradient-to-br from-blue-400 to-blue-500 p-3 rounded-full">
+                <div class="bg-[#0066CC] p-3 rounded-full">
                     <i class="fas fa-envelope text-white"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900">Ganti Email</h3>
@@ -204,7 +204,7 @@
                     <button type="button" id="closeChangeEmail" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
                         <i class="fas fa-times mr-2"></i>Batal
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 transition shadow-sm">
+                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-[#0066CC] hover:bg-[#0052A3] text-white font-semibold transition shadow-sm">
                         <i class="fas fa-check mr-2"></i>Simpan Email
                     </button>
                 </div>
@@ -217,7 +217,7 @@
         <div id="phoneModalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
         <div id="phoneModalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-                <div class="bg-gradient-to-br from-green-400 to-green-500 p-3 rounded-full">
+                <div class="bg-[#22C55E] p-3 rounded-full">
                     <i class="fas fa-phone text-white"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900">Ganti Nomor Telepon</h3>
@@ -249,7 +249,7 @@
                     <button type="button" id="closeChangePhone" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
                         <i class="fas fa-times mr-2"></i>Batal
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700 transition shadow-sm">
+                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-white font-semibold transition shadow-sm">
                         <i class="fas fa-check mr-2"></i>Simpan Nomor
                     </button>
                 </div>
@@ -262,7 +262,7 @@
         <div id="modalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
         <div id="modalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-                <div class="bg-gradient-to-br from-amber-400 to-yellow-300 p-3 rounded-full">
+                <div class="bg-[#760031] p-3 rounded-full">
                     <i class="fas fa-key text-white"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900">Ganti Kata Sandi</h3>
@@ -309,7 +309,7 @@
                     <button type="button" id="closeChangePassword" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
                         <i class="fas fa-times mr-2"></i>Batal
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold hover:from-red-600 hover:to-red-700 transition shadow-sm">
+                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-[#760031] hover:bg-[#760031]/80 text-white font-semibold transition shadow-sm">
                         <i class="fas fa-check mr-2"></i>Simpan Kata Sandi
                     </button>
                 </div>

@@ -131,7 +131,6 @@
                         </label>
                         <div class="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 bg-gray-50">
                             <span class="text-gray-600 text-lg tracking-wider">••••••••</span>
-                            <span class="text-xs text-gray-400">Terakhir diubah 14 hari lalu</span>
                         </div>
                     </div>
 

@@ -3,6 +3,43 @@
 @section('title', 'Manajemen Akun')
 
 @section('content')
+<style>
+    @keyframes fadeInBackdrop {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUpScale {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.85);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    .modal-backdrop-enter {
+        animation: fadeInBackdrop 0.3s ease-out;
+    }
+
+    .modal-card-enter {
+        animation: slideUpScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop-exit {
+        animation: fadeInBackdrop 0.3s ease-out reverse;
+    }
+
+    .modal-card-exit {
+        animation: slideUpScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) reverse;
+    }
+</style>
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4">
         
@@ -106,8 +143,9 @@
     </div>
 
     {{-- Change Password Modal --}}
-    <div id="changePasswordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden px-4">
-        <div class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl">
+    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden px-4" style="display: flex; align-items: center; justify-content: center;">
+        <div id="modalBackdrop" class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div id="modalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
                 <div class="bg-gradient-to-br from-amber-400 to-yellow-300 p-3 rounded-full">
                     <i class="fas fa-key text-white"></i>
@@ -167,6 +205,8 @@
     <script>
         (function(){
             const modal = document.getElementById('changePasswordModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const card = document.getElementById('modalCard');
             const openBtn = document.getElementById('openChangePassword');
             const closeBtn = document.getElementById('closeChangePassword');
             const form = document.getElementById('changePasswordForm');
@@ -174,11 +214,38 @@
             const confirmPass = document.getElementById('confirmPassword');
             const confirmError = document.getElementById('confirmError');
 
-            function openModal(){ modal.classList.remove('hidden'); }
-            function closeModal(){ modal.classList.add('hidden'); confirmError.classList.add('hidden'); }
+            function openModal(){
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    backdrop.classList.add('modal-backdrop-enter');
+                    card.classList.add('modal-card-enter');
+                });
+            }
+
+            function closeModal(){
+                backdrop.classList.remove('modal-backdrop-enter');
+                card.classList.remove('modal-card-enter');
+                
+                backdrop.classList.add('modal-backdrop-exit');
+                card.classList.add('modal-card-exit');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                    backdrop.classList.remove('modal-backdrop-exit');
+                    card.classList.remove('modal-card-exit');
+                    confirmError.classList.add('hidden');
+                }, 300);
+            }
 
             openBtn && openBtn.addEventListener('click', openModal);
             closeBtn && closeBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking on backdrop
+            backdrop && backdrop.addEventListener('click', closeModal);
 
             form && form.addEventListener('submit', function(e){
                 if(newPass.value !== confirmPass.value){

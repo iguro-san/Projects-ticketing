@@ -79,7 +79,7 @@ Route::middleware(['auth', 'check.role:user'])->group(function () {
 });
 
 // ==========================================
-// PANITIA ROUTES (ROLE PANITIA)
+// PANITIA ROUTES (ROLE PANITIA) - DIPERBAIKI
 // ==========================================
 Route::middleware(['auth', 'check.role:panitia'])->prefix('panitia')->name('panitia.')->group(function () {
     Route::get('/dashboard', [PanitiaDashboardController::class, 'index'])->name('dashboard');
@@ -88,13 +88,15 @@ Route::middleware(['auth', 'check.role:panitia'])->prefix('panitia')->name('pani
     Route::post('/events', [PanitiaEventController::class, 'store'])->name('events.store');
     Route::get('/events/{event}/edit', [PanitiaEventController::class, 'edit'])->name('events.edit');
     Route::put('/events/{event}', [PanitiaEventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{event}', [PanitiaEventController::class, 'destroy'])->name('events.destroy');
+    
+    // ❌ ROUTE DELETE EVENT DIHAPUS - Panitia TIDAK BOLEH menghapus event
+    // Route::delete('/events/{event}', [PanitiaEventController::class, 'destroy'])->name('events.destroy');
+    
+    // Registrasi per event + export
     Route::get('/events/{event}/registrations', [PanitiaEventController::class, 'registrations'])->name('events.registrations');
     Route::get('/events/{event}/registrations/export', [PanitiaEventController::class, 'exportRegistrations'])->name('events.registrations.export');
     
-    // ==========================================
-    // ROUTE UNTUK HAPUS TIKET
-    // ==========================================
+    // ✅ HAPUS TIKET - HANYA menghapus tiket, BUKAN event
     Route::delete('/events/{event}/tickets/{ticketType}', [PanitiaEventController::class, 'destroyTicket'])->name('events.tickets.destroy');
 });
 
@@ -126,9 +128,7 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::post('/events/{event}/pending', [SuspensionController::class, 'pending'])->name('events.pending');
     Route::post('/events/{event}/resolve/{action}', [SuspensionController::class, 'resolve'])->name('events.resolve');
     
-    // ==========================================
-    // CANCEL EVENT - OTOMATIS BUAT REFUND
-    // ==========================================
+    // Cancel Event - otomatis buat refund
     Route::post('/events/{event}/cancel', [AdminEventController::class, 'cancelEvent'])->name('events.cancel');
     
     // Ticket Types
@@ -137,34 +137,41 @@ Route::middleware(['auth', 'check.role:admin'])->prefix('admin')->name('admin.')
     Route::put('/events/{event}/ticket-types/{ticketType}', [AdminTicketTypeController::class, 'update'])->name('events.ticket-types.update');
     Route::delete('/events/{event}/ticket-types/{ticketType}', [AdminTicketTypeController::class, 'destroy'])->name('events.ticket-types.destroy');
     
-    // Registration Management
+    // ==========================================
+    // REGISTRATION MANAGEMENT - URUTAN DIPERBAIKI
+    // ==========================================
+    // Static routes (tanpa parameter) harus di atas dynamic routes
     Route::get('/registrations', [AdminRegistrationController::class, 'index'])->name('registrations.index');
+    Route::get('/registrations/export', [AdminRegistrationController::class, 'export'])->name('registrations.export');
     Route::get('/registrations/{registration}', [AdminRegistrationController::class, 'show'])->name('registrations.show');
     Route::post('/registrations/{registration}/verify-payment', [AdminRegistrationController::class, 'verifyPayment'])->name('registrations.verify-payment');
-    Route::get('/registrations/export', [AdminRegistrationController::class, 'export'])->name('registrations.export');
-    Route::get('/events/{event}/registrations', [AdminRegistrationController::class, 'eventRegistrations'])->name('events.registrations');
-    Route::get('/events/{event}/registrations/export', [AdminRegistrationController::class, 'exportEventRegistrations'])->name('events.registrations.export');
     
-    // Panitia Management
+    // ==========================================
+    // PANITIA MANAGEMENT
+    // ==========================================
     Route::get('/panitia', [PanitiaController::class, 'index'])->name('panitia.index');
     Route::get('/panitia/create', [PanitiaController::class, 'create'])->name('panitia.create');
     Route::post('/panitia', [PanitiaController::class, 'store'])->name('panitia.store');
     Route::delete('/panitia/{user}', [PanitiaController::class, 'destroy'])->name('panitia.destroy');
     
-    // Payment Confirmation
+    // ==========================================
+    // PAYMENT CONFIRMATION - PAKAI {payment}
+    // ==========================================
     Route::get('/payments', [PaymentConfirmationController::class, 'index'])->name('payments.index');
-    Route::post('/payments/{registration}/confirm', [PaymentConfirmationController::class, 'confirm'])->name('payments.confirm');
+    Route::post('/payments/{payment}/confirm', [PaymentConfirmationController::class, 'confirm'])->name('payments.confirm');
     
     // ==========================================
-    // REFUND MANAGEMENT - SISTEM BARU (SIMPEL)
+    // REFUND MANAGEMENT - PAKAI {payment}
     // ==========================================
     Route::get('/refunds', [RefundController::class, 'index'])->name('refunds.index');
-    Route::post('/refunds/{registration}/process', [RefundController::class, 'process'])->name('refunds.process');
+    Route::post('/refunds/{payment}/process', [RefundController::class, 'process'])->name('refunds.process');
     Route::post('/refunds/process-all', [RefundController::class, 'processAll'])->name('refunds.process-all');
-    Route::post('/refunds/{registration}/reject', [RefundController::class, 'reject'])->name('refunds.reject');
-    Route::get('/refunds/{registration}', [RefundController::class, 'show'])->name('refunds.show');
+    Route::post('/refunds/{payment}/reject', [RefundController::class, 'reject'])->name('refunds.reject');
+    Route::get('/refunds/{payment}', [RefundController::class, 'show'])->name('refunds.show');
     
-    // Announcement Management
+    // ==========================================
+    // ANNOUNCEMENT MANAGEMENT
+    // ==========================================
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
     Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');

@@ -200,25 +200,7 @@ class EventController extends BaseEventController
 
     public function destroy(Event $event)
     {
-        if ($event->panitia_id !== auth()->id()) abort(403);
-
-        // Cek apakah event sudah memiliki peserta
-        if ($event->registrations()->count() > 0) {
-            return back()->with('error', 'Event tidak dapat dihapus karena sudah ada peserta terdaftar.');
-        }
-
-        // Hapus poster jika ada
-        if ($event->poster) {
-            Storage::disk('public')->delete($event->poster);
-        }
-
-        // Hapus semua tiket terkait
-        $event->ticketTypes()->delete();
-
-        // Hapus event
-        $event->delete();
-
-        return redirect()->route('panitia.events.index')->with('success', 'Event berhasil dihapus.');
+        abort(403, 'Panitia tidak diizinkan menghapus event.');
     }
 
     public function registrations(Event $event)
@@ -258,25 +240,27 @@ class EventController extends BaseEventController
         return back()->with('success', $msg);
     }
 
-    public function exportRegistrations(Event $event)
+         public function exportRegistrations(Event $event)
     {
         if ($event->panitia_id !== auth()->id()) abort(403);
 
-        $registrations = $event->registrations()->with(['ticketType', 'user', 'payments'])->get();
+        $registrations = $event->registrations()
+            ->with(['ticketType', 'user', 'payments'])
+            ->get();
+
         $filename = 'peserta_' . str_replace(' ', '_', $event->title) . '_' . date('Ymd') . '.csv';
 
         return response()->streamDownload(function() use ($registrations) {
             $out = fopen('php://output', 'w');
             fputcsv($out, ['No Registrasi', 'Nama', 'Email', 'Tiket', 'Harga', 'Status', 'Tanggal Daftar']);
             foreach ($registrations as $r) {
-                $status = $r->payments->contains(fn($p) => $p->status === 'verified') ? 'Lunas' : 'Belum Lunas';
                 fputcsv($out, [
                     $r->registration_number,
-                    $r->user->name,
-                    $r->user->email,
+                    $r->user->name ?? '-',
+                    $r->user->email ?? '-',
                     $r->ticketType->name,
                     number_format($r->ticketType->price, 0, ',', '.'),
-                    $status,
+                    $r->payment_status_label,
                     $r->registered_at->format('d/m/Y H:i')
                 ]);
             }

@@ -18,9 +18,6 @@ class EventController extends BaseEventController
      * OVERRIDE METHOD #1 - POLYMORPHISM
      * ==========================================
      * Panitia hanya melihat event MILIKNYA SENDIRI (filter panitia_id)
-     * 
-     * @param Request $request
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function getUserQuery(Request $request)
     {
@@ -32,10 +29,6 @@ class EventController extends BaseEventController
      * OVERRIDE METHOD #2 - POLYMORPHISM
      * ==========================================
      * Panitia view hanya butuh $events (tanpa $categories & $panitia)
-     * 
-     * @param mixed $events
-     * @param Request $request
-     * @return \Illuminate\View\View
      */
     protected function renderIndexView($events, Request $request)
     {
@@ -99,26 +92,115 @@ class EventController extends BaseEventController
         return view('panitia.events.edit', compact('event', 'categories'));
     }
 
+    /**
+     * ==========================================
+     * UPDATE EVENT + TAMBAH TIKET BARU
+     * ==========================================
+     */
     public function update(Request $request, Event $event)
     {
-        if ($event->panitia_id !== auth()->id()) abort(403);
+        // Cek kepemilikan event
+        if ($event->panitia_id !== auth()->id()) {
+            abort(403);
+        }
 
+        // ==========================================
+        // VALIDASI
+        // ==========================================
         $validated = $request->validate([
             'title' => 'required|string|min:3|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
-            'poster' => 'nullable|image|max:2048',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            // Validasi tiket baru (opsional - bisa kosong)
+            'ticket_names' => 'nullable|array',
+            'ticket_names.*' => 'nullable|string|min:1',
+            'ticket_prices' => 'nullable|array',
+            'ticket_prices.*' => 'nullable|numeric|min:0',
+            'ticket_quotas' => 'nullable|array',
+            'ticket_quotas.*' => 'nullable|integer|min:1',
         ]);
 
+        // ==========================================
+        // UPDATE POSTER JIKA ADA
+        // ==========================================
         if ($request->hasFile('poster')) {
-            if ($event->poster) Storage::disk('public')->delete($event->poster);
+            if ($event->poster) {
+                Storage::disk('public')->delete($event->poster);
+            }
             $validated['poster'] = $request->file('poster')->store('posters/' . date('Y/m'), 'public');
         }
 
+        // ==========================================
+        // UPDATE EVENT
+        // ==========================================
         $event->update($validated);
-        return redirect()->route('panitia.events.index')->with('success', 'Event berhasil diupdate.');
+
+        // ==========================================
+        // TAMBAH TIKET BARU JIKA ADA
+        // ==========================================
+        $ticketAdded = 0;
+        $ticketErrors = [];
+
+        // CEK APAKAH ADA TIKET YANG DIKIRIM
+        if ($request->has('ticket_names') && is_array($request->ticket_names)) {
+            // Filter tiket yang memiliki nama (tidak kosong)
+            $ticketData = [];
+            foreach ($request->ticket_names as $i => $name) {
+                $name = trim($name);
+                if (!empty($name)) {
+                    // Pastikan index price dan quota ada
+                    $price = isset($request->ticket_prices[$i]) ? (float) $request->ticket_prices[$i] : 0;
+                    $quota = isset($request->ticket_quotas[$i]) ? (int) $request->ticket_quotas[$i] : 1;
+                    
+                    $ticketData[] = [
+                        'name' => $name,
+                        'price' => $price,
+                        'quota' => $quota,
+                    ];
+                }
+            }
+
+            // Jika ada data tiket, simpan
+            if (!empty($ticketData)) {
+                DB::beginTransaction();
+                try {
+                    foreach ($ticketData as $data) {
+                        TicketType::create([
+                            'event_id' => $event->id,
+                            'name' => $data['name'],
+                            'price' => $data['price'],
+                            'quota' => $data['quota'],
+                            'registered' => 0,
+                        ]);
+                        $ticketAdded++;
+                    }
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return back()->with('error', 'Gagal menambah tiket: ' . $e->getMessage())->withInput();
+                }
+            }
+        }
+
+        // ==========================================
+        // RESPONSE
+        // ==========================================
+        $message = 'Event berhasil diupdate.';
+        if ($ticketAdded > 0) {
+            $message .= ' ' . $ticketAdded . ' tiket baru berhasil ditambahkan.';
+        } else {
+            $message .= ' Tidak ada tiket baru yang ditambahkan.';
+        }
+
+        return redirect()->route('panitia.events.index')->with('success', $message);
+    }
+
+    public function destroy(Event $event)
+    {
+        abort(403, 'Panitia tidak diizinkan menghapus event.');
     }
 
     public function registrations(Event $event)
@@ -158,29 +240,55 @@ class EventController extends BaseEventController
         return back()->with('success', $msg);
     }
 
-    public function exportRegistrations(Event $event)
+         public function exportRegistrations(Event $event)
     {
         if ($event->panitia_id !== auth()->id()) abort(403);
 
-        $registrations = $event->registrations()->with(['ticketType', 'user', 'payments'])->get();
+        $registrations = $event->registrations()
+            ->with(['ticketType', 'user', 'payments'])
+            ->get();
+
         $filename = 'peserta_' . str_replace(' ', '_', $event->title) . '_' . date('Ymd') . '.csv';
 
         return response()->streamDownload(function() use ($registrations) {
             $out = fopen('php://output', 'w');
             fputcsv($out, ['No Registrasi', 'Nama', 'Email', 'Tiket', 'Harga', 'Status', 'Tanggal Daftar']);
             foreach ($registrations as $r) {
-                $status = $r->payments->contains(fn($p) => $p->status === 'verified') ? 'Lunas' : 'Belum Lunas';
                 fputcsv($out, [
                     $r->registration_number,
-                    $r->user->name,
-                    $r->user->email,
+                    $r->user->name ?? '-',
+                    $r->user->email ?? '-',
                     $r->ticketType->name,
                     number_format($r->ticketType->price, 0, ',', '.'),
-                    $status,
+                    $r->payment_status_label,
                     $r->registered_at->format('d/m/Y H:i')
                 ]);
             }
             fclose($out);
         }, $filename);
+    }
+
+    /**
+     * ==========================================
+     * HAPUS TIKET (jika belum ada pendaftar)
+     * ==========================================
+     */
+    public function destroyTicket(Event $event, TicketType $ticketType)
+    {
+        // Cek apakah panitia adalah pemilik event
+        if ($event->panitia_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus tiket ini.');
+        }
+        
+        // Cek apakah tiket sudah ada pendaftar
+        $registrationCount = $ticketType->registrations()->count();
+        if ($registrationCount > 0) {
+            return back()->with('error', 'Tiket "' . $ticketType->name . '" tidak dapat dihapus karena sudah ada ' . $registrationCount . ' peserta terdaftar.');
+        }
+        
+        // Hapus tiket
+        $ticketType->delete();
+        
+        return back()->with('success', 'Tiket "' . $ticketType->name . '" berhasil dihapus.');
     }
 }

@@ -32,6 +32,11 @@ class AccountController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Check if this is an email update request
+        if ($request->has('password_confirm')) {
+            return $this->updateEmail($request);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -41,6 +46,32 @@ class AccountController extends Controller
         $user->update($data);
 
         return back()->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    // Update email with password confirmation
+    public function updateEmail(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Only allow regular users to update email
+        if ($user->isAdmin() || $user->isPanitia()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password_confirm' => 'required',
+        ]);
+
+        if (!Hash::check($request->input('password_confirm'), $user->password)) {
+            return back()->with('error', 'Kata sandi yang Anda masukkan salah.');
+        }
+
+        $oldEmail = $user->email;
+        $user->email = $request->input('email');
+        $user->save();
+
+        return back()->with('success', "Email berhasil diperbarui dari {$oldEmail} menjadi {$user->email}.");
     }
 
     // Change password

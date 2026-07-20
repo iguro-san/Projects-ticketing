@@ -89,8 +89,12 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             <i class="fas fa-envelope text-gray-400 mr-2"></i>Email
                         </label>
-                        <input type="email" value="{{ $user->email }}" readonly 
-                            class="w-full border border-gray-200 rounded-lg px-4 py-3 bg-gray-50 text-gray-700 cursor-not-allowed focus:outline-none">
+                        <div class="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 bg-gray-50">
+                            <span class="text-gray-600 flex-1">{{ $user->email }}</span>
+                            <button id="openChangeEmail" type="button" class="text-blue-600 hover:text-blue-700 font-semibold text-sm whitespace-nowrap">
+                                <i class="fas fa-edit mr-1"></i>Ganti
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -147,6 +151,61 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Change Email Modal --}}
+    <div id="changeEmailModal" class="fixed inset-0 z-50 hidden px-4" style="align-items: center; justify-content: center;">
+        <div id="emailModalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
+        <div id="emailModalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
+                <div class="bg-gradient-to-br from-blue-400 to-blue-500 p-3 rounded-full">
+                    <i class="fas fa-envelope text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900">Ganti Email</h3>
+            </div>
+
+            <form id="changeEmailForm" action="{{ route('account.update') }}" method="POST" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-envelope-circle-check text-gray-400 mr-2"></i>Email Lama
+                    </label>
+                    <input type="email" value="{{ $user->email }}" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-gray-700 cursor-not-allowed">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-envelope text-gray-400 mr-2"></i>Email Baru
+                    </label>
+                    <input id="newEmail" type="email" name="email" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                        placeholder="Masukkan email baru" required>
+                    @error('email') 
+                        <p class="text-red-600 text-sm mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> 
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-lock text-gray-400 mr-2"></i>Kata Sandi
+                    </label>
+                    <input id="emailPassword" type="password" name="password_confirm" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" 
+                        placeholder="Masukkan kata sandi untuk konfirmasi" required>
+                    <p id="emailPasswordError" class="text-red-600 text-sm mt-1 hidden"><i class="fas fa-exclamation-circle mr-1"></i>Kata sandi salah</p>
+                </div>
+
+                <div class="flex gap-3 pt-6">
+                    <button type="button" id="closeChangeEmail" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+                        <i class="fas fa-times mr-2"></i>Batal
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 transition shadow-sm">
+                        <i class="fas fa-check mr-2"></i>Simpan Email
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -268,6 +327,77 @@
             const hasPasswordError = '{{ $errors->has('current_password') || $errors->has('password') ? 'true' : 'false' }}';
             if(hasPasswordError === 'true'){
                 setTimeout(openModal, 300);
+            }
+        })();
+
+        // Email Modal Handler
+        (function(){
+            const emailModal = document.getElementById('changeEmailModal');
+            const emailBackdrop = document.getElementById('emailModalBackdrop');
+            const emailCard = document.getElementById('emailModalCard');
+            const openEmailBtn = document.getElementById('openChangeEmail');
+            const closeEmailBtn = document.getElementById('closeChangeEmail');
+            const emailForm = document.getElementById('changeEmailForm');
+            const newEmailField = document.getElementById('newEmail');
+            const emailPasswordField = document.getElementById('emailPassword');
+            const emailPasswordError = document.getElementById('emailPasswordError');
+
+            function openEmailModal(){
+                emailModal.classList.add('modal-open');
+                emailModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Clear fields
+                newEmailField.value = '';
+                emailPasswordField.value = '';
+                emailPasswordError.classList.add('hidden');
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    emailBackdrop.classList.add('modal-backdrop-enter');
+                    emailCard.classList.add('modal-card-enter');
+                });
+            }
+
+            function closeEmailModal(){
+                emailBackdrop.classList.remove('modal-backdrop-enter');
+                emailCard.classList.remove('modal-card-enter');
+                
+                emailBackdrop.classList.add('modal-backdrop-exit');
+                emailCard.classList.add('modal-card-exit');
+                
+                setTimeout(() => {
+                    emailModal.classList.remove('modal-open');
+                    emailModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    emailBackdrop.classList.remove('modal-backdrop-exit');
+                    emailCard.classList.remove('modal-card-exit');
+                    emailPasswordError.classList.add('hidden');
+                }, 300);
+            }
+
+            openEmailBtn && openEmailBtn.addEventListener('click', openEmailModal);
+            closeEmailBtn && closeEmailBtn.addEventListener('click', closeEmailModal);
+
+            // Close modal when clicking on backdrop
+            emailBackdrop && emailBackdrop.addEventListener('click', closeEmailModal);
+
+            // Validasi email baru
+            emailForm && emailForm.addEventListener('submit', function(e){
+                const currentEmail = '{{ $user->email }}';
+                const newEmail = newEmailField.value.trim();
+                
+                if(newEmail === currentEmail){
+                    e.preventDefault();
+                    alert('Email baru harus berbeda dengan email saat ini');
+                    return false;
+                }
+            });
+
+            // Hanya buka modal jika ada error validation email
+            const hasEmailError = '{{ $errors->has('email') ? 'true' : 'false' }}';
+            if(hasEmailError === 'true'){
+                setTimeout(openEmailModal, 300);
             }
         })();
     </script>

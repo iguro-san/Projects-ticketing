@@ -16,11 +16,11 @@
     @keyframes slideUpScale {
         from {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.85);
+            transform: scale(0.85);
         }
         to {
             opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
+            transform: scale(1);
         }
     }
 
@@ -38,6 +38,14 @@
 
     .modal-card-exit {
         animation: slideUpScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) reverse;
+    }
+
+    #changePasswordModal {
+        display: none !important;
+    }
+
+    #changePasswordModal.modal-open {
+        display: flex !important;
     }
 </style>
 <div class="min-h-screen bg-gray-50 py-8">
@@ -143,9 +151,9 @@
     </div>
 
     {{-- Change Password Modal --}}
-    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden px-4" style="display: flex; align-items: center; justify-content: center;">
-        <div id="modalBackdrop" class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div id="modalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative">
+    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden px-4" style="align-items: center; justify-content: center;">
+        <div id="modalBackdrop" class="absolute inset-0 bg-black bg-opacity-50 cursor-pointer"></div>
+        <div id="modalCard" class="bg-white rounded-lg w-full max-w-md p-8 shadow-2xl relative z-10">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
                 <div class="bg-gradient-to-br from-amber-400 to-yellow-300 p-3 rounded-full">
                     <i class="fas fa-key text-white"></i>
@@ -215,8 +223,9 @@
             const confirmError = document.getElementById('confirmError');
 
             function openModal(){
-                modal.style.display = 'flex';
+                modal.classList.add('modal-open');
                 modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
                 
                 // Trigger animation
                 requestAnimationFrame(() => {
@@ -233,8 +242,9 @@
                 card.classList.add('modal-card-exit');
                 
                 setTimeout(() => {
+                    modal.classList.remove('modal-open');
                     modal.classList.add('hidden');
-                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
                     backdrop.classList.remove('modal-backdrop-exit');
                     card.classList.remove('modal-card-exit');
                     confirmError.classList.add('hidden');
@@ -254,10 +264,11 @@
                 }
             });
 
-            // If server-side validation failed for password fields, open modal
-            @if($errors->has('current_password') || $errors->has('password') || session('error'))
-                openModal();
-            @endif
+            // Hanya buka modal jika ada error validation
+            const hasPasswordError = '{{ $errors->has('current_password') || $errors->has('password') ? 'true' : 'false' }}';
+            if(hasPasswordError === 'true'){
+                setTimeout(openModal, 300);
+            }
         })();
     </script>
 </div>
